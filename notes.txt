@@ -1,0 +1,12 @@
+Generate the .g.dart files
+Use the non-deprecated command:
+1- dart run build_runner build --delete-conflicting-outputs
+(or in Flutter projects this also works)
+2-flutter pub run build_runner build --delete-conflicting-outputs
+Or for auto-generation while coding:
+3-dart run build_runner watch
+
+//for freezed and json serialization
+dart run build_runner build --delete-conflicting-outputs
+//Auto-regenerate on every change (optional)
+dart run build_runner watch --delete-conflicting-outputs
