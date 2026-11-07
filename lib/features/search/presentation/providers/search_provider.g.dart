@@ -94,7 +94,7 @@ final class FilterNotifierProvider
   }
 }
 
-String _$filterNotifierHash() => r'2cd3b342831c06bbb2b98ee625737db387ef61ee';
+String _$filterNotifierHash() => r'93f479e5163c0fb8bb9b5fb90778544a90dbc859';
 
 abstract class _$FilterNotifier extends $Notifier<FilterModel> {
   FilterModel build();
@@ -159,4 +159,4 @@ final class FilteredProductsProvider
   }
 }
 
-String _$filteredProductsHash() => r'213beea2d508659a248aefce2ac83e52af3a8ed8';
+String _$filteredProductsHash() => r'd91d2960c3f84d548dfdfbc51f7b603c968788c9';

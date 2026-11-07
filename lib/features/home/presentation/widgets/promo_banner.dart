@@ -21,7 +21,7 @@ class PromoBanner extends StatelessWidget {
     }
 
     return SizedBox(
-      height: 160.h(context),
+      height: 130,
       child: PageView.builder(
         physics: const BouncingScrollPhysics(),
         itemCount: banners.length,
@@ -35,12 +35,12 @@ class PromoBanner extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(24.w(context)),
+              borderRadius: BorderRadius.circular(20.w(context)),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.primary.withValues(alpha: 0.2),
-                  blurRadius: 16,
-                  offset: Offset(0, 8.h(context)),
+                  blurRadius: 12,
+                  offset: Offset(0, 4.h(context)),
                 ),
               ],
             ),
@@ -49,76 +49,61 @@ class PromoBanner extends StatelessWidget {
                 if (banner.imageUrl.isNotEmpty && !banner.imageUrl.contains('placehold.co'))
                   Positioned.fill(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(24.w(context)),
+                      borderRadius: BorderRadius.circular(20.w(context)),
                       child: CachedNetworkImage(
                         imageUrl: banner.imageUrl,
                         fit: BoxFit.cover,
+                        httpHeaders: const {
+                          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        },
                         color: Colors.black.withValues(alpha: 0.3),
                         colorBlendMode: BlendMode.darken,
                       ),
                     ),
                   ),
-                Positioned(
-                  right: -30.w(context),
-                  top: -30.h(context),
-                  child: Container(
-                    width: 130.w(context),
-                    height: 130.h(context),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withValues(alpha: 0.05),
-                    ),
-                  ),
-                ),
                 Padding(
-                  padding: EdgeInsets.all(22.w(context)),
+                  padding: EdgeInsets.symmetric(horizontal: 14.w(context), vertical: 8.h(context)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         banner.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontSize: 22.sp(context),
+                              fontSize: 16.sp(context),
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
                       ),
-                      SizedBox(height: 4.h(context)),
+                      SizedBox(height: 2.h(context)),
                       Text(
                         banner.subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontSize: 14.sp(context),
+                              fontSize: 11.sp(context),
                               color: Colors.white70,
                             ),
                       ),
-                      SizedBox(height: 14.h(context)),
+                      SizedBox(height: 6.h(context)),
                       GestureDetector(
                         onTap: onShopNow,
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w(context), vertical: 8.h(context)),
+                          padding: EdgeInsets.symmetric(horizontal: 10.w(context), vertical: 3.h(context)),
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(20.w(context)),
+                            borderRadius: BorderRadius.circular(16.w(context)),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Shop now',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      fontSize: 13.sp(context),
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.lightTextPrimary,
-                                    ),
-                              ),
-                              SizedBox(width: 4.w(context)),
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                size: 12.sp(context),
-                                color: AppColors.lightTextPrimary,
-                              ),
-                            ],
+                          child: Text(
+                            'Shop now',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  fontSize: 10.sp(context),
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.lightTextPrimary,
+                                ),
                           ),
                         ),
                       ),

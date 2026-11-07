@@ -3,9 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
-
+import 'package:ecommerce/core/utils/responsive_utils.dart';
+import 'package:ecommerce/core/theme/text_theme_extension.dart';
+import 'package:ecommerce/core/widgets/app_button.dart';
+import 'package:ecommerce/core/network/dio_client.dart';
+import 'package:ecommerce/features/favorites/data/favorites_repository.dart';
 import '../../../home/models/home_response_model.dart';
-
+import 'package:ecommerce/features/product/presentation/screens/product_details_screen.dart';
 
 class FavoritesScreen extends ConsumerStatefulWidget {
   const FavoritesScreen({super.key});
@@ -15,45 +19,50 @@ class FavoritesScreen extends ConsumerStatefulWidget {
 }
 
 class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
-  //'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?q=80&w=600&auto=format&fit=crop'
-  //'https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?q=80&w=600&auto=format&fit=crop'
+  late Future<List<ProductModel>> _wishlistFuture;
 
-  final List<ProductModel> _favorites = [];
+  @override
+  void initState() {
+    super.initState();
+    _loadWishlist();
+  }
 
-  ProductModel? _recentlyRemoved;
-  int? _recentlyRemovedIndex;
+  void _loadWishlist() {
+    _wishlistFuture = FavoritesRepository(ref.read(dioClientProvider)).getWishlist();
+  }
 
-  void _removeItem(int index) {
-    setState(() {
-      _recentlyRemoved = _favorites[index];
-      _recentlyRemovedIndex = index;
-      _favorites.removeAt(index);
-    });
+  Future<void> _removeItem(ProductModel product, AppStrings strings) async {
+    try {
+      final repo = FavoritesRepository(ref.read(dioClientProvider));
+      await repo.removeFromWishlist(product.id);
+      setState(() {
+        _loadWishlist();
+      });
 
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Removed from favorites'),
-        action: SnackBarAction(
-          label: 'UNDO',
-          textColor: Colors.amber,
-          onPressed: () {
-            if (_recentlyRemoved != null && _recentlyRemovedIndex != null) {
-              setState(() {
-                _favorites.insert(_recentlyRemovedIndex!, _recentlyRemoved!);
-              });
-            }
-          },
-        ),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 3),
-      ),
-    );
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(strings.removedFromFavorites),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
     final currentLang = ref.watch(languageProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
     final isArabic = currentLang == AppLanguage.ar;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -63,7 +72,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
         backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
         elevation: 0,
         leading: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.w(context)),
           child: Container(
             decoration: BoxDecoration(
               color: isDark ? AppColors.darkSurface : Colors.white,
@@ -72,14 +81,14 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  offset: Offset(0, 2.h(context)),
                 ),
               ],
             ),
             child: IconButton(
               icon: Icon(
                 isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
-                size: 16,
+                size: 16.sp(context),
                 color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
               ),
               onPressed: () => Navigator.of(context).pop(),
@@ -87,51 +96,31 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
           ),
         ),
         title: Text(
-          isArabic ? 'المفضلة' : 'Favorites',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-          ),
+          strings.favorites,
+          style: context.textTheme.titleLarge?.copyWith(
+                fontSize: 20.sp(context),
+                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+              ),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.darkSurface : Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Text(
-                isArabic ? '${_favorites.length} عناصر' : '${_favorites.length} ITEMS',
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
-      body: _favorites.isEmpty
-          ? Center(
+      body: FutureBuilder<List<ProductModel>>(
+        future: _wishlistFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final favorites = snapshot.data ?? [];
+
+          if (favorites.isEmpty) {
+            return Center(
               child: Padding(
-                padding: const EdgeInsets.all(24.0),
+                padding: EdgeInsets.all(24.w(context)),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 110,
-                      height: 110,
+                      width: 110.w(context),
+                      height: 110.h(context),
                       decoration: BoxDecoration(
                         color: AppColors.peach.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
@@ -139,13 +128,13 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          const Icon(Icons.favorite_border, size: 48, color: AppColors.primary),
+                          Icon(Icons.favorite_border, size: 48.sp(context), color: AppColors.primary),
                           Positioned(
-                            top: 24,
-                            right: 28,
+                            top: 24.h(context),
+                            right: 28.w(context),
                             child: Container(
-                              width: 8,
-                              height: 8,
+                              width: 8.w(context),
+                              height: 8.h(context),
                               decoration: const BoxDecoration(
                                 color: AppColors.starYellow,
                                 shape: BoxShape.circle,
@@ -155,78 +144,73 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24.h(context)),
                     Text(
-                      isArabic ? 'لا توجد مفضلة بعد' : 'No favorites yet',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      isArabic
-                          ? 'اضغط على القلب في أي منتج لحفظه هنا، حتى تتمكن من العثور عليه لاحقاً.'
-                          : 'Tap the heart on any product to save it here, so you can find it again later.',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.lightTextSecondary,
-                        height: 1.4,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    SizedBox(
-                      width: 240,
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: () {
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
-                        ),
-                        child: Text(
-                          isArabic ? 'تصفح المتجر' : 'BROWSE THE SHOP',
-                          style: const TextStyle(
+                      strings.noFavoritesYet,
+                      style: context.textTheme.headlineSmall?.copyWith(
+                            fontSize: 22.sp(context),
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 1.0,
+                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
                           ),
-                        ),
+                    ),
+                    SizedBox(height: 8.h(context)),
+                    Text(
+                      strings.tapTheHeart,
+                      textAlign: TextAlign.center,
+                      style: context.textTheme.addressBody?.copyWith(
+                            fontSize: 14.sp(context),
+                            color: AppColors.lightTextSecondary,
+                          ),
+                    ),
+                    SizedBox(height: 32.h(context)),
+                    SizedBox(
+                      width: 240.w(context),
+                      height: 52.h(context),
+                      child: AppButton(
+                        text: strings.browseTheShop,
+                        onPressed: () => Navigator.of(context).pop(),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Your saved items sync across your devices',
-                      style: TextStyle(fontSize: 11, color: AppColors.lightTextSecondary),
+                    SizedBox(height: 16.h(context)),
+                    Text(
+                      strings.syncDevices,
+                      style: context.textTheme.bodySmall?.copyWith(fontSize: 11.sp(context), color: AppColors.lightTextSecondary),
                     ),
                   ],
                 ),
               ),
-            )
-          : GridView.builder(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(20),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.72,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: _favorites.length,
-              itemBuilder: (context, index) {
-                final product = _favorites[index];
-                return Container(
+            );
+          }
+
+          return GridView.builder(
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.all(20.w(context)),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.72,
+              crossAxisSpacing: 16.w(context),
+              mainAxisSpacing: 16.h(context),
+            ),
+            itemCount: favorites.length,
+            itemBuilder: (context, index) {
+              final product = favorites[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => ProductDetailsScreen(product: product),
+                    ),
+                  );
+                },
+                child: Container(
                   decoration: BoxDecoration(
                     color: isDark ? AppColors.darkCardBg : Colors.white,
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(24.w(context)),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.04),
                         blurRadius: 12,
-                        offset: const Offset(0, 4),
+                        offset: Offset(0, 4.h(context)),
                       ),
                     ],
                   ),
@@ -240,24 +224,25 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                               width: double.infinity,
                               decoration: BoxDecoration(
                                 color: isDark ? AppColors.darkCategoryBg : AppColors.lightCategoryBg,
-                                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                                borderRadius: BorderRadius.vertical(top: Radius.circular(24.w(context))),
                               ),
                               child: ClipRRect(
-                                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                                borderRadius: BorderRadius.vertical(top: Radius.circular(24.w(context))),
                                 child: CachedNetworkImage(
                                   imageUrl: product.image,
                                   fit: BoxFit.cover,
+                                  errorWidget: (context, url, error) => const Icon(Icons.image_not_supported_outlined),
                                 ),
                               ),
                             ),
                             Positioned(
-                              top: 10,
-                              right: 10,
+                              top: 10.h(context),
+                              right: 10.w(context),
                               child: GestureDetector(
-                                onTap: () => _removeItem(index),
+                                onTap: () => _removeItem(product, strings),
                                 child: Container(
-                                  width: 30,
-                                  height: 30,
+                                  width: 30.w(context),
+                                  height: 30.w(context),
                                   decoration: BoxDecoration(
                                     color: isDark ? AppColors.darkSurface : Colors.white,
                                     shape: BoxShape.circle,
@@ -269,7 +254,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                                       ),
                                     ],
                                   ),
-                                  child: const Icon(Icons.close, size: 16, color: AppColors.lightTextSecondary),
+                                  child: Icon(Icons.close, size: 16.sp(context), color: AppColors.lightTextSecondary),
                                 ),
                               ),
                             ),
@@ -277,7 +262,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(12.0),
+                        padding: EdgeInsets.all(12.w(context)),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -285,13 +270,12 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                               product.name,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                              ),
+                              style: context.textTheme.boldTitleMedium?.copyWith(
+                                    fontSize: 14.sp(context),
+                                    color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                  ),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8.h(context)),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -300,28 +284,26 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                                   children: [
                                     Text(
                                       '\$${product.priceInfo.finalPrice.toStringAsFixed(2)}',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                                      ),
+                                      style: context.textTheme.boldTitleMedium?.copyWith(
+                                            fontSize: 15.sp(context),
+                                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                          ),
                                     ),
                                     if (product.priceInfo.discountPercentage != null) ...[
-                                      const SizedBox(height: 2),
+                                      SizedBox(height: 2.h(context)),
                                       Text(
                                         '\$${product.priceInfo.originalPrice.toStringAsFixed(2)}',
-                                        style: const TextStyle(
-                                          fontSize: 11,
-                                          decoration: TextDecoration.lineThrough,
-                                          color: AppColors.lightTextSecondary,
-                                        ),
+                                        style: context.textTheme.bodySmall?.copyWith(
+                                              fontSize: 11.sp(context),
+                                              decoration: TextDecoration.lineThrough,
+                                            ),
                                       ),
                                     ],
                                   ],
                                 ),
                                 Container(
-                                  width: 34,
-                                  height: 34,
+                                  width: 34.w(context),
+                                  height: 34.w(context),
                                   decoration: BoxDecoration(
                                     color: AppColors.primary,
                                     shape: BoxShape.circle,
@@ -329,11 +311,11 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                                       BoxShadow(
                                         color: AppColors.primary.withValues(alpha: 0.3),
                                         blurRadius: 6,
-                                        offset: const Offset(0, 3),
+                                        offset: Offset(0, 3.h(context)),
                                       ),
                                     ],
                                   ),
-                                  child: const Icon(Icons.add, color: Colors.white, size: 18),
+                                  child: Icon(Icons.add, color: Colors.white, size: 18.sp(context)),
                                 ),
                               ],
                             ),
@@ -342,9 +324,12 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                       ),
                     ],
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

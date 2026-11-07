@@ -5,7 +5,8 @@ import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/core/widgets/app_image_container.dart';
-import '../screens/category_detail_screen.dart';
+import 'package:ecommerce/features/product/presentation/screens/product_list_screen.dart';
+import '../screens/category_children_screen.dart';
 import '../../models/category_detail_model.dart';
 
 class CategoriesSection extends ConsumerWidget {
@@ -37,11 +38,22 @@ class CategoriesSection extends ConsumerWidget {
               final category = categories[index];
               return GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => CategoryDetailScreen(category: category),
-                    ),
-                  );
+                  if (category.hasChildren) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => CategoryChildrenScreen(category: category),
+                      ),
+                    );
+                  } else {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => ProductListScreen(
+                          title: category.name,
+                          endpoint: '/products?categoryId=${category.id}',
+                        ),
+                      ),
+                    );
+                  }
                 },
                 child: Container(
                   padding: EdgeInsets.all(16.w(context)),
@@ -87,16 +99,6 @@ class CategoriesSection extends ConsumerWidget {
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontSize: 16.sp(context),
                               fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      SizedBox(height: 4.h(context)),
-                      Text(
-                        category.subCategories.isNotEmpty
-                            ? '${category.subCategories.length} ${strings.collections}'
-                            : '${category.directProducts.length} ${strings.items}',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              fontSize: 12.sp(context),
                             ),
                       ),
                     ],

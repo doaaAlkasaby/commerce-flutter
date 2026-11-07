@@ -1,16 +1,22 @@
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../config/tenant_config.dart';
 import '../constants/api_endpoints.dart';
 import '../utils/app_logger.dart';
+import '../../main.dart';
 
 part 'dio_client.g.dart';
 
 @Riverpod(keepAlive: true)
 class AuthTokenNotifier extends _$AuthTokenNotifier {
   @override
-  String? build() => null;
+  String? build() {
+    try {
+      return sharedPreferences.getString('access_token');
+    } catch (_) {
+      return null;
+    }
+  }
 
   void setToken(String? token) {
     state = token;
@@ -73,8 +79,7 @@ Dio dioClient(Ref ref) {
             !error.requestOptions.path.contains('auth/login') &&
             !error.requestOptions.path.contains('auth/refresh')) {
           try {
-            final prefs = await SharedPreferences.getInstance();
-            final refreshToken = prefs.getString('refresh_token');
+            final refreshToken = sharedPreferences.getString('refresh_token');
 
             if (refreshToken != null && refreshToken.isNotEmpty) {
               final refreshDio = Dio(BaseOptions(baseUrl: ApiEndpoints.baseUrl));
@@ -89,7 +94,7 @@ Dio dioClient(Ref ref) {
                 final newAccessToken = data['accessToken']?.toString();
 
                 if (newAccessToken != null && newAccessToken.isNotEmpty) {
-                  await prefs.setString('access_token', newAccessToken);
+                  await sharedPreferences.setString('access_token', newAccessToken);
                   ref.read(authTokenProvider.notifier).setToken(newAccessToken);
 
                   final opts = error.requestOptions;

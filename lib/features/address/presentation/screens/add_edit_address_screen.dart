@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
+import 'package:ecommerce/core/utils/responsive_utils.dart';
+import 'package:ecommerce/core/theme/text_theme_extension.dart';
+import 'package:ecommerce/core/widgets/app_text_field.dart';
+import 'package:ecommerce/core/widgets/app_button.dart';
 import '../../models/address_model.dart';
 import '../providers/address_provider.dart';
 
@@ -47,10 +51,10 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
     super.dispose();
   }
 
-  void _saveAddress() {
+  void _saveAddress(AppStrings strings) {
     if (_nameController.text.isEmpty || _streetController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in required fields')),
+        SnackBar(content: Text(strings.fillRequired)),
       );
       return;
     }
@@ -77,7 +81,9 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
     final currentLang = ref.watch(languageProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
     final isArabic = currentLang == AppLanguage.ar;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -87,7 +93,7 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
         backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
         elevation: 0,
         leading: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.w(context)),
           child: Container(
             decoration: BoxDecoration(
               color: isDark ? AppColors.darkSurface : Colors.white,
@@ -96,14 +102,14 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  offset: Offset(0, 2.h(context)),
                 ),
               ],
             ),
             child: IconButton(
               icon: Icon(
                 isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
-                size: 16,
+                size: 16.sp(context),
                 color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
               ),
               onPressed: () => Navigator.of(context).pop(),
@@ -111,85 +117,62 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
           ),
         ),
         title: Text(
-          widget.addressToEdit == null ? (isArabic ? 'إضافة عنوان' : 'Add Address') : (isArabic ? 'تعديل العنوان' : 'Edit Address'),
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-          ),
+          widget.addressToEdit == null ? strings.addAddress : strings.editAddress,
+          style: context.textTheme.titleLarge?.copyWith(
+                fontSize: 20.sp(context),
+                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+              ),
         ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20.w(context)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildTextField('Address Label (e.g. HOME, WORK)', _titleController),
-            const SizedBox(height: 16),
-            _buildTextField('Full Name', _nameController),
-            const SizedBox(height: 16),
-            _buildTextField('Street Address', _streetController),
-            const SizedBox(height: 16),
+            AppTextField(
+              controller: _titleController,
+              labelText: 'Address Label (e.g. HOME, WORK)',
+            ),
+            SizedBox(height: 16.h(context)),
+            AppTextField(
+              controller: _nameController,
+              labelText: strings.fullName,
+            ),
+            SizedBox(height: 16.h(context)),
+            AppTextField(
+              controller: _streetController,
+              labelText: strings.streetAddress,
+            ),
+            SizedBox(height: 16.h(context)),
             Row(
               children: [
-                Expanded(child: _buildTextField('City', _cityController)),
-                const SizedBox(width: 12),
-                Expanded(child: _buildTextField('Postal Code', _postalController)),
+                Expanded(child: AppTextField(controller: _cityController, labelText: strings.city)),
+                SizedBox(width: 12.w(context)),
+                Expanded(child: AppTextField(controller: _postalController, labelText: strings.postalCode)),
               ],
             ),
-            const SizedBox(height: 16),
-            _buildTextField('Phone Number', _phoneController),
-            const SizedBox(height: 20),
+            SizedBox(height: 16.h(context)),
+            AppTextField(
+              controller: _phoneController,
+              labelText: strings.phoneNumber,
+              keyboardType: TextInputType.phone,
+            ),
+            SizedBox(height: 20.h(context)),
             SwitchListTile.adaptive(
-              title: const Text('Set as default address', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+              title: Text(strings.setDefaultAddress, style: context.textTheme.boldTitleMedium?.copyWith(fontSize: 14.sp(context))),
               value: _isDefault,
               activeTrackColor: AppColors.primary,
               onChanged: (val) => setState(() => _isDefault = val),
             ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: _saveAddress,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(27)),
-                ),
-                child: Text(
-                  widget.addressToEdit == null ? 'SAVE ADDRESS' : 'UPDATE ADDRESS',
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 15, letterSpacing: 1.0),
-                ),
-              ),
+            SizedBox(height: 32.h(context)),
+            AppButton(
+              text: widget.addressToEdit == null ? strings.saveAddress : strings.updateAddress,
+              onPressed: () => _saveAddress(strings),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildTextField(String label, TextEditingController controller) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.lightTextSecondary)),
-        const SizedBox(height: 6),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade300),
-          ),
-          child: TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

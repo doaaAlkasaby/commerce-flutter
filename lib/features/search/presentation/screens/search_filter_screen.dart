@@ -1,9 +1,19 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
+import 'package:ecommerce/core/utils/responsive_utils.dart';
+import 'package:ecommerce/core/theme/text_theme_extension.dart';
+import 'package:ecommerce/core/network/dio_client.dart';
+import 'package:ecommerce/core/widgets/app_button.dart';
+import 'package:ecommerce/core/widgets/app_text_field.dart';
+import 'package:ecommerce/core/widgets/app_drop_down.dart';
+import 'package:ecommerce/features/home/models/home_response_model.dart';
 import 'package:ecommerce/features/home/presentation/widgets/product_card.dart';
+import 'package:ecommerce/features/product/data/product_repository.dart';
 import 'package:ecommerce/features/search/presentation/providers/search_provider.dart';
+import 'package:ecommerce/features/categories/presentation/providers/categories_provider.dart';
 
 class SearchFilterScreen extends ConsumerStatefulWidget {
   const SearchFilterScreen({super.key});
@@ -14,12 +24,46 @@ class SearchFilterScreen extends ConsumerStatefulWidget {
 
 class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
   final TextEditingController _searchController = TextEditingController();
+  Timer? _debounceTimer;
 
-  void _showFilterBottomSheet(BuildContext context) {
+  @override
+  void initState() {
+    super.initState();
+    _searchController.text = ref.read(searchQueryProvider);
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounceTimer?.isActive ?? false) _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        ref.read(searchQueryProvider.notifier).setQuery(query);
+      }
+    });
+  }
+
+  void _onSearchSubmitted(String query) {
+    _debounceTimer?.cancel();
+    ref.read(searchQueryProvider.notifier).setQuery(query);
+  }
+
+  void _showFilterBottomSheet(BuildContext context, AppStrings strings) {
     final currentFilter = ref.read(filterProvider);
     double minPrice = currentFilter.minPrice;
     double maxPrice = currentFilter.maxPrice;
-    double minRating = currentFilter.minRating;
+    String? categoryId = currentFilter.categoryId;
+    String? brandId = currentFilter.brandId;
+    String sortBy = currentFilter.sortBy;
+    String sortOrder = currentFilter.sortOrder;
+
+    final categories = ref.read(activeCategoriesListProvider).value ?? [];
+    final brands = ref.read(activeBrandsListProvider).value ?? [];
 
     showModalBottomSheet(
       context: context,
@@ -30,101 +74,129 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             return Container(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24.w(context)),
+              constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
               decoration: BoxDecoration(
                 color: isDark ? AppColors.darkSurface : Colors.white,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(32.w(context))),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Filter Products',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          ref.read(filterProvider.notifier).resetFilter();
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Reset', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  const Text('Price Range (\$0 - \$100)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                  RangeSlider(
-                    values: RangeValues(minPrice, maxPrice),
-                    min: 0,
-                    max: 100,
-                    activeColor: AppColors.primary,
-                    inactiveColor: Colors.grey.shade300,
-                    labels: RangeLabels('\$${minPrice.toStringAsFixed(0)}', '\$${maxPrice.toStringAsFixed(0)}'),
-                    onChanged: (values) {
-                      setModalState(() {
-                        minPrice = values.start;
-                        maxPrice = values.end;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  const Text('Minimum Rating', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [0.0, 4.0, 4.5, 4.8].map((rating) {
-                      final isSelected = minRating == rating;
-                      return Expanded(
-                        child: GestureDetector(
-                          onTap: () => setModalState(() => minRating = rating),
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: isSelected ? AppColors.primary : AppColors.lightBackground,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              rating == 0 ? 'All' : '$rating ★',
-                              style: TextStyle(
-                                color: isSelected ? Colors.white : AppColors.lightTextPrimary,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          strings.filterProducts,
+                          style: context.textTheme.boldTitleLarge?.copyWith(fontSize: 20.sp(context)),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            ref.read(filterProvider.notifier).resetFilter();
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(strings.reset, style: context.textTheme.primaryTitleMedium?.copyWith(fontSize: 14.sp(context), fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16.h(context)),
+                    Text('${strings.priceRange} (\$0 - \$20000)', style: context.textTheme.fieldLabel?.copyWith(fontSize: 14.sp(context))),
+                    RangeSlider(
+                      values: RangeValues(minPrice, maxPrice),
+                      min: 0,
+                      max: 20000,
+                      activeColor: AppColors.primary,
+                      inactiveColor: Colors.grey.shade300,
+                      labels: RangeLabels('\$${minPrice.toStringAsFixed(0)}', '\$${maxPrice.toStringAsFixed(0)}'),
+                      onChanged: (values) {
+                        setModalState(() {
+                          minPrice = values.start;
+                          maxPrice = values.end;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 16.h(context)),
+                    AppDropDown<String?>(
+                      value: categoryId,
+                      labelText: 'Category',
+                      hintText: 'All Categories',
+                      items: [
+                        const DropdownMenuItem<String?>(value: null, child: Text('All Categories')),
+                        ...categories.map((cat) => DropdownMenuItem<String?>(
+                              value: cat['id']?.toString(),
+                              child: Text(cat['name']?.toString() ?? ''),
+                            )),
+                      ],
+                      onChanged: (val) => setModalState(() => categoryId = val),
+                    ),
+                    SizedBox(height: 16.h(context)),
+                    AppDropDown<String?>(
+                      value: brandId,
+                      labelText: 'Brand',
+                      hintText: 'All Brands',
+                      items: [
+                        const DropdownMenuItem<String?>(value: null, child: Text('All Brands')),
+                        ...brands.map((brand) => DropdownMenuItem<String?>(
+                              value: brand['id']?.toString(),
+                              child: Text(brand['name']?.toString() ?? ''),
+                            )),
+                      ],
+                      onChanged: (val) => setModalState(() => brandId = val),
+                    ),
+                    SizedBox(height: 16.h(context)),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: AppDropDown<String>(
+                            value: sortBy,
+                            labelText: 'Sort By',
+                            hintText: 'Date Added',
+                            items: const [
+                              DropdownMenuItem(value: 'createdAt', child: Text('Date Added')),
+                              DropdownMenuItem(value: 'basePrice', child: Text('Price')),
+                              DropdownMenuItem(value: 'name', child: Text('Name')),
+                            ],
+                            onChanged: (val) => setModalState(() => sortBy = val ?? 'createdAt'),
                           ),
                         ),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 32),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ElevatedButton(
+                        SizedBox(width: 12.w(context)),
+                        Expanded(
+                          child: AppDropDown<String>(
+                            value: sortOrder,
+                            labelText: 'Order',
+                            hintText: 'Descending',
+                            items: const [
+                              DropdownMenuItem(value: 'desc', child: Text('Descending')),
+                              DropdownMenuItem(value: 'asc', child: Text('Ascending')),
+                            ],
+                            onChanged: (val) => setModalState(() => sortOrder = val ?? 'desc'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 32.h(context)),
+                    AppButton(
+                      text: strings.applyFilters,
                       onPressed: () {
                         ref.read(filterProvider.notifier).updateFilter(
                               currentFilter.copyWith(
                                 minPrice: minPrice,
                                 maxPrice: maxPrice,
-                                minRating: minRating,
+                                categoryId: categoryId,
+                                brandId: brandId,
+                                sortBy: sortBy,
+                                sortOrder: sortOrder,
                               ),
                             );
                         Navigator.of(context).pop();
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
-                      ),
-                      child: const Text('APPLY FILTERS', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
+                    SizedBox(height: 16.h(context)),
+                  ],
+                ),
               ),
             );
           },
@@ -135,10 +207,18 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final products = ref.watch(filteredProductsProvider);
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
     final currentLang = ref.watch(languageProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
     final isArabic = currentLang == AppLanguage.ar;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final query = ref.watch(searchQueryProvider);
+    final filter = ref.watch(filterProvider);
+
+    // Preload cached active categories and brands globally across the app
+    ref.watch(activeCategoriesListProvider);
+    ref.watch(activeBrandsListProvider);
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
@@ -146,7 +226,7 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
         backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
         elevation: 0,
         leading: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.w(context)),
           child: Container(
             decoration: BoxDecoration(
               color: isDark ? AppColors.darkSurface : Colors.white,
@@ -155,50 +235,31 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  offset: Offset(0, 2.h(context)),
                 ),
               ],
             ),
             child: IconButton(
               icon: Icon(
                 isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
-                size: 16,
+                size: 16.sp(context),
                 color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
         ),
-        title: Container(
-          height: 44,
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.darkSurface : Colors.white,
-            borderRadius: BorderRadius.circular(22),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: TextField(
-            controller: _searchController,
-            onChanged: (val) {
-              ref.read(searchQueryProvider.notifier).setQuery(val);
-            },
-            decoration: InputDecoration(
-              hintText: isArabic ? 'ابحث عن المنتجات...' : 'Search products...',
-              hintStyle: const TextStyle(color: AppColors.lightTextSecondary, fontSize: 13),
-              prefixIcon: const Icon(Icons.search, size: 18, color: AppColors.lightTextSecondary),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-          ),
+        title: AppTextField(
+          controller: _searchController,
+          onChanged: _onSearchChanged,
+          onSubmitted: _onSearchSubmitted,
+          textInputAction: TextInputAction.search,
+          hintText: strings.searchProductsHint,
+          prefixIcon: Icons.search,
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+            padding: EdgeInsets.only(right: 16.w(context), top: 8.h(context), bottom: 8.h(context)),
             child: Container(
               decoration: BoxDecoration(
                 color: isDark ? AppColors.darkSurface : Colors.white,
@@ -207,68 +268,87 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 8,
-                    offset: const Offset(0, 2),
+                    offset: Offset(0, 2.h(context)),
                   ),
                 ],
               ),
               child: IconButton(
-                icon: const Icon(Icons.tune, size: 18, color: AppColors.primary),
-                onPressed: () => _showFilterBottomSheet(context),
+                icon: Icon(Icons.tune, size: 18.sp(context), color: AppColors.primary),
+                onPressed: () => _showFilterBottomSheet(context, strings),
               ),
             ),
           ),
         ],
       ),
-      body: products.isEmpty
-          ? Center(
+      body: FutureBuilder<List<ProductModel>>(
+        future: ProductRepository(ref.read(dioClientProvider)).searchProducts(
+          search: query,
+          minPrice: filter.minPrice,
+          maxPrice: filter.maxPrice,
+          categoryId: filter.categoryId,
+          brandId: filter.brandId,
+          sortBy: filter.sortBy,
+          sortOrder: filter.sortOrder,
+        ),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final products = snapshot.data ?? [];
+
+          if (products.isEmpty) {
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.search_off, size: 64, color: AppColors.lightTextSecondary),
-                  const SizedBox(height: 16),
+                  Icon(Icons.search_off, size: 64.sp(context), color: AppColors.lightTextSecondary),
+                  SizedBox(height: 16.h(context)),
                   Text(
-                    isArabic ? 'لم يتم العثور على منتجات' : 'No products found',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                    ),
+                    strings.noProductsFound,
+                    style: context.textTheme.boldTitleLarge?.copyWith(
+                          fontSize: 18.sp(context),
+                          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                        ),
                   ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'Try adjusting your search or filters',
-                    style: TextStyle(color: AppColors.lightTextSecondary, fontSize: 13),
+                  SizedBox(height: 6.h(context)),
+                  Text(
+                    strings.tryAdjusting,
+                    style: context.textTheme.description?.copyWith(fontSize: 13.sp(context)),
                   ),
                 ],
               ),
-            )
-          : GridView.builder(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(20),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.68,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: products.length,
-              itemBuilder: (context, index) {
-                final product = products[index];
-                return ProductCard(
-                  product: product,
-                  onFavoriteTap: () {},
-                  onAddTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Added ${product.name} to cart'),
-                        duration: const Duration(seconds: 1),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  },
-                );
-              },
+            );
+          }
+
+          return GridView.builder(
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.all(20.w(context)),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.68,
+              crossAxisSpacing: 16.w(context),
+              mainAxisSpacing: 16.h(context),
             ),
+            itemCount: products.length,
+            itemBuilder: (context, index) {
+              final product = products[index];
+              return ProductCard(
+                product: product,
+                onFavoriteTap: () {},
+                onAddTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${strings.addedToCart}: ${product.name}'),
+                      duration: const Duration(seconds: 1),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

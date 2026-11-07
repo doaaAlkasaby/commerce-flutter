@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
+import 'package:ecommerce/core/widgets/app_text_field.dart';
+import 'package:ecommerce/core/widgets/app_button.dart';
 
 class RegisterFormWidget extends StatelessWidget {
   final TextEditingController nameController;
@@ -27,114 +28,37 @@ class RegisterFormWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Full Name',
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                fontSize: 13.sp(context),
-                color: AppColors.lightTextSecondary,
-              ),
-        ),
-        SizedBox(height: 6.h(context)),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.w(context)),
-            border: Border.all(color: Colors.grey.shade300),
-          ),
-          child: TextField(
-            controller: nameController,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.person_outline, color: AppColors.lightTextSecondary),
-              hintText: 'Amelia Wood',
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            ),
-          ),
+        AppTextField(
+          controller: nameController,
+          labelText: 'Full Name',
+          hintText: 'Amelia Wood',
+          prefixIcon: Icons.person_outline,
         ),
         SizedBox(height: 16.h(context)),
-        Text(
-          'Email',
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                fontSize: 13.sp(context),
-                color: AppColors.lightTextSecondary,
-              ),
-        ),
-        SizedBox(height: 6.h(context)),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.w(context)),
-            border: Border.all(color: Colors.grey.shade300),
-          ),
-          child: TextField(
-            controller: emailController,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.email_outlined, color: AppColors.lightTextSecondary),
-              hintText: 'amelia.wood@gmail.com',
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            ),
-          ),
+        AppTextField(
+          controller: emailController,
+          labelText: 'Email',
+          hintText: 'amelia.wood@gmail.com',
+          prefixIcon: Icons.email_outlined,
+          keyboardType: TextInputType.emailAddress,
         ),
         SizedBox(height: 16.h(context)),
-        Text(
-          'Password',
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                fontSize: 13.sp(context),
-                color: AppColors.lightTextSecondary,
-              ),
-        ),
-        SizedBox(height: 6.h(context)),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.w(context)),
-            border: Border.all(color: AppColors.primary, width: 1.5),
-          ),
-          child: TextField(
-            controller: passwordController,
-            obscureText: obscurePassword,
-            decoration: InputDecoration(
-              prefixIcon: const Icon(Icons.lock_outline, color: AppColors.lightTextSecondary),
-              suffixIcon: IconButton(
-                icon: Icon(obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined),
-                onPressed: onTogglePasswordVisibility,
-              ),
-              hintText: 'Create a password',
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16.w(context), vertical: 14.h(context)),
-            ),
+        AppTextField(
+          controller: passwordController,
+          labelText: 'Password',
+          hintText: 'Create a password',
+          prefixIcon: Icons.lock_outline,
+          obscureText: obscurePassword,
+          suffixIcon: IconButton(
+            icon: Icon(obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+            onPressed: onTogglePasswordVisibility,
           ),
         ),
         SizedBox(height: 32.h(context)),
-        SizedBox(
-          width: double.infinity,
-          height: 54.h(context),
-          child: ElevatedButton(
-            onPressed: isLoading ? null : onRegisterPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(27.w(context))),
-            ),
-            child: isLoading
-                ? SizedBox(
-                    width: 24.w(context),
-                    height: 24.h(context),
-                    child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                  )
-                : Text(
-                    'SIGN UP',
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15.sp(context),
-                          color: Colors.white,
-                          letterSpacing: 1.0,
-                        ),
-                  ),
-          ),
+        AppButton(
+          text: 'SIGN UP',
+          onPressed: onRegisterPressed,
+          isLoading: isLoading,
         ),
       ],
     );

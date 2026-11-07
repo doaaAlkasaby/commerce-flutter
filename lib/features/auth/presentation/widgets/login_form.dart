@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
+import 'package:ecommerce/core/theme/text_theme_extension.dart';
+import 'package:ecommerce/core/widgets/app_text_field.dart';
+import 'package:ecommerce/core/widgets/app_button.dart';
 
 class LoginFormWidget extends StatelessWidget {
   final TextEditingController emailController;
@@ -50,172 +53,94 @@ class LoginFormWidget extends StatelessWidget {
               width: 40.w(context),
               height: 4.h(context),
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(2.w(context)),
               ),
             ),
           ),
-          SizedBox(height: 16.h(context)),
+          SizedBox(height: 24.h(context)),
           Text(
-            isArabic ? 'مرحباً بعودتك' : 'Welcome back',
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  fontSize: 24.sp(context),
+            isArabic ? 'تسجيل الدخول' : 'Welcome back',
+            style: context.textTheme.displaySmall?.copyWith(
+                  fontSize: 26.sp(context),
                   fontWeight: FontWeight.bold,
                   color: AppColors.lightTextPrimary,
                 ),
           ),
-          SizedBox(height: 4.h(context)),
+          SizedBox(height: 8.h(context)),
           Text(
-            isArabic ? 'تسجيل الدخول للمتابعة إلى الاستوديو الخاص بك.' : 'Sign in to continue to your studio.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            isArabic ? 'الرجاء إدخال بيانات حسابك' : 'Please enter your account details',
+            style: context.textTheme.bodyMedium?.copyWith(
                   fontSize: 14.sp(context),
                   color: AppColors.lightTextSecondary,
                 ),
           ),
+          SizedBox(height: 28.h(context)),
+          AppTextField(
+            controller: emailController,
+            labelText: isArabic ? 'البريد الإلكتروني' : 'Email Address',
+            hintText: 'name@example.com',
+            prefixIcon: Icons.email_outlined,
+            keyboardType: TextInputType.emailAddress,
+          ),
           SizedBox(height: 20.h(context)),
-          Text(
-            'Email',
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontSize: 13.sp(context),
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.lightTextSecondary,
-                ),
-          ),
-          SizedBox(height: 6.h(context)),
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.lightBackground,
-              borderRadius: BorderRadius.circular(16.w(context)),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            child: TextField(
-              controller: emailController,
-              decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.email_outlined, color: AppColors.lightTextSecondary),
-                suffixIcon: Icon(Icons.check_circle, color: AppColors.mintTeal),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          AppTextField(
+            controller: passwordController,
+            labelText: isArabic ? 'كلمة المرور' : 'Password',
+            hintText: 'Enter your password',
+            prefixIcon: Icons.lock_outline,
+            obscureText: obscurePassword,
+            suffixIcon: IconButton(
+              icon: Icon(
+                obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                color: AppColors.lightTextSecondary,
               ),
-            ),
-          ),
-          SizedBox(height: 16.h(context)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Password',
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      fontSize: 13.sp(context),
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.lightTextSecondary,
-                    ),
-              ),
-              GestureDetector(
-                onTap: onForgotPasswordPressed,
-                child: Text(
-                  'Forgot password?',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontSize: 13.sp(context),
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                      ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 6.h(context)),
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.lightBackground,
-              borderRadius: BorderRadius.circular(16.w(context)),
-              border: Border.all(color: AppColors.primary, width: 1.5),
-            ),
-            child: TextField(
-              controller: passwordController,
-              obscureText: obscurePassword,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.lock_outline, color: AppColors.lightTextSecondary),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                    color: AppColors.lightTextSecondary,
-                  ),
-                  onPressed: onTogglePasswordVisibility,
-                ),
-                hintText: 'Enter your password',
-                hintStyle: const TextStyle(color: AppColors.lightTextSecondary),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(horizontal: 16.w(context), vertical: 14.h(context)),
-              ),
+              onPressed: onTogglePasswordVisibility,
             ),
           ),
           SizedBox(height: 24.h(context)),
-          SizedBox(
-            width: double.infinity,
-            height: 54.h(context),
-            child: ElevatedButton(
-              onPressed: isLoading ? null : onLoginPressed,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(27.w(context)),
-                ),
-                elevation: 4,
-                shadowColor: AppColors.primary.withValues(alpha: 0.4),
-              ),
-              child: isLoading
-                  ? SizedBox(
-                      width: 24.w(context),
-                      height: 24.h(context),
-                      child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                    )
-                  : Text(
-                      'SIGN IN',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            fontSize: 16.sp(context),
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 1.1,
-                          ),
+          AppButton(
+            text: isArabic ? 'تسجيل الدخول' : 'SIGN IN',
+            onPressed: onLoginPressed,
+            isLoading: isLoading,
+          ),
+          SizedBox(height: 16.h(context)),
+          Center(
+            child: TextButton(
+              onPressed: onForgotPasswordPressed,
+              child: Text(
+                isArabic ? 'هل نسيت كلمة المرور؟' : 'Forgot password?',
+                style: context.textTheme.bodySmall?.copyWith(
+                      fontSize: 13.sp(context),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
                     ),
+              ),
             ),
           ),
-          SizedBox(height: 18.h(context)),
+          SizedBox(height: 8.h(context)),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'New to Ivy Kids Studio? ',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                isArabic ? 'ليس لديك حساب؟' : "Don't have an account?",
+                style: context.textTheme.titleSmall?.copyWith(
                       fontSize: 13.sp(context),
                       color: AppColors.lightTextSecondary,
                     ),
               ),
-              GestureDetector(
-                onTap: onCreateAccountPressed,
+              TextButton(
+                onPressed: onCreateAccountPressed,
                 child: Text(
-                  'Create account',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  isArabic ? 'إنشاء حساب' : 'Sign up',
+                  style: context.textTheme.labelLarge?.copyWith(
                         fontSize: 13.sp(context),
                         fontWeight: FontWeight.bold,
                         color: AppColors.primary,
-                        decoration: TextDecoration.underline,
                       ),
                 ),
               ),
             ],
-          ),
-          SizedBox(height: 12.h(context)),
-          Center(
-            child: Text(
-              'VERSION 1.0.1',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontSize: 11.sp(context),
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.lightTextSecondary,
-                    letterSpacing: 1.0,
-                  ),
-            ),
           ),
         ],
       ),

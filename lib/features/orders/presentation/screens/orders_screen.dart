@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
+import 'package:ecommerce/core/utils/responsive_utils.dart';
+import 'package:ecommerce/core/theme/text_theme_extension.dart';
+import 'package:ecommerce/core/widgets/app_button.dart';
 import '../providers/orders_provider.dart';
 import 'order_details_screen.dart';
 
@@ -13,7 +16,9 @@ class OrdersScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ordersAsync = ref.watch(myOrdersProvider);
     final selectedFilter = ref.watch(orderFilterProvider);
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
     final currentLang = ref.watch(languageProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
     final isArabic = currentLang == AppLanguage.ar;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -26,21 +31,19 @@ class OrdersScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+              padding: EdgeInsets.fromLTRB(20.w(context), 16.h(context), 20.w(context), 12.h(context)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     isArabic ? 'طلباتي' : 'My orders',
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                    ),
+                    style: context.textTheme.displayMedium?.copyWith(
+                          fontSize: 26.sp(context),
+                        ),
                   ),
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 40.w(context),
+                    height: 40.w(context),
                     decoration: BoxDecoration(
                       color: isDark ? AppColors.darkSurface : Colors.white,
                       shape: BoxShape.circle,
@@ -48,21 +51,21 @@ class OrdersScreen extends ConsumerWidget {
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 8,
-                          offset: const Offset(0, 2),
+                          offset: Offset(0, 2.h(context)),
                         ),
                       ],
                     ),
-                    child: const Icon(Icons.search, size: 20, color: AppColors.lightTextPrimary),
+                    child: Icon(Icons.search, size: 20.sp(context), color: AppColors.lightTextPrimary),
                   ),
                 ],
               ),
             ),
             SizedBox(
-              height: 50,
+              height: 50.h(context),
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: 20.w(context)),
                 itemCount: filters.length,
                 itemBuilder: (context, index) {
                   final filter = filters[index];
@@ -72,34 +75,33 @@ class OrdersScreen extends ConsumerWidget {
                       ref.read(orderFilterProvider.notifier).setFilter(filter);
                     },
                     child: Container(
-                      margin: const EdgeInsets.only(right: 10),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      margin: EdgeInsets.only(right: 10.w(context)),
+                      padding: EdgeInsets.symmetric(horizontal: 20.w(context), vertical: 10.h(context)),
                       decoration: BoxDecoration(
                         color: isSelected ? AppColors.primary : (isDark ? AppColors.darkSurface : Colors.white),
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(24.w(context)),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.04),
                             blurRadius: 8,
-                            offset: const Offset(0, 2),
+                            offset: Offset(0, 2.h(context)),
                           ),
                         ],
                       ),
                       alignment: Alignment.center,
                       child: Text(
                         filter,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: isSelected ? Colors.white : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
-                        ),
+                        style: context.textTheme.boldTitleSmall?.copyWith(
+                              fontSize: 13.sp(context),
+                              color: isSelected ? Colors.white : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
+                            ),
                       ),
                     ),
                   );
                 },
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h(context)),
             Expanded(
               child: ordersAsync.when(
                 data: (orders) {
@@ -112,12 +114,17 @@ class OrdersScreen extends ConsumerWidget {
                   }).toList();
 
                   if (filteredOrders.isEmpty) {
-                    return const Center(child: Text('No orders found'));
+                    return Center(
+                      child: Text(
+                        strings.noProductsFound,
+                        style: context.textTheme.bodyMedium?.copyWith(fontSize: 14.sp(context)),
+                      ),
+                    );
                   }
 
                   return ListView.builder(
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: EdgeInsets.symmetric(horizontal: 20.w(context), vertical: 10.h(context)),
                     itemCount: filteredOrders.length,
                     itemBuilder: (context, index) {
                       final order = filteredOrders[index];
@@ -134,16 +141,16 @@ class OrdersScreen extends ConsumerWidget {
                           );
                         },
                         child: Container(
-                          margin: const EdgeInsets.only(bottom: 16),
-                          padding: const EdgeInsets.all(18),
+                          margin: EdgeInsets.only(bottom: 16.h(context)),
+                          padding: EdgeInsets.all(18.w(context)),
                           decoration: BoxDecoration(
                             color: isDark ? AppColors.darkCardBg : Colors.white,
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: BorderRadius.circular(24.w(context)),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withValues(alpha: 0.04),
                                 blurRadius: 10,
-                                offset: const Offset(0, 4),
+                                offset: Offset(0, 4.h(context)),
                               ),
                             ],
                           ),
@@ -155,97 +162,91 @@ class OrdersScreen extends ConsumerWidget {
                                 children: [
                                   Text(
                                     order.orderNumber,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                                    ),
+                                    style: context.textTheme.boldTitleMedium?.copyWith(
+                                          fontSize: 16.sp(context),
+                                          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                        ),
                                   ),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    padding: EdgeInsets.symmetric(horizontal: 10.w(context), vertical: 4.h(context)),
                                     decoration: BoxDecoration(
                                       color: badgeColor.withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(10.w(context)),
                                     ),
                                     child: Text(
                                       order.status.replaceAll('_', ' '),
-                                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: badgeColor),
+                                      style: context.textTheme.labelSmall?.copyWith(fontSize: 10.sp(context), color: badgeColor),
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 4),
+                              SizedBox(height: 4.h(context)),
                               Text(
                                 order.placedDate,
-                                style: const TextStyle(color: AppColors.lightTextSecondary, fontSize: 12),
+                                style: context.textTheme.bodySmall?.copyWith(fontSize: 12.sp(context)),
                               ),
-                              const SizedBox(height: 14),
+                              SizedBox(height: 14.h(context)),
                               Row(
                                 children: [
                                   ...order.items.take(3).map((item) => Padding(
-                                    padding: const EdgeInsets.only(right: 8),
+                                    padding: EdgeInsets.only(right: 8.w(context)),
                                     child: Container(
-                                      width: 48,
-                                      height: 48,
+                                      width: 48.w(context),
+                                      height: 48.h(context),
                                       decoration: BoxDecoration(
                                         color: AppColors.lightCategoryBg,
-                                        borderRadius: BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(12.w(context)),
                                       ),
                                       child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(12.w(context)),
                                         child: CachedNetworkImage(imageUrl: item.imageUrl, fit: BoxFit.cover),
                                       ),
                                     ),
                                   )),
                                   if (order.items.length > 3)
                                     Container(
-                                      width: 48,
-                                      height: 48,
+                                      width: 48.w(context),
+                                      height: 48.h(context),
                                       decoration: BoxDecoration(
                                         color: Colors.grey.shade200,
-                                        borderRadius: BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(12.w(context)),
                                       ),
                                       alignment: Alignment.center,
                                       child: Text(
                                         '+${order.items.length - 3}',
-                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.lightTextSecondary),
+                                        style: context.textTheme.boldTitleSmall?.copyWith(fontSize: 13.sp(context), color: AppColors.lightTextSecondary),
                                       ),
                                     ),
                                 ],
                               ),
-                              const SizedBox(height: 16),
+                              SizedBox(height: 16.h(context)),
                               const Divider(height: 1),
-                              const SizedBox(height: 12),
+                              SizedBox(height: 12.h(context)),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      const Text('TOTAL', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.lightTextSecondary)),
-                                      const SizedBox(height: 2),
+                                      Text(strings.total, style: context.textTheme.labelLarge?.copyWith(fontSize: 10.sp(context), color: AppColors.lightTextSecondary, fontWeight: FontWeight.bold)),
+                                      SizedBox(height: 2.h(context)),
                                       Text(
                                         '\$${order.totalAmount.toStringAsFixed(2)}',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                                        ),
+                                        style: context.textTheme.boldTitleMedium?.copyWith(
+                                              fontSize: 16.sp(context),
+                                              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                            ),
                                       ),
                                     ],
                                   ),
                                   SizedBox(
-                                    height: 38,
-                                    child: OutlinedButton(
+                                    height: 38.h(context),
+                                    child: AppButton(
+                                      text: order.status == 'IN_TRANSIT' ? 'Track order' : (order.status == 'CANCELLED' ? 'View refund' : 'Buy again'),
                                       onPressed: () {},
-                                      style: OutlinedButton.styleFrom(
-                                        side: const BorderSide(color: AppColors.primary),
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(19)),
-                                      ),
-                                      child: Text(
-                                        order.status == 'IN_TRANSIT' ? 'Track order' : (order.status == 'CANCELLED' ? 'View refund' : 'Buy again'),
-                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.primary),
-                                      ),
+                                      type: AppButtonType.outlined,
+                                      height: 38.h(context),
+                                      width: 130.w(context),
                                     ),
                                   ),
                                 ],

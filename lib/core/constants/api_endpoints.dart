@@ -1,8 +1,7 @@
 import 'dart:io';
 
 class ApiEndpoints {
-  static String baseUrl = ( Platform.isIOS)? "http://127.0.0.1:3000/api/v1":
-  'http://10.0.2.2:3000/api/v1';
+  static String baseUrl = (Platform.isIOS) ? "http://127.0.0.1:3000/api/v1" : 'http://10.0.2.2:3000/api/v1';
 
   // App settings
   static const String appSettings = '/app-settings';
@@ -53,6 +52,13 @@ class ApiEndpoints {
   static const String productsBestSellers = '/products/best-sellers';
   static const String productsNewArrivals = '/products/new-arrivals';
   static String productById(String id) => '/products/$id';
+  static String productReviews(String id) => '/products/$id/reviews';
+
+  // Wishlist
+  static const String wishlist = '/wishlist';
+  static const String wishlistItems = '/wishlist/items';
+  static String wishlistByProduct(String productId) => '/wishlist/items/$productId';
+  static String wishlistCheck(String productId) => '/wishlist/check/$productId';
 
   // Addresses
   static const String addresses = '/addresses';
@@ -61,8 +67,27 @@ class ApiEndpoints {
   static String addressDefaultBilling(String id) => '/addresses/$id/default-billing';
 
   // Orders & Checkout
-  static const String myOrders = '/my';
-  static String myOrderById(String id) => '/my/$id';
+  static const String ordersMy = '/orders/my';
+  static String orderMyById(String id) => '/orders/my/$id';
+  static const String orders = '/orders';
+  static String orderById(String id) => '/orders/$id';
+  static String orderStatus(String id) => '/orders/$id/status';
   static const String checkout = '/checkout';
   static String paymentByOrderId(String orderId) => '/payments/order/$orderId';
+
+  // Cart
+  static const String cart = '/cart';
+  static const String cartItems = '/cart/items';
+  static String cartItemById(String variantId) => '/cart/items/$variantId';
+
+  // Devices
+  static const String devices = '/devices';
+  static String deviceDeactivate(String deviceId) => '/devices/$deviceId/deactivate';
+  static String deviceById(String deviceId) => '/devices/$deviceId';
+
+  // Notifications
+  static const String notifications = '/notifications';
+  static const String notificationsReadAll = '/notifications/read-all';
+  static String notificationRead(String id) => '/notifications/$id/read';
+  static String notificationById(String id) => '/notifications/$id';
 }

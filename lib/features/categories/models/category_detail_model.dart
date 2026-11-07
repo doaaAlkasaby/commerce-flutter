@@ -1,4 +1,3 @@
-
 import '../../home/models/home_response_model.dart';
 
 class SubCategoryModel {
@@ -20,7 +19,8 @@ class MainCategoryModel {
   final String name;
   final String iconName;
   final String imageUrl;
-  final List<SubCategoryModel> subCategories;
+  final bool hasChildren;
+  final List<MainCategoryModel> subCategories;
   final List<ProductModel> directProducts;
 
   const MainCategoryModel({
@@ -28,6 +28,7 @@ class MainCategoryModel {
     required this.name,
     required this.iconName,
     required this.imageUrl,
+    this.hasChildren = false,
     this.subCategories = const [],
     this.directProducts = const [],
   });

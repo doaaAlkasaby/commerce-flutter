@@ -19,24 +19,10 @@ class AppImagePlaceholder extends StatelessWidget {
       width: width,
       height: height,
       child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 32,
-              color: AppColors.primary.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: AppColors.primary.withValues(alpha: 0.7),
-              ),
-            ),
-          ],
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: Icon(icon, size: 24, color: AppColors.primary)
         ),
       ),
     );

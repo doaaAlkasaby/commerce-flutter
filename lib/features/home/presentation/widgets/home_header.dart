@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ecommerce/core/constants/app_assets.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
+import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/features/search/presentation/screens/search_filter_screen.dart';
 
 class HomeHeaderWidget extends StatelessWidget {
@@ -27,65 +28,73 @@ class HomeHeaderWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(14),
-                child: Image.asset(
-                  AppAssets.logo,
-                  width: 44,
-                  height: 44,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Center(
-                    child: Icon(Icons.storefront, color: AppColors.primary, size: 24),
-                  ),
+        Expanded(
+          child: Row(
+            children: [
+              Container(
+                width: 44.w(context),
+                height: 44.w(context),
+                decoration: BoxDecoration(
+                  // color: Colors.white,
+                  borderRadius: BorderRadius.circular(14.w(context)),
+                  // boxShadow: [
+                  //   BoxShadow(
+                  //     color: Colors.black.withValues(alpha: 0.08),
+                  //     blurRadius: 8,
+                  //     offset: Offset(0, 4.h(context)),
+                  //   ),
+                  // ],
+                ),
+                // child: ClipRRect(
+                //   borderRadius: BorderRadius.circular(14.w(context)),
+                  child: Image.asset(
+                    AppAssets.logo,
+                    width: 44.w(context),
+                    height: 44.w(context),
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => const Center(
+                      child: Icon(Icons.storefront, color: AppColors.primary, size: 24),
+                    ),
+                  // ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isLoggedIn ? strings.goodMorning : (isArabic ? 'مرحباً بك في المتجر' : 'Welcome to Store'),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
+              SizedBox(width: 12.w(context)),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isLoggedIn ? strings.goodMorning : (isArabic ? 'مرحباً بك' : 'Welcome'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontSize: 12.sp(context),
+                            fontWeight: FontWeight.w500,
+                          ),
+                    ),
+                    SizedBox(height: 2.h(context)),
+                    Text(
+                      isLoggedIn ? 'Hi, $userName!' : (isArabic ? 'أهلاً بك، زائرنا الكريم' : 'Hello, Guest!'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontSize: 18.sp(context),
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  isLoggedIn ? 'Hi, $userName!' : (isArabic ? 'أهلاً بك، زائرنا الكريم' : 'Hello, Guest!'),
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                  ),
-                ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
+        SizedBox(width: 12.w(context)),
         Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 40,
-              height: 40,
+              width: 40.w(context),
+              height: 40.w(context),
               decoration: BoxDecoration(
                 color: isDark ? AppColors.darkSurface : Colors.white,
                 shape: BoxShape.circle,
@@ -93,7 +102,7 @@ class HomeHeaderWidget extends StatelessWidget {
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 8,
-                    offset: const Offset(0, 2),
+                    offset: Offset(0, 2.h(context)),
                   ),
                 ],
               ),
@@ -101,7 +110,7 @@ class HomeHeaderWidget extends StatelessWidget {
                 icon: Icon(
                   Icons.search,
                   color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                  size: 20,
+                  size: 20.sp(context),
                 ),
                 onPressed: () {
                   Navigator.of(context).push(
@@ -111,13 +120,13 @@ class HomeHeaderWidget extends StatelessWidget {
                 padding: EdgeInsets.zero,
               ),
             ),
-            const SizedBox(width: 10),
+            SizedBox(width: 10.w(context)),
             Stack(
               clipBehavior: Clip.none,
               children: [
                 Container(
-                  width: 40,
-                  height: 40,
+                  width: 40.w(context),
+                  height: 40.w(context),
                   decoration: BoxDecoration(
                     color: isDark ? AppColors.darkSurface : Colors.white,
                     shape: BoxShape.circle,
@@ -125,7 +134,7 @@ class HomeHeaderWidget extends StatelessWidget {
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        offset: Offset(0, 2.h(context)),
                       ),
                     ],
                   ),
@@ -133,7 +142,7 @@ class HomeHeaderWidget extends StatelessWidget {
                     icon: Icon(
                       Icons.notifications_outlined,
                       color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                      size: 20,
+                      size: 20.sp(context),
                     ),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -147,25 +156,25 @@ class HomeHeaderWidget extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  top: 4,
-                  right: 4,
+                  top: 4.h(context),
+                  right: 4.w(context),
                   child: Container(
-                    padding: const EdgeInsets.all(4),
+                    padding: EdgeInsets.all(4.w(context)),
                     decoration: const BoxDecoration(
                       color: AppColors.badgeRed,
                       shape: BoxShape.circle,
                     ),
-                    constraints: const BoxConstraints(
-                      minWidth: 18,
-                      minHeight: 18,
+                    constraints: BoxConstraints(
+                      minWidth: 18.w(context),
+                      minHeight: 18.h(context),
                     ),
-                    child: const Text(
+                    child: Text(
                       '5',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: Colors.white,
+                            fontSize: 10.sp(context),
+                            fontWeight: FontWeight.bold,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                   ),

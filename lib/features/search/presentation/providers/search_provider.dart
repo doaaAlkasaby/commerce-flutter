@@ -18,14 +18,14 @@ class SearchQueryNotifier extends _$SearchQueryNotifier {
 @Riverpod(keepAlive: true)
 class FilterNotifier extends _$FilterNotifier {
   @override
-  FilterModel build() => const FilterModel(minPrice: 0, maxPrice: 100);
+  FilterModel build() => const FilterModel(minPrice: 0, maxPrice: 200);
 
   void updateFilter(FilterModel filter) {
     state = filter;
   }
 
   void resetFilter() {
-    state = const FilterModel(minPrice: 0, maxPrice: 100);
+    state = const FilterModel(minPrice: 0, maxPrice: 200);
   }
 }
 
@@ -49,9 +49,8 @@ List<ProductModel> filteredProducts(Ref ref) {
         final matchesQuery = p.name.toLowerCase().contains(query);
         final matchesPrice = (p.priceInfo.finalPrice) >= filter.minPrice &&
             (p.priceInfo.finalPrice) <= filter.maxPrice;
-        final matchesRating = p.rating >= filter.minRating;
 
-        return matchesQuery && matchesPrice && matchesRating;
+        return matchesQuery && matchesPrice;
       }).toList();
     },
     orElse: () => [],

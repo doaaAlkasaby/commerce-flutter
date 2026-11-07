@@ -27,33 +27,12 @@ class AddressRepository {
           );
         },
       );
-      if (apiResponse.success && apiResponse.data.isNotEmpty) {
+      if (apiResponse.success) {
         return apiResponse.data;
       }
     } catch (_) {}
 
-    return [
-      const AddressModel(
-        id: '1',
-        title: 'HOME',
-        fullName: 'Amelia Wood',
-        streetAddress: '12 Rosewood Lane, Apt 4B',
-        city: 'Singapore',
-        postalCode: '238461',
-        phoneNumber: '+65 8123 4567',
-        isDefault: true,
-      ),
-      const AddressModel(
-        id: '2',
-        title: 'WORK',
-        fullName: 'Amelia Wood',
-        streetAddress: '8 Marina Boulevard, Level 12',
-        city: 'Singapore',
-        postalCode: '018981',
-        phoneNumber: '+65 8123 4567',
-        isDefault: false,
-      ),
-    ];
+    return [];
   }
 
   Future<void> addAddress(AddressModel address) async {

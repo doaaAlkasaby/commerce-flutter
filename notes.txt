@@ -10,3 +10,10 @@ Or for auto-generation while coding:
 dart run build_runner build --delete-conflicting-outputs
 //Auto-regenerate on every change (optional)
 dart run build_runner watch --delete-conflicting-outputs
+
+
+
+remove demo data and call the products search api s, filter apis,  translate all static strings , make all dimesions and radius scallable, add required widgets to handle all filter options implemented on the apis on lib/features/search/presentation/screens/search_filter_screen.dart
+
+
+المتجر الأول dev81-kuwait-fashion بعملة KWD وعنده مخزن في الكويت وآخر في الرياض. والمتجر الثاني dev81-independent بعملة SAR وعنده مخزن مستقل في الرياض.
