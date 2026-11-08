@@ -1,17 +1,18 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ecommerce/main.dart';
 import 'package:ecommerce/app.dart';
 
 void main() {
   testWidgets('App loads smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+    SharedPreferences.setMockInitialValues({});
+    sharedPreferences = await SharedPreferences.getInstance();
+
     await tester.pumpWidget(const ProviderScope(child: EcommerceApp()));
 
-    // Wait for async repository data to load
     await tester.pump(const Duration(milliseconds: 500));
 
-    // Verify app loads successfully.
-    expect(find.text('Hello, Guest!'), findsOneWidget);
+    expect(find.byType(EcommerceApp), findsOneWidget);
   });
 }

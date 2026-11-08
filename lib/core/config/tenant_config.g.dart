@@ -42,7 +42,7 @@ final class SelectedTenantSlugNotifierProvider
 }
 
 String _$selectedTenantSlugNotifierHash() =>
-    r'2e41fc91ca5c35b80f71ee06ab5ed3f9b9f22269';
+    r'060964c3679669effbfba8588ec1e502de948159';
 
 abstract class _$SelectedTenantSlugNotifier extends $Notifier<String> {
   String build();

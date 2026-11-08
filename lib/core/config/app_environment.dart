@@ -83,12 +83,16 @@ class AppEnvironment {
       throw const FormatException('API Base URL must not include fragments');
     }
 
-    if (trimmed.endsWith('/')) {
-      trimmed = trimmed.substring(0, trimmed.length - 1);
+    final path = uri.path.endsWith('/') ? uri.path.substring(0, uri.path.length - 1) : uri.path;
+
+    if (path.contains('/api/v1/api/v1') || path.contains('/v1/v1')) {
+      throw const FormatException('API Base URL contains duplicate API path segments');
     }
-    if (!trimmed.endsWith('/api/v1')) {
-      trimmed = '$trimmed/api/v1';
+
+    var result = '${uri.scheme}://${uri.host}${uri.hasPort ? ':${uri.port}' : ''}$path';
+    if (!result.endsWith('/api/v1')) {
+      result = '$result/api/v1';
     }
-    return trimmed;
+    return result;
   }
 }

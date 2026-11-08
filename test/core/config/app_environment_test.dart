@@ -18,14 +18,19 @@ void main() {
         'http://localhost:3000/api/v1',
       );
       expect(
-        AppEnvironment.normalizeAndValidateUrl(
-          'https://api.example.com/api/v1/',
-        ),
+        AppEnvironment.normalizeAndValidateUrl('https://api.example.com/api/v1/'),
         'https://api.example.com/api/v1',
       );
     });
 
-    test('normalizeAndValidateUrl throws FormatException for invalid URLs', () {
+    test('normalizeAndValidateUrl rejects duplicate path segments', () {
+      expect(
+        () => AppEnvironment.normalizeAndValidateUrl('http://localhost:3000/api/v1/api/v1'),
+        throwsFormatException,
+      );
+    });
+
+    test('normalizeAndValidateUrl throws FormatException for invalid URLs without interpolating raw URL', () {
       expect(
         () => AppEnvironment.normalizeAndValidateUrl('invalid-url'),
         throwsFormatException,
