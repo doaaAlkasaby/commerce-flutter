@@ -11,10 +11,14 @@ class FavoritesRepository {
     try {
       final response = await _dio.get(ApiEndpoints.wishlist);
       final rawData = response.data['data'];
-      final List list = rawData is List ? rawData : (rawData['items'] ?? rawData['products'] ?? []);
+      final List list = rawData is List
+          ? rawData
+          : (rawData['items'] ?? rawData['products'] ?? []);
       return list.map((item) {
         final prodMap = item['product'] ?? item;
-        return ProductModel.fromJson(prodMap is Map<String, dynamic> ? prodMap : item);
+        return ProductModel.fromJson(
+          prodMap is Map<String, dynamic> ? prodMap : item,
+        );
       }).toList();
     } catch (_) {
       return [];

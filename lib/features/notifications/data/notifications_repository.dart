@@ -7,12 +7,24 @@ class NotificationsRepository {
 
   NotificationsRepository(this._dio);
 
-  Future<List<NotificationModel>> getNotifications({int page = 1, int limit = 20}) async {
+  Future<List<NotificationModel>> getNotifications({
+    int page = 1,
+    int limit = 20,
+  }) async {
     try {
-      final response = await _dio.get(ApiEndpoints.notifications, queryParameters: {'page': page, 'limit': limit});
+      final response = await _dio.get(
+        ApiEndpoints.notifications,
+        queryParameters: {'page': page, 'limit': limit},
+      );
       final rawData = response.data['data'];
-      final List list = rawData is List ? rawData : (rawData['notifications'] ?? rawData['items'] ?? []);
-      return list.map((item) => NotificationModel.fromJson(item as Map<String, dynamic>)).toList();
+      final List list = rawData is List
+          ? rawData
+          : (rawData['notifications'] ?? rawData['items'] ?? []);
+      return list
+          .map(
+            (item) => NotificationModel.fromJson(item as Map<String, dynamic>),
+          )
+          .toList();
     } catch (_) {
       return [];
     }

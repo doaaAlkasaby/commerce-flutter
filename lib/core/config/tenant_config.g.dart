@@ -9,6 +9,59 @@ part of 'tenant_config.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(SelectedTenantSlugNotifier)
+final selectedTenantSlugProvider = SelectedTenantSlugNotifierProvider._();
+
+final class SelectedTenantSlugNotifierProvider
+    extends $NotifierProvider<SelectedTenantSlugNotifier, String> {
+  SelectedTenantSlugNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'selectedTenantSlugProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$selectedTenantSlugNotifierHash();
+
+  @$internal
+  @override
+  SelectedTenantSlugNotifier create() => SelectedTenantSlugNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String>(value),
+    );
+  }
+}
+
+String _$selectedTenantSlugNotifierHash() =>
+    r'2e41fc91ca5c35b80f71ee06ab5ed3f9b9f22269';
+
+abstract class _$SelectedTenantSlugNotifier extends $Notifier<String> {
+  String build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<String, String>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<String, String>,
+              String,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(TenantNotifier)
 final tenantProvider = TenantNotifierProvider._();
 
@@ -41,7 +94,7 @@ final class TenantNotifierProvider
   }
 }
 
-String _$tenantNotifierHash() => r'1e8fd8418c39dc3c41ce1e2209dde1a1614a8858';
+String _$tenantNotifierHash() => r'6d8a6cbaa251617e71c15b45efcdb5936bb54647';
 
 abstract class _$TenantNotifier extends $Notifier<TenantConfig> {
   TenantConfig build();

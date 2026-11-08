@@ -25,7 +25,12 @@ class ProductBottomBarWidget extends StatelessWidget {
       left: 0,
       right: 0,
       child: Container(
-        padding: EdgeInsets.fromLTRB(24.w(context), 16.h(context), 24.w(context), 28.h(context)),
+        padding: EdgeInsets.fromLTRB(
+          24.w(context),
+          16.h(context),
+          24.w(context),
+          28.h(context),
+        ),
         decoration: BoxDecoration(
           color: isDark ? AppColors.darkSurface : Colors.white,
           boxShadow: [
@@ -42,15 +47,24 @@ class ProductBottomBarWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('TOTAL', style: Theme.of(context).textTheme.labelSmall?.copyWith(fontSize: 11.sp(context), color: AppColors.lightTextSecondary, fontWeight: FontWeight.bold)),
+                Text(
+                  'TOTAL',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontSize: 11.sp(context),
+                    color: AppColors.lightTextSecondary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 SizedBox(height: 2.h(context)),
                 Text(
                   '\$${(product.priceInfo.finalPrice * quantity).toStringAsFixed(2)}',
                   style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        fontSize: 22.sp(context),
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                      ),
+                    fontSize: 22.sp(context),
+                    fontWeight: FontWeight.bold,
+                    color: isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.lightTextPrimary,
+                  ),
                 ),
               ],
             ),

@@ -41,7 +41,7 @@ final class AuthTokenNotifierProvider
   }
 }
 
-String _$authTokenNotifierHash() => r'caf0a4c2bb97cab8880d3287810e4a0e2f65068b';
+String _$authTokenNotifierHash() => r'5e7d68cbeb8fee7caff3d50fca14d1485916a274';
 
 abstract class _$AuthTokenNotifier extends $Notifier<String?> {
   String? build();
@@ -99,4 +99,4 @@ final class DioClientProvider extends $FunctionalProvider<Dio, Dio, Dio>
   }
 }
 
-String _$dioClientHash() => r'e14e4795bce7db236011c88276f3b615af0ae686';
+String _$dioClientHash() => r'cbfda06c2bb369c65d5ce6c38bdff26c28e49994';

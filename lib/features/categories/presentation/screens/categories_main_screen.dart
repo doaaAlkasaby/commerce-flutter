@@ -26,19 +26,25 @@ class CategoriesMainScreen extends ConsumerWidget {
             await ref.read(mainCategoriesProvider.future);
           },
           child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(20.w(context), 16.h(context), 20.w(context), 12.h(context)),
+                  padding: EdgeInsets.fromLTRB(
+                    20.w(context),
+                    16.h(context),
+                    20.w(context),
+                    12.h(context),
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         strings.exploreCollections,
-                        style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                              fontSize: 26.sp(context),
-                            ),
+                        style: Theme.of(context).textTheme.displayMedium
+                            ?.copyWith(fontSize: 26.sp(context)),
                       ),
                     ],
                   ),
@@ -46,7 +52,10 @@ class CategoriesMainScreen extends ConsumerWidget {
               ),
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w(context), vertical: 8.h(context)),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20.w(context),
+                    vertical: 8.h(context),
+                  ),
                   child: Container(
                     height: 140.h(context),
                     decoration: BoxDecoration(
@@ -85,14 +94,20 @@ class CategoriesMainScreen extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 10.w(context), vertical: 4.h(context)),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 10.w(context),
+                                  vertical: 4.h(context),
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(10.w(context)),
+                                  borderRadius: BorderRadius.circular(
+                                    10.w(context),
+                                  ),
                                 ),
                                 child: Text(
                                   strings.newSeason,
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  style: Theme.of(context).textTheme.labelSmall
+                                      ?.copyWith(
                                         fontSize: 10.sp(context),
                                         color: Colors.white,
                                         letterSpacing: 1.0,
@@ -102,7 +117,8 @@ class CategoriesMainScreen extends ConsumerWidget {
                               SizedBox(height: 8.h(context)),
                               Text(
                                 strings.organicPlay,
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(
                                       fontSize: 18.sp(context),
                                       color: Colors.white,
                                     ),

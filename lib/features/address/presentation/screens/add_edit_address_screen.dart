@@ -15,7 +15,8 @@ class AddEditAddressScreen extends ConsumerStatefulWidget {
   const AddEditAddressScreen({super.key, this.addressToEdit});
 
   @override
-  ConsumerState<AddEditAddressScreen> createState() => _AddEditAddressScreenState();
+  ConsumerState<AddEditAddressScreen> createState() =>
+      _AddEditAddressScreenState();
 }
 
 class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
@@ -53,14 +54,16 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
 
   void _saveAddress(AppStrings strings) {
     if (_nameController.text.isEmpty || _streetController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(strings.fillRequired)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(strings.fillRequired)));
       return;
     }
 
     final newAddress = AddressModel(
-      id: widget.addressToEdit?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      id:
+          widget.addressToEdit?.id ??
+          DateTime.now().millisecondsSinceEpoch.toString(),
       title: _titleController.text.toUpperCase(),
       fullName: _nameController.text,
       streetAddress: _streetController.text,
@@ -88,9 +91,13 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
       appBar: AppBar(
-        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        backgroundColor: isDark
+            ? AppColors.darkBackground
+            : AppColors.lightBackground,
         elevation: 0,
         leading: Padding(
           padding: EdgeInsets.all(8.w(context)),
@@ -110,18 +117,24 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
               icon: Icon(
                 isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
                 size: 16.sp(context),
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
         ),
         title: Text(
-          widget.addressToEdit == null ? strings.addAddress : strings.editAddress,
+          widget.addressToEdit == null
+              ? strings.addAddress
+              : strings.editAddress,
           style: context.textTheme.titleLarge?.copyWith(
-                fontSize: 20.sp(context),
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-              ),
+            fontSize: 20.sp(context),
+            color: isDark
+                ? AppColors.darkTextPrimary
+                : AppColors.lightTextPrimary,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -147,9 +160,19 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
             SizedBox(height: 16.h(context)),
             Row(
               children: [
-                Expanded(child: AppTextField(controller: _cityController, labelText: strings.city)),
+                Expanded(
+                  child: AppTextField(
+                    controller: _cityController,
+                    labelText: strings.city,
+                  ),
+                ),
                 SizedBox(width: 12.w(context)),
-                Expanded(child: AppTextField(controller: _postalController, labelText: strings.postalCode)),
+                Expanded(
+                  child: AppTextField(
+                    controller: _postalController,
+                    labelText: strings.postalCode,
+                  ),
+                ),
               ],
             ),
             SizedBox(height: 16.h(context)),
@@ -160,14 +183,21 @@ class _AddEditAddressScreenState extends ConsumerState<AddEditAddressScreen> {
             ),
             SizedBox(height: 20.h(context)),
             SwitchListTile.adaptive(
-              title: Text(strings.setDefaultAddress, style: context.textTheme.boldTitleMedium?.copyWith(fontSize: 14.sp(context))),
+              title: Text(
+                strings.setDefaultAddress,
+                style: context.textTheme.boldTitleMedium?.copyWith(
+                  fontSize: 14.sp(context),
+                ),
+              ),
               value: _isDefault,
               activeTrackColor: AppColors.primary,
               onChanged: (val) => setState(() => _isDefault = val),
             ),
             SizedBox(height: 32.h(context)),
             AppButton(
-              text: widget.addressToEdit == null ? strings.saveAddress : strings.updateAddress,
+              text: widget.addressToEdit == null
+                  ? strings.saveAddress
+                  : strings.updateAddress,
               onPressed: () => _saveAddress(strings),
             ),
           ],

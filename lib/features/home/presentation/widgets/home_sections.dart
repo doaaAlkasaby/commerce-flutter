@@ -44,7 +44,8 @@ class HomeSectionsWidget extends ConsumerWidget {
                     if (targetType == 'PRODUCT_LIST') {
                       if (target == 'BEST_SELLERS') {
                         endpoint = ApiEndpoints.productsBestSellers;
-                      } else if (target == 'OFFERS' || target == 'SPECIAL_OFFERS') {
+                      } else if (target == 'OFFERS' ||
+                          target == 'SPECIAL_OFFERS') {
                         endpoint = ApiEndpoints.productsOffers;
                       } else if (target == 'NEW_ARRIVALS') {
                         endpoint = ApiEndpoints.productsNewArrivals;
@@ -95,7 +96,9 @@ class HomeSectionsWidget extends ConsumerWidget {
                             onAddTap: () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('${strings.addedToCart}: ${product.name}'),
+                                  content: Text(
+                                    '${strings.addedToCart}: ${product.name}',
+                                  ),
                                   duration: const Duration(seconds: 1),
                                   behavior: SnackBarBehavior.floating,
                                 ),

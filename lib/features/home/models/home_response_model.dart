@@ -62,16 +62,34 @@ class ProductPriceModel {
 
   factory ProductPriceModel.fromJson(dynamic json) {
     if (json is Map<String, dynamic>) {
-      final original = double.tryParse(json['original']?.toString() ?? json['basePrice']?.toString() ?? '0.0') ?? 0.0;
-      final finalP = double.tryParse(json['final']?.toString() ?? json['finalPrice']?.toString() ?? json['basePrice']?.toString() ?? '0.0') ?? original;
-      final discount = json['discountPercentage'] ?? num.tryParse(json['discountValue']?.toString() ?? '');
+      final original =
+          double.tryParse(
+            json['original']?.toString() ??
+                json['basePrice']?.toString() ??
+                '0.0',
+          ) ??
+          0.0;
+      final finalP =
+          double.tryParse(
+            json['final']?.toString() ??
+                json['finalPrice']?.toString() ??
+                json['basePrice']?.toString() ??
+                '0.0',
+          ) ??
+          original;
+      final discount =
+          json['discountPercentage'] ??
+          num.tryParse(json['discountValue']?.toString() ?? '');
       return ProductPriceModel(
         originalPrice: original,
         finalPrice: finalP,
         discountPercentage: discount,
       );
     } else if (json is num) {
-      return ProductPriceModel(originalPrice: json.toDouble(), finalPrice: json.toDouble());
+      return ProductPriceModel(
+        originalPrice: json.toDouble(),
+        finalPrice: json.toDouble(),
+      );
     } else if (json is String) {
       final val = double.tryParse(json) ?? 0.0;
       return ProductPriceModel(originalPrice: val, finalPrice: val);
@@ -96,7 +114,14 @@ class ProductPricingModel {
   factory ProductPricingModel.fromJson(Map<String, dynamic> json) {
     return ProductPricingModel(
       basePrice: double.tryParse(json['basePrice']?.toString() ?? '0.0') ?? 0.0,
-      finalPrice: double.tryParse(json['finalPrice']?.toString() ?? json['final']?.toString() ?? json['basePrice']?.toString() ?? '0.0') ?? 0.0,
+      finalPrice:
+          double.tryParse(
+            json['finalPrice']?.toString() ??
+                json['final']?.toString() ??
+                json['basePrice']?.toString() ??
+                '0.0',
+          ) ??
+          0.0,
       discountType: json['discountType']?.toString(),
       discountValue: json['discountValue']?.toString(),
     );
@@ -162,7 +187,10 @@ class ProductAttributeModel {
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
       values: (json['values'] as List? ?? [])
-          .map((v) => ProductAttributeValueModel.fromJson(v as Map<String, dynamic>))
+          .map(
+            (v) =>
+                ProductAttributeValueModel.fromJson(v as Map<String, dynamic>),
+          )
           .toList(),
     );
   }
@@ -221,7 +249,10 @@ class ProductVariantModel {
           .map((img) => ProductImageModel.fromJson(img as Map<String, dynamic>))
           .toList(),
       attributes: (json['attributes'] as List? ?? [])
-          .map((attr) => VariantAttributeModel.fromJson(attr as Map<String, dynamic>))
+          .map(
+            (attr) =>
+                VariantAttributeModel.fromJson(attr as Map<String, dynamic>),
+          )
           .toList(),
     );
   }
@@ -231,10 +262,7 @@ class RatingModel {
   final double average;
   final int count;
 
-  const RatingModel({
-    required this.average,
-    required this.count,
-  });
+  const RatingModel({required this.average, required this.count});
 
   factory RatingModel.fromJson(dynamic json) {
     if (json is Map<String, dynamic>) {
@@ -302,16 +330,21 @@ class ProductModel {
     }
     if (json['primaryImage'] is Map<String, dynamic>) {
       final pi = json['primaryImage'] as Map<String, dynamic>;
-      imgsList.add(ProductImageModel(
-        id: pi['id']?.toString() ?? 'primary',
-        url: pi['url']?.toString() ?? '',
-        altText: pi['altText']?.toString() ?? '',
-        isPrimary: true,
-      ));
+      imgsList.add(
+        ProductImageModel(
+          id: pi['id']?.toString() ?? 'primary',
+          url: pi['url']?.toString() ?? '',
+          altText: pi['altText']?.toString() ?? '',
+          isPrimary: true,
+        ),
+      );
     }
 
-    final primaryImg = imgsList.where((img) => img.isPrimary).firstOrNull?.url ??
-        (imgsList.isNotEmpty ? imgsList.first.url : json['image']?.toString() ?? 'https://placehold.co/800x800');
+    final primaryImg =
+        imgsList.where((img) => img.isPrimary).firstOrNull?.url ??
+        (imgsList.isNotEmpty
+            ? imgsList.first.url
+            : json['image']?.toString() ?? 'https://placehold.co/800x800');
 
     return ProductModel(
       id: json['id']?.toString() ?? '',
@@ -323,7 +356,10 @@ class ProductModel {
       image: primaryImg,
       images: imgsList,
       attributes: (json['attributes'] as List? ?? [])
-          .map((attr) => ProductAttributeModel.fromJson(attr as Map<String, dynamic>))
+          .map(
+            (attr) =>
+                ProductAttributeModel.fromJson(attr as Map<String, dynamic>),
+          )
           .toList(),
       variants: (json['variants'] as List? ?? [])
           .map((v) => ProductVariantModel.fromJson(v as Map<String, dynamic>))
@@ -384,7 +420,9 @@ class HomeSectionModel {
       products: (json['products'] as List? ?? [])
           .map((p) => ProductModel.fromJson(p as Map<String, dynamic>))
           .toList(),
-      seeAll: json['seeAll'] != null ? SeeAllModel.fromJson(json['seeAll'] as Map<String, dynamic>) : null,
+      seeAll: json['seeAll'] != null
+          ? SeeAllModel.fromJson(json['seeAll'] as Map<String, dynamic>)
+          : null,
     );
   }
 }
@@ -471,11 +509,7 @@ class SeeAllModel {
   final String? targetType;
   final String? target;
 
-  const SeeAllModel({
-    required this.enabled,
-    this.targetType,
-    this.target,
-  });
+  const SeeAllModel({required this.enabled, this.targetType, this.target});
 
   factory SeeAllModel.fromJson(Map<String, dynamic> json) {
     return SeeAllModel(

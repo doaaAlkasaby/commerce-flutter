@@ -47,10 +47,7 @@ class MainShellScreen extends ConsumerWidget {
     ];
 
     return Scaffold(
-      body: IndexedStack(
-        index: currentIndex,
-        children: screens,
-      ),
+      body: IndexedStack(index: currentIndex, children: screens),
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -71,13 +68,23 @@ class MainShellScreen extends ConsumerWidget {
               onTap: (index) {
                 ref.read(navigationIndexProvider.notifier).setIndex(index);
               },
-              backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightBackground,
+              backgroundColor: isDark
+                  ? AppColors.darkSurface
+                  : AppColors.lightBackground,
               elevation: 0,
               type: BottomNavigationBarType.fixed,
               selectedItemColor: AppColors.primary,
-              unselectedItemColor: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-              selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+              unselectedItemColor: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.lightTextSecondary,
+              selectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 12,
+              ),
               items: [
                 BottomNavigationBarItem(
                   icon: const Icon(Icons.home_outlined),

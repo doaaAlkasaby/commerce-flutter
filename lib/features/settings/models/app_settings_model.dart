@@ -17,12 +17,21 @@ class AppSettingsModel {
 
   factory AppSettingsModel.fromJson(Map<String, dynamic> json) {
     return AppSettingsModel(
-      androidBuild: (json['android_build'] as List?)?.map((e) => (e as num).toInt()).toList() ?? [],
-      iosBuild: (json['ios_build'] as List?)?.map((e) => (e as num).toInt()).toList() ?? [],
+      androidBuild:
+          (json['android_build'] as List?)
+              ?.map((e) => (e as num).toInt())
+              .toList() ??
+          [],
+      iosBuild:
+          (json['ios_build'] as List?)
+              ?.map((e) => (e as num).toInt())
+              .toList() ??
+          [],
       forceUpdate: json['forceUpdate'] ?? false,
       currencyAr: json['currency_ar']?.toString() ?? '',
       currencyEn: json['currency_en']?.toString() ?? '',
-      features: (json['features'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      features:
+          (json['features'] as List?)?.map((e) => e.toString()).toList() ?? [],
     );
   }
 }

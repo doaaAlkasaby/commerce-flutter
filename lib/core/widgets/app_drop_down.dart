@@ -27,18 +27,36 @@ class AppDropDown<T> extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (labelText != null) ...[
-          Text(labelText!, style: context.textTheme.fieldLabel?.copyWith(fontSize: 14.sp(context))),
+          Text(
+            labelText!,
+            style: context.textTheme.fieldLabel?.copyWith(
+              fontSize: 14.sp(context),
+            ),
+          ),
           SizedBox(height: 8.h(context)),
         ],
         DropdownButtonFormField<T>(
           initialValue: value,
           decoration: InputDecoration(
             filled: true,
-            fillColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.w(context)), borderSide: BorderSide.none),
-            contentPadding: EdgeInsets.symmetric(horizontal: 16.w(context), vertical: 12.h(context)),
+            fillColor: isDark
+                ? AppColors.darkBackground
+                : AppColors.lightBackground,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16.w(context)),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 16.w(context),
+              vertical: 12.h(context),
+            ),
           ),
-          hint: Text(hintText, style: context.textTheme.secondaryHint?.copyWith(fontSize: 13.sp(context))),
+          hint: Text(
+            hintText,
+            style: context.textTheme.secondaryHint?.copyWith(
+              fontSize: 13.sp(context),
+            ),
+          ),
           items: items,
           onChanged: onChanged,
         ),

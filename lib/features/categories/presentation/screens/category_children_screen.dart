@@ -14,10 +14,12 @@ class CategoryChildrenScreen extends ConsumerStatefulWidget {
   const CategoryChildrenScreen({super.key, required this.category});
 
   @override
-  ConsumerState<CategoryChildrenScreen> createState() => _CategoryChildrenScreenState();
+  ConsumerState<CategoryChildrenScreen> createState() =>
+      _CategoryChildrenScreenState();
 }
 
-class _CategoryChildrenScreenState extends ConsumerState<CategoryChildrenScreen> {
+class _CategoryChildrenScreenState
+    extends ConsumerState<CategoryChildrenScreen> {
   late Future<List<MainCategoryModel>> _childrenFuture;
 
   @override
@@ -36,9 +38,13 @@ class _CategoryChildrenScreenState extends ConsumerState<CategoryChildrenScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
       appBar: AppBar(
-        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        backgroundColor: isDark
+            ? AppColors.darkBackground
+            : AppColors.lightBackground,
         elevation: 0,
         leading: Padding(
           padding: EdgeInsets.all(8.w(context)),
@@ -58,7 +64,9 @@ class _CategoryChildrenScreenState extends ConsumerState<CategoryChildrenScreen>
               icon: Icon(
                 isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
                 size: 16.sp(context),
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
@@ -67,10 +75,12 @@ class _CategoryChildrenScreenState extends ConsumerState<CategoryChildrenScreen>
         title: Text(
           widget.category.name,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontSize: 20.sp(context),
-                fontWeight: FontWeight.bold,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-              ),
+            fontSize: 20.sp(context),
+            fontWeight: FontWeight.bold,
+            color: isDark
+                ? AppColors.darkTextPrimary
+                : AppColors.lightTextPrimary,
+          ),
         ),
       ),
       body: FutureBuilder<List<MainCategoryModel>>(
@@ -86,9 +96,9 @@ class _CategoryChildrenScreenState extends ConsumerState<CategoryChildrenScreen>
               child: Text(
                 strings.noProductsFound,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: 14.sp(context),
-                      color: AppColors.lightTextSecondary,
-                    ),
+                  fontSize: 14.sp(context),
+                  color: AppColors.lightTextSecondary,
+                ),
               ),
             );
           }
@@ -135,14 +145,17 @@ class _CategoryChildrenScreenState extends ConsumerState<CategoryChildrenScreen>
                   child: Row(
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.horizontal(left: Radius.circular(24.w(context))),
+                        borderRadius: BorderRadius.horizontal(
+                          left: Radius.circular(24.w(context)),
+                        ),
                         child: SizedBox(
                           width: 110.w(context),
                           height: 110.h(context),
                           child: CachedNetworkImage(
                             imageUrl: sub.imageUrl,
                             fit: BoxFit.cover,
-                            errorWidget: (context, url, error) => const Icon(Icons.category_outlined),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.category_outlined),
                           ),
                         ),
                       ),
@@ -155,10 +168,13 @@ class _CategoryChildrenScreenState extends ConsumerState<CategoryChildrenScreen>
                             children: [
                               Text(
                                 sub.name,
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
                                       fontSize: 16.sp(context),
                                       fontWeight: FontWeight.bold,
-                                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                      color: isDark
+                                          ? AppColors.darkTextPrimary
+                                          : AppColors.lightTextPrimary,
                                     ),
                               ),
                             ],
@@ -167,7 +183,11 @@ class _CategoryChildrenScreenState extends ConsumerState<CategoryChildrenScreen>
                       ),
                       Padding(
                         padding: EdgeInsets.only(right: 16.w(context)),
-                        child: Icon(Icons.arrow_forward_ios, size: 16.sp(context), color: AppColors.lightTextSecondary),
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16.sp(context),
+                          color: AppColors.lightTextSecondary,
+                        ),
                       ),
                     ],
                   ),

@@ -33,14 +33,24 @@ class _ProductHeaderWidgetState extends State<ProductHeaderWidget> {
   Widget build(BuildContext context) {
     final images = widget.product.images.isNotEmpty
         ? widget.product.images
-        : [ProductImageModel(id: '1', url: widget.product.image, altText: widget.product.name, isPrimary: true)];
+        : [
+            ProductImageModel(
+              id: '1',
+              url: widget.product.image,
+              altText: widget.product.name,
+              isPrimary: true,
+            ),
+          ];
 
-    final activeImageUrl = images[_selectedImageIndex.clamp(0, images.length - 1)].url;
+    final activeImageUrl =
+        images[_selectedImageIndex.clamp(0, images.length - 1)].url;
 
     return SliverAppBar(
       expandedHeight: 380.h(context),
       pinned: true,
-      backgroundColor: widget.isDark ? AppColors.darkSurface : const Color(0xFFF2ECE4),
+      backgroundColor: widget.isDark
+          ? AppColors.darkSurface
+          : const Color(0xFFF2ECE4),
       leading: Padding(
         padding: EdgeInsets.all(8.w(context)),
         child: Container(
@@ -57,9 +67,13 @@ class _ProductHeaderWidgetState extends State<ProductHeaderWidget> {
           ),
           child: IconButton(
             icon: Icon(
-              widget.isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
+              widget.isArabic
+                  ? Icons.arrow_forward_ios
+                  : Icons.arrow_back_ios_new,
               size: 16.sp(context),
-              color: widget.isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+              color: widget.isDark
+                  ? AppColors.darkTextPrimary
+                  : AppColors.lightTextPrimary,
             ),
             onPressed: widget.onBackPressed,
           ),
@@ -84,14 +98,20 @@ class _ProductHeaderWidgetState extends State<ProductHeaderWidget> {
               icon: Icon(
                 Icons.share_outlined,
                 size: 18.sp(context),
-                color: widget.isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                color: widget.isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
               ),
               onPressed: () {},
             ),
           ),
         ),
         Padding(
-          padding: EdgeInsets.only(right: 12.w(context), top: 8.h(context), bottom: 8.h(context)),
+          padding: EdgeInsets.only(
+            right: 12.w(context),
+            top: 8.h(context),
+            bottom: 8.h(context),
+          ),
           child: Container(
             decoration: BoxDecoration(
               color: widget.isDark ? AppColors.darkSurface : Colors.white,
@@ -108,7 +128,11 @@ class _ProductHeaderWidgetState extends State<ProductHeaderWidget> {
               icon: Icon(
                 widget.isFavorite ? Icons.favorite : Icons.favorite_border,
                 size: 18.sp(context),
-                color: widget.isFavorite ? AppColors.badgeRed : (widget.isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
+                color: widget.isFavorite
+                    ? AppColors.badgeRed
+                    : (widget.isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.lightTextPrimary),
               ),
               onPressed: widget.onFavoritePressed,
             ),
@@ -123,16 +147,21 @@ class _ProductHeaderWidgetState extends State<ProductHeaderWidget> {
               imageUrl: activeImageUrl,
               fit: BoxFit.cover,
               httpHeaders: const {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'User-Agent':
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
               },
-              placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+              placeholder: (context, url) =>
+                  const Center(child: CircularProgressIndicator()),
               errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
             Positioned(
               bottom: 70.h(context),
               left: 20.w(context),
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w(context), vertical: 6.h(context)),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 12.w(context),
+                  vertical: 6.h(context),
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF9F6F0),
                   borderRadius: BorderRadius.circular(16.w(context)),
@@ -147,11 +176,11 @@ class _ProductHeaderWidgetState extends State<ProductHeaderWidget> {
                 child: Text(
                   'BESTSELLER',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontSize: 11.sp(context),
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.lightTextPrimary,
-                        letterSpacing: 0.8,
-                      ),
+                    fontSize: 11.sp(context),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.lightTextPrimary,
+                    letterSpacing: 0.8,
+                  ),
                 ),
               ),
             ),
@@ -173,7 +202,9 @@ class _ProductHeaderWidgetState extends State<ProductHeaderWidget> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12.w(context)),
                             border: Border.all(
-                              color: isSelected ? AppColors.primary : Colors.transparent,
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : Colors.transparent,
                               width: 2,
                             ),
                             image: DecorationImage(

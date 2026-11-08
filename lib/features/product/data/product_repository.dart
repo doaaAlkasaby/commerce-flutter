@@ -34,30 +34,46 @@ class ProductRepository {
       if (search.isNotEmpty) queryParams['search'] = search;
       if (minPrice != null) queryParams['minPrice'] = minPrice;
       if (maxPrice != null) queryParams['maxPrice'] = maxPrice;
-      if (categoryId != null && categoryId.isNotEmpty) queryParams['categoryId'] = categoryId;
-      if (brandId != null && brandId.isNotEmpty) queryParams['brandId'] = brandId;
+      if (categoryId != null && categoryId.isNotEmpty) {
+        queryParams['categoryId'] = categoryId;
+      }
+      if (brandId != null && brandId.isNotEmpty) {
+        queryParams['brandId'] = brandId;
+      }
 
       final response = await _dio.get(
         ApiEndpoints.products,
         queryParameters: queryParams,
       );
       final rawData = response.data['data'];
-      final List list = rawData is List ? rawData : (rawData['products'] ?? rawData['items'] ?? []);
-      return list.map((p) => ProductModel.fromJson(p as Map<String, dynamic>)).toList();
+      final List list = rawData is List
+          ? rawData
+          : (rawData['products'] ?? rawData['items'] ?? []);
+      return list
+          .map((p) => ProductModel.fromJson(p as Map<String, dynamic>))
+          .toList();
     } catch (_) {
       return [];
     }
   }
 
-  Future<List<ProductModel>> getProductsByEndpoint(String endpoint, {int page = 1, int limit = 10}) async {
+  Future<List<ProductModel>> getProductsByEndpoint(
+    String endpoint, {
+    int page = 1,
+    int limit = 10,
+  }) async {
     try {
       final response = await _dio.get(
         endpoint,
         queryParameters: {'page': page, 'limit': limit},
       );
       final rawData = response.data['data'];
-      final List list = rawData is List ? rawData : (rawData['products'] ?? rawData['items'] ?? []);
-      return list.map((p) => ProductModel.fromJson(p as Map<String, dynamic>)).toList();
+      final List list = rawData is List
+          ? rawData
+          : (rawData['products'] ?? rawData['items'] ?? []);
+      return list
+          .map((p) => ProductModel.fromJson(p as Map<String, dynamic>))
+          .toList();
     } catch (_) {
       // Fallback seed products for offline/testing
       return [
@@ -65,7 +81,11 @@ class ProductRepository {
           id: 'p1',
           name: 'Classic T-Shirt',
           slug: 'classic-t-shirt',
-          priceInfo: const ProductPriceModel(originalPrice: 29.99, finalPrice: 23.99, discountPercentage: 20.01),
+          priceInfo: const ProductPriceModel(
+            originalPrice: 29.99,
+            finalPrice: 23.99,
+            discountPercentage: 20.01,
+          ),
           image: 'https://placehold.co/800x800?text=Classic%20T-Shirt',
           isFavorite: false,
           rating: 4.8,
@@ -76,7 +96,11 @@ class ProductRepository {
           id: 'p2',
           name: 'Premium Hoodie',
           slug: 'premium-hoodie',
-          priceInfo: const ProductPriceModel(originalPrice: 59.99, finalPrice: 50.99, discountPercentage: 15),
+          priceInfo: const ProductPriceModel(
+            originalPrice: 59.99,
+            finalPrice: 50.99,
+            discountPercentage: 15,
+          ),
           image: 'https://placehold.co/800x800?text=Premium%20Hoodie',
           isFavorite: true,
           rating: 4.9,
@@ -90,7 +114,8 @@ class ProductRepository {
   Future<List<Map<String, dynamic>>> getProductReviews(String id) async {
     try {
       final response = await _dio.get(ApiEndpoints.productReviews(id));
-      final list = response.data['data'] as List? ?? response.data as List? ?? [];
+      final list =
+          response.data['data'] as List? ?? response.data as List? ?? [];
       return list.map((e) => e as Map<String, dynamic>).toList();
     } catch (_) {
       return [];
@@ -98,24 +123,27 @@ class ProductRepository {
   }
 
   Future<void> addReview(String id, double rating, String comment) async {
-    await _dio.post(ApiEndpoints.productReviews(id), data: {
-      'rating': rating,
-      'comment': comment,
-    });
+    await _dio.post(
+      ApiEndpoints.productReviews(id),
+      data: {'rating': rating, 'comment': comment},
+    );
   }
 
   Future<void> toggleFavorite(String productId, bool isFavorite) async {
     if (isFavorite) {
-      await _dio.post(ApiEndpoints.wishlistItems, data: {'productId': productId});
+      await _dio.post(
+        ApiEndpoints.wishlistItems,
+        data: {'productId': productId},
+      );
     } else {
       await _dio.delete(ApiEndpoints.wishlistByProduct(productId));
     }
   }
 
   Future<void> addToCart(String productId, int quantity) async {
-    await _dio.post(ApiEndpoints.cartItems, data: {
-      'variantId': productId,
-      'quantity': quantity,
-    });
+    await _dio.post(
+      ApiEndpoints.cartItems,
+      data: {'variantId': productId, 'quantity': quantity},
+    );
   }
 }

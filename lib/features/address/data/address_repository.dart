@@ -11,22 +11,19 @@ class AddressRepository {
   Future<List<AddressModel>> getAddresses() async {
     try {
       final response = await _dio.get(ApiEndpoints.addresses);
-      final apiResponse = ApiListResponse.fromJson(
-        response.data,
-        (json) {
-          final item = json as Map<String, dynamic>;
-          return AddressModel(
-            id: item['id']?.toString() ?? '',
-            title: item['title']?.toString() ?? 'HOME',
-            fullName: item['fullName']?.toString() ?? '',
-            streetAddress: item['streetAddress']?.toString() ?? '',
-            city: item['city']?.toString() ?? '',
-            postalCode: item['postalCode']?.toString() ?? '',
-            phoneNumber: item['phoneNumber']?.toString() ?? '',
-            isDefault: item['isDefault'] ?? false,
-          );
-        },
-      );
+      final apiResponse = ApiListResponse.fromJson(response.data, (json) {
+        final item = json as Map<String, dynamic>;
+        return AddressModel(
+          id: item['id']?.toString() ?? '',
+          title: item['title']?.toString() ?? 'HOME',
+          fullName: item['fullName']?.toString() ?? '',
+          streetAddress: item['streetAddress']?.toString() ?? '',
+          city: item['city']?.toString() ?? '',
+          postalCode: item['postalCode']?.toString() ?? '',
+          phoneNumber: item['phoneNumber']?.toString() ?? '',
+          isDefault: item['isDefault'] ?? false,
+        );
+      });
       if (apiResponse.success) {
         return apiResponse.data;
       }
@@ -36,27 +33,33 @@ class AddressRepository {
   }
 
   Future<void> addAddress(AddressModel address) async {
-    await _dio.post(ApiEndpoints.addresses, data: {
-      'title': address.title,
-      'fullName': address.fullName,
-      'streetAddress': address.streetAddress,
-      'city': address.city,
-      'postalCode': address.postalCode,
-      'phoneNumber': address.phoneNumber,
-      'isDefault': address.isDefault,
-    });
+    await _dio.post(
+      ApiEndpoints.addresses,
+      data: {
+        'title': address.title,
+        'fullName': address.fullName,
+        'streetAddress': address.streetAddress,
+        'city': address.city,
+        'postalCode': address.postalCode,
+        'phoneNumber': address.phoneNumber,
+        'isDefault': address.isDefault,
+      },
+    );
   }
 
   Future<void> updateAddress(AddressModel address) async {
-    await _dio.patch(ApiEndpoints.addressById(address.id), data: {
-      'title': address.title,
-      'fullName': address.fullName,
-      'streetAddress': address.streetAddress,
-      'city': address.city,
-      'postalCode': address.postalCode,
-      'phoneNumber': address.phoneNumber,
-      'isDefault': address.isDefault,
-    });
+    await _dio.patch(
+      ApiEndpoints.addressById(address.id),
+      data: {
+        'title': address.title,
+        'fullName': address.fullName,
+        'streetAddress': address.streetAddress,
+        'city': address.city,
+        'postalCode': address.postalCode,
+        'phoneNumber': address.phoneNumber,
+        'isDefault': address.isDefault,
+      },
+    );
   }
 
   Future<void> deleteAddress(String id) async {

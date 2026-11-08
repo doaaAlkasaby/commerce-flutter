@@ -42,15 +42,18 @@ class LoginHeaderWidget extends StatelessWidget {
         Text(
           'kids studio',
           style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                fontSize: 24.sp(context),
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-                letterSpacing: 1.2,
-              ),
+            fontSize: 24.sp(context),
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
+            letterSpacing: 1.2,
+          ),
         ),
         SizedBox(height: 16.h(context)),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 16.w(context), vertical: 8.h(context)),
+          padding: EdgeInsets.symmetric(
+            horizontal: 16.w(context),
+            vertical: 8.h(context),
+          ),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20.w(context)),
@@ -65,15 +68,19 @@ class LoginHeaderWidget extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.auto_awesome, size: 16.sp(context), color: AppColors.primary),
+              Icon(
+                Icons.auto_awesome,
+                size: 16.sp(context),
+                color: AppColors.primary,
+              ),
               SizedBox(width: 6.w(context)),
               Text(
                 'Learn through play',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: 13.sp(context),
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.lightTextPrimary,
-                    ),
+                  fontSize: 13.sp(context),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.lightTextPrimary,
+                ),
               ),
             ],
           ),

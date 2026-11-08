@@ -5,11 +5,7 @@ class OfflineWidget extends StatelessWidget {
   final Widget child;
   final bool isOffline;
 
-  const OfflineWidget({
-    super.key,
-    required this.child,
-    this.isOffline = false,
-  });
+  const OfflineWidget({super.key, required this.child, this.isOffline = false});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +20,10 @@ class OfflineWidget extends StatelessWidget {
             child: Material(
               color: Colors.transparent,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 16,
+                ),
                 color: AppColors.badgeRed,
                 child: SafeArea(
                   bottom: false,

@@ -19,7 +19,8 @@ class ProductDetailsScreen extends ConsumerStatefulWidget {
   const ProductDetailsScreen({super.key, required this.product});
 
   @override
-  ConsumerState<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
+  ConsumerState<ProductDetailsScreen> createState() =>
+      _ProductDetailsScreenState();
 }
 
 class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
@@ -72,7 +73,11 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
     if (_reviewController.text.trim().isEmpty) return;
     try {
       final repo = ProductRepository(ref.read(dioClientProvider));
-      await repo.addReview(widget.product.id, _userRating, _reviewController.text.trim());
+      await repo.addReview(
+        widget.product.id,
+        _userRating,
+        _reviewController.text.trim(),
+      );
       _reviewController.clear();
       setState(() {
         _loadData();
@@ -84,17 +89,23 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
 
-  Future<void> _addToCart(ProductModel currentProduct, AppStrings strings) async {
+  Future<void> _addToCart(
+    ProductModel currentProduct,
+    AppStrings strings,
+  ) async {
     try {
       final repo = ProductRepository(ref.read(dioClientProvider));
-      final variantId = _selectedVariant?.id ?? currentProduct.defaultVariantId ?? currentProduct.id;
+      final variantId =
+          _selectedVariant?.id ??
+          currentProduct.defaultVariantId ??
+          currentProduct.id;
       await repo.addToCart(variantId, _quantity);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -107,9 +118,9 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error adding to cart: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error adding to cart: $e')));
       }
     }
   }
@@ -129,7 +140,9 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
         final currentProduct = snapshot.data ?? widget.product;
 
         return Scaffold(
-          backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+          backgroundColor: isDark
+              ? AppColors.darkBackground
+              : AppColors.lightBackground,
           body: Stack(
             children: [
               CustomScrollView(
@@ -145,7 +158,12 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                   ),
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(20.w(context), 16.h(context), 20.w(context), 140.h(context)),
+                      padding: EdgeInsets.fromLTRB(
+                        20.w(context),
+                        16.h(context),
+                        20.w(context),
+                        140.h(context),
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -155,22 +173,35 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                               Expanded(
                                 child: Text(
                                   currentProduct.name,
-                                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .displaySmall
+                                      ?.copyWith(
                                         fontSize: 22.sp(context),
                                         fontWeight: FontWeight.bold,
-                                        color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                        color: isDark
+                                            ? AppColors.darkTextPrimary
+                                            : AppColors.lightTextPrimary,
                                       ),
                                 ),
                               ),
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 10.w(context), vertical: 4.h(context)),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 10.w(context),
+                                  vertical: 4.h(context),
+                                ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.mintTeal.withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(10.w(context)),
+                                  color: AppColors.mintTeal.withValues(
+                                    alpha: 0.15,
+                                  ),
+                                  borderRadius: BorderRadius.circular(
+                                    10.w(context),
+                                  ),
                                 ),
                                 child: Text(
                                   strings.inStock,
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  style: Theme.of(context).textTheme.labelSmall
+                                      ?.copyWith(
                                         fontSize: 11.sp(context),
                                         fontWeight: FontWeight.bold,
                                         color: AppColors.mintTeal,
@@ -182,15 +213,21 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                           SizedBox(height: 6.h(context)),
                           Row(
                             children: [
-                              Icon(Icons.star, color: AppColors.starYellow, size: 16.sp(context)),
+                              Icon(
+                                Icons.star,
+                                color: AppColors.starYellow,
+                                size: 16.sp(context),
+                              ),
                               SizedBox(width: 4.w(context)),
                               Text(
                                 '${currentProduct.rating} (${currentProduct.reviewCount} reviews)',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 13.sp(context)),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(fontSize: 13.sp(context)),
                               ),
                               Text(
                                 strings.freeDelivery,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 12.sp(context)),
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(fontSize: 12.sp(context)),
                               ),
                             ],
                           ),
@@ -199,17 +236,22 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                             children: [
                               Text(
                                 '\$${currentProduct.priceInfo.finalPrice.toStringAsFixed(2)}',
-                                style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                                style: Theme.of(context).textTheme.displayMedium
+                                    ?.copyWith(
                                       fontSize: 24.sp(context),
                                       fontWeight: FontWeight.bold,
-                                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                      color: isDark
+                                          ? AppColors.darkTextPrimary
+                                          : AppColors.lightTextPrimary,
                                     ),
                               ),
-                              if (currentProduct.priceInfo.discountPercentage != null) ...[
+                              if (currentProduct.priceInfo.discountPercentage !=
+                                  null) ...[
                                 SizedBox(width: 10.w(context)),
                                 Text(
                                   '\$${currentProduct.priceInfo.originalPrice.toStringAsFixed(2)}',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(
                                         fontSize: 14.sp(context),
                                         decoration: TextDecoration.lineThrough,
                                       ),
@@ -220,7 +262,11 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                           SizedBox(height: 20.h(context)),
                           Text(
                             strings.colour,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 15.sp(context), fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  fontSize: 15.sp(context),
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                           SizedBox(height: 10.h(context)),
                           ProductVariantsWidget(
@@ -231,15 +277,21 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                           SizedBox(height: 20.h(context)),
                           Text(
                             strings.size,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 15.sp(context), fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  fontSize: 15.sp(context),
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                           SizedBox(height: 10.h(context)),
                           ProductAttributesWidget(
                             product: currentProduct,
                             selectedColor: _selectedColor,
                             selectedSize: _selectedSize,
-                            onColorSelected: (c) => setState(() => _selectedColor = c),
-                            onSizeSelected: (s) => setState(() => _selectedSize = s),
+                            onColorSelected: (c) =>
+                                setState(() => _selectedColor = c),
+                            onSizeSelected: (s) =>
+                                setState(() => _selectedSize = s),
                             isDark: isDark,
                           ),
                           SizedBox(height: 20.h(context)),
@@ -248,26 +300,51 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                             children: [
                               Text(
                                 'Quantity',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 15.sp(context), fontWeight: FontWeight.bold),
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      fontSize: 15.sp(context),
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 12.w(context), vertical: 6.h(context)),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w(context),
+                                  vertical: 6.h(context),
+                                ),
                                 decoration: BoxDecoration(
-                                  color: isDark ? AppColors.darkCardBg : Colors.white,
-                                  borderRadius: BorderRadius.circular(20.w(context)),
-                                  border: Border.all(color: Colors.grey.shade300),
+                                  color: isDark
+                                      ? AppColors.darkCardBg
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(
+                                    20.w(context),
+                                  ),
+                                  border: Border.all(
+                                    color: Colors.grey.shade300,
+                                  ),
                                 ),
                                 child: Row(
                                   children: [
                                     GestureDetector(
                                       onTap: () {
-                                        if (_quantity > 1) setState(() => _quantity--);
+                                        if (_quantity > 1) {
+                                          setState(() => _quantity--);
+                                        }
                                       },
                                       child: const Icon(Icons.remove, size: 18),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 16.w(context)),
-                                      child: Text('$_quantity', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 16.w(context),
+                                      ),
+                                      child: Text(
+                                        '$_quantity',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
                                     ),
                                     GestureDetector(
                                       onTap: () => setState(() => _quantity++),
@@ -281,12 +358,22 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                           SizedBox(height: 24.h(context)),
                           Text(
                             strings.description,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 18.sp(context), fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(
+                                  fontSize: 18.sp(context),
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                           SizedBox(height: 8.h(context)),
                           Text(
-                            currentProduct.description.isNotEmpty ? currentProduct.description : 'High quality crafted item designed with care for your little ones. Made from sustainable and safe materials.',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 14.sp(context), height: 1.5),
+                            currentProduct.description.isNotEmpty
+                                ? currentProduct.description
+                                : 'High quality crafted item designed with care for your little ones. Made from sustainable and safe materials.',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  fontSize: 14.sp(context),
+                                  height: 1.5,
+                                ),
                           ),
                           Divider(height: 36.h(context)),
                           Row(
@@ -294,11 +381,22 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                             children: [
                               Text(
                                 strings.reviewsHeader,
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 18.sp(context), fontWeight: FontWeight.bold),
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(
+                                      fontSize: 18.sp(context),
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
                               TextButton(
                                 onPressed: () {},
-                                child: Text(strings.readMore, style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                                child: Text(
+                                  strings.readMore,
+                                  style: Theme.of(context).textTheme.labelLarge
+                                      ?.copyWith(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
                               ),
                             ],
                           ),
@@ -308,17 +406,26 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                             builder: (context, snapshot) {
                               final reviews = snapshot.data ?? [];
                               if (reviews.isEmpty) {
-                                return Text('No reviews yet. Be the first to review!', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 13.sp(context)));
+                                return Text(
+                                  'No reviews yet. Be the first to review!',
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(fontSize: 13.sp(context)),
+                                );
                               }
                               return Column(
                                 children: reviews.map((rev) {
                                   return Padding(
-                                    padding: EdgeInsets.only(bottom: 12.h(context)),
+                                    padding: EdgeInsets.only(
+                                      bottom: 12.h(context),
+                                    ),
                                     child: _buildReviewItem(
                                       context: context,
-                                      name: rev['userName']?.toString() ?? 'Parent',
+                                      name:
+                                          rev['userName']?.toString() ??
+                                          'Parent',
                                       date: 'Recent',
-                                      rating: (rev['rating'] as num?)?.toInt() ?? 5,
+                                      rating:
+                                          (rev['rating'] as num?)?.toInt() ?? 5,
                                       comment: rev['comment']?.toString() ?? '',
                                       helpfulCount: 0,
                                     ),
@@ -337,17 +444,31 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                           Divider(height: 36.h(context)),
                           Text(
                             strings.writeReview,
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 18.sp(context), fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(
+                                  fontSize: 18.sp(context),
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                           SizedBox(height: 12.h(context)),
-                          Text(strings.yourRating, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.lightTextSecondary, fontSize: 13.sp(context))),
+                          Text(
+                            strings.yourRating,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: AppColors.lightTextSecondary,
+                                  fontSize: 13.sp(context),
+                                ),
+                          ),
                           SizedBox(height: 8.h(context)),
                           Row(
                             children: List.generate(5, (index) {
                               return GestureDetector(
-                                onTap: () => setState(() => _userRating = index + 1.0),
+                                onTap: () =>
+                                    setState(() => _userRating = index + 1.0),
                                 child: Icon(
-                                  index < _userRating ? Icons.star : Icons.star_border,
+                                  index < _userRating
+                                      ? Icons.star
+                                      : Icons.star_border,
                                   color: AppColors.starYellow,
                                   size: 28.sp(context),
                                 ),
@@ -372,7 +493,14 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                                 icon: Icons.camera_alt_outlined,
                                 width: 140.w(context),
                               ),
-                              Text('0/500', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.lightTextSecondary, fontSize: 12.sp(context))),
+                              Text(
+                                '0/500',
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: AppColors.lightTextSecondary,
+                                      fontSize: 12.sp(context),
+                                    ),
+                              ),
                             ],
                           ),
                           SizedBox(height: 16.h(context)),
@@ -431,14 +559,18 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
               Text(
                 name,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontSize: 14.sp(context),
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                    ),
+                  fontSize: 14.sp(context),
+                  fontWeight: FontWeight.bold,
+                  color: isDark
+                      ? AppColors.darkTextPrimary
+                      : AppColors.lightTextPrimary,
+                ),
               ),
               Text(
                 date,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 11.sp(context)),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(fontSize: 11.sp(context)),
               ),
             ],
           ),
@@ -456,10 +588,12 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
           Text(
             comment,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontSize: 13.sp(context),
-                  height: 1.4,
-                  color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-                ),
+              fontSize: 13.sp(context),
+              height: 1.4,
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.lightTextSecondary,
+            ),
           ),
         ],
       ),

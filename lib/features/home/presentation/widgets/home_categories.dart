@@ -6,10 +6,7 @@ import 'package:ecommerce/features/home/presentation/widgets/category_item.dart'
 class HomeCategoriesWidget extends ConsumerWidget {
   final AsyncValue<HomeResponseModel> homeDataAsync;
 
-  const HomeCategoriesWidget({
-    super.key,
-    required this.homeDataAsync,
-  });
+  const HomeCategoriesWidget({super.key, required this.homeDataAsync});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,10 +21,7 @@ class HomeCategoriesWidget extends ConsumerWidget {
             itemCount: categoriesList.length,
             itemBuilder: (context, index) {
               final CategoryModel category = categoriesList[index];
-              return CategoryItem(
-                category: category,
-                onTap: () {},
-              );
+              return CategoryItem(category: category, onTap: () {});
             },
           );
         },

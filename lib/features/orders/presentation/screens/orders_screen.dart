@@ -25,21 +25,28 @@ class OrdersScreen extends ConsumerWidget {
     final filters = ['All', 'Processing', 'Shipped', 'Delivered'];
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(20.w(context), 16.h(context), 20.w(context), 12.h(context)),
+              padding: EdgeInsets.fromLTRB(
+                20.w(context),
+                16.h(context),
+                20.w(context),
+                12.h(context),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     isArabic ? 'طلباتي' : 'My orders',
                     style: context.textTheme.displayMedium?.copyWith(
-                          fontSize: 26.sp(context),
-                        ),
+                      fontSize: 26.sp(context),
+                    ),
                   ),
                   Container(
                     width: 40.w(context),
@@ -55,7 +62,11 @@ class OrdersScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    child: Icon(Icons.search, size: 20.sp(context), color: AppColors.lightTextPrimary),
+                    child: Icon(
+                      Icons.search,
+                      size: 20.sp(context),
+                      color: AppColors.lightTextPrimary,
+                    ),
                   ),
                 ],
               ),
@@ -76,9 +87,14 @@ class OrdersScreen extends ConsumerWidget {
                     },
                     child: Container(
                       margin: EdgeInsets.only(right: 10.w(context)),
-                      padding: EdgeInsets.symmetric(horizontal: 20.w(context), vertical: 10.h(context)),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20.w(context),
+                        vertical: 10.h(context),
+                      ),
                       decoration: BoxDecoration(
-                        color: isSelected ? AppColors.primary : (isDark ? AppColors.darkSurface : Colors.white),
+                        color: isSelected
+                            ? AppColors.primary
+                            : (isDark ? AppColors.darkSurface : Colors.white),
                         borderRadius: BorderRadius.circular(24.w(context)),
                         boxShadow: [
                           BoxShadow(
@@ -92,9 +108,13 @@ class OrdersScreen extends ConsumerWidget {
                       child: Text(
                         filter,
                         style: context.textTheme.boldTitleSmall?.copyWith(
-                              fontSize: 13.sp(context),
-                              color: isSelected ? Colors.white : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
-                            ),
+                          fontSize: 13.sp(context),
+                          color: isSelected
+                              ? Colors.white
+                              : (isDark
+                                    ? AppColors.darkTextPrimary
+                                    : AppColors.lightTextPrimary),
+                        ),
                       ),
                     ),
                   );
@@ -106,10 +126,18 @@ class OrdersScreen extends ConsumerWidget {
               child: ordersAsync.when(
                 data: (orders) {
                   final filteredOrders = orders.where((o) {
-                    if (selectedFilter == 'All') return true;
-                    if (selectedFilter == 'Delivered') return o.status == 'DELIVERED';
-                    if (selectedFilter == 'Processing') return o.status == 'IN_TRANSIT' || o.status == 'PROCESSING';
-                    if (selectedFilter == 'Shipped') return o.status == 'SHIPPED';
+                    if (selectedFilter == 'All') {
+                      return true;
+                    }
+                    if (selectedFilter == 'Delivered') {
+                      return o.status == 'DELIVERED';
+                    }
+                    if (selectedFilter == 'Processing') {
+                      return o.status == 'IN_TRANSIT' || o.status == 'PROCESSING';
+                    }
+                    if (selectedFilter == 'Shipped') {
+                      return o.status == 'SHIPPED';
+                    }
                     return true;
                   }).toList();
 
@@ -117,20 +145,29 @@ class OrdersScreen extends ConsumerWidget {
                     return Center(
                       child: Text(
                         strings.noProductsFound,
-                        style: context.textTheme.bodyMedium?.copyWith(fontSize: 14.sp(context)),
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          fontSize: 14.sp(context),
+                        ),
                       ),
                     );
                   }
 
                   return ListView.builder(
                     physics: const BouncingScrollPhysics(),
-                    padding: EdgeInsets.symmetric(horizontal: 20.w(context), vertical: 10.h(context)),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.w(context),
+                      vertical: 10.h(context),
+                    ),
                     itemCount: filteredOrders.length,
                     itemBuilder: (context, index) {
                       final order = filteredOrders[index];
                       Color badgeColor = AppColors.mintTeal;
-                      if (order.status == 'DELIVERED') badgeColor = Colors.green;
-                      if (order.status == 'CANCELLED') badgeColor = Colors.grey;
+                      if (order.status == 'DELIVERED') {
+                        badgeColor = Colors.green;
+                      }
+                      if (order.status == 'CANCELLED') {
+                        badgeColor = Colors.grey;
+                      }
 
                       return GestureDetector(
                         onTap: () {
@@ -158,24 +195,37 @@ class OrdersScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     order.orderNumber,
-                                    style: context.textTheme.boldTitleMedium?.copyWith(
+                                    style: context.textTheme.boldTitleMedium
+                                        ?.copyWith(
                                           fontSize: 16.sp(context),
-                                          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                          color: isDark
+                                              ? AppColors.darkTextPrimary
+                                              : AppColors.lightTextPrimary,
                                         ),
                                   ),
                                   Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 10.w(context), vertical: 4.h(context)),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 10.w(context),
+                                      vertical: 4.h(context),
+                                    ),
                                     decoration: BoxDecoration(
                                       color: badgeColor.withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(10.w(context)),
+                                      borderRadius: BorderRadius.circular(
+                                        10.w(context),
+                                      ),
                                     ),
                                     child: Text(
                                       order.status.replaceAll('_', ' '),
-                                      style: context.textTheme.labelSmall?.copyWith(fontSize: 10.sp(context), color: badgeColor),
+                                      style: context.textTheme.labelSmall
+                                          ?.copyWith(
+                                            fontSize: 10.sp(context),
+                                            color: badgeColor,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -183,38 +233,62 @@ class OrdersScreen extends ConsumerWidget {
                               SizedBox(height: 4.h(context)),
                               Text(
                                 order.placedDate,
-                                style: context.textTheme.bodySmall?.copyWith(fontSize: 12.sp(context)),
+                                style: context.textTheme.bodySmall?.copyWith(
+                                  fontSize: 12.sp(context),
+                                ),
                               ),
                               SizedBox(height: 14.h(context)),
                               Row(
                                 children: [
-                                  ...order.items.take(3).map((item) => Padding(
-                                    padding: EdgeInsets.only(right: 8.w(context)),
-                                    child: Container(
-                                      width: 48.w(context),
-                                      height: 48.h(context),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.lightCategoryBg,
-                                        borderRadius: BorderRadius.circular(12.w(context)),
+                                  ...order.items
+                                      .take(3)
+                                      .map(
+                                        (item) => Padding(
+                                          padding: EdgeInsets.only(
+                                            right: 8.w(context),
+                                          ),
+                                          child: Container(
+                                            width: 48.w(context),
+                                            height: 48.h(context),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.lightCategoryBg,
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    12.w(context),
+                                                  ),
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    12.w(context),
+                                                  ),
+                                              child: CachedNetworkImage(
+                                                imageUrl: item.imageUrl,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(12.w(context)),
-                                        child: CachedNetworkImage(imageUrl: item.imageUrl, fit: BoxFit.cover),
-                                      ),
-                                    ),
-                                  )),
                                   if (order.items.length > 3)
                                     Container(
                                       width: 48.w(context),
                                       height: 48.h(context),
                                       decoration: BoxDecoration(
                                         color: Colors.grey.shade200,
-                                        borderRadius: BorderRadius.circular(12.w(context)),
+                                        borderRadius: BorderRadius.circular(
+                                          12.w(context),
+                                        ),
                                       ),
                                       alignment: Alignment.center,
                                       child: Text(
                                         '+${order.items.length - 3}',
-                                        style: context.textTheme.boldTitleSmall?.copyWith(fontSize: 13.sp(context), color: AppColors.lightTextSecondary),
+                                        style: context.textTheme.boldTitleSmall
+                                            ?.copyWith(
+                                              fontSize: 13.sp(context),
+                                              color:
+                                                  AppColors.lightTextSecondary,
+                                            ),
                                       ),
                                     ),
                                 ],
@@ -223,18 +297,32 @@ class OrdersScreen extends ConsumerWidget {
                               const Divider(height: 1),
                               SizedBox(height: 12.h(context)),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(strings.total, style: context.textTheme.labelLarge?.copyWith(fontSize: 10.sp(context), color: AppColors.lightTextSecondary, fontWeight: FontWeight.bold)),
+                                      Text(
+                                        strings.total,
+                                        style: context.textTheme.labelLarge
+                                            ?.copyWith(
+                                              fontSize: 10.sp(context),
+                                              color:
+                                                  AppColors.lightTextSecondary,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
                                       SizedBox(height: 2.h(context)),
                                       Text(
                                         '\$${order.totalAmount.toStringAsFixed(2)}',
-                                        style: context.textTheme.boldTitleMedium?.copyWith(
+                                        style: context.textTheme.boldTitleMedium
+                                            ?.copyWith(
                                               fontSize: 16.sp(context),
-                                              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                              color: isDark
+                                                  ? AppColors.darkTextPrimary
+                                                  : AppColors.lightTextPrimary,
                                             ),
                                       ),
                                     ],
@@ -242,7 +330,11 @@ class OrdersScreen extends ConsumerWidget {
                                   SizedBox(
                                     height: 38.h(context),
                                     child: AppButton(
-                                      text: order.status == 'IN_TRANSIT' ? 'Track order' : (order.status == 'CANCELLED' ? 'View refund' : 'Buy again'),
+                                      text: order.status == 'IN_TRANSIT'
+                                          ? 'Track order'
+                                          : (order.status == 'CANCELLED'
+                                                ? 'View refund'
+                                                : 'Buy again'),
                                       onPressed: () {},
                                       type: AppButtonType.outlined,
                                       height: 38.h(context),

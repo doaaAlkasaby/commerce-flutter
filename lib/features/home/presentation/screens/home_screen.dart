@@ -41,7 +41,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
     final isDark = themeMode == ThemeMode.dark;
     final isLoggedIn = userAsync.value != null;
-    final userName = isLoggedIn ? (userAsync.value?.firstName ?? 'User') : 'Guest';
+    final userName = isLoggedIn
+        ? (userAsync.value?.firstName ?? 'User')
+        : 'Guest';
 
     return AppScaffold(
       body: SafeArea(
@@ -53,8 +55,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             await ref.read(homeDataProvider.future);
           },
           child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-            padding: EdgeInsets.symmetric(horizontal: 20.w(context), vertical: 12.h(context)),
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            padding: EdgeInsets.symmetric(
+              horizontal: 20.w(context),
+              vertical: 12.h(context),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -73,7 +80,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     banners: homeResponse.data.banners,
                     onShopNow: () {},
                   ),
-                  loading: () => SizedBox(height: 160.h(context), child: const Center(child: CircularProgressIndicator())),
+                  loading: () => SizedBox(
+                    height: 160.h(context),
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
                   error: (e, st) => const SizedBox.shrink(),
                 ),
                 SizedBox(height: 26.h(context)),

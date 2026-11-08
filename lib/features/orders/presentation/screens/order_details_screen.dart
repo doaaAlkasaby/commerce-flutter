@@ -16,9 +16,13 @@ class OrderDetailsScreen extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
       appBar: AppBar(
-        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        backgroundColor: isDark
+            ? AppColors.darkBackground
+            : AppColors.lightBackground,
         elevation: 0,
         leading: Padding(
           padding: EdgeInsets.all(8.w(context)),
@@ -38,7 +42,9 @@ class OrderDetailsScreen extends ConsumerWidget {
               icon: Icon(
                 isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
                 size: 16.sp(context),
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
@@ -50,13 +56,17 @@ class OrderDetailsScreen extends ConsumerWidget {
             Text(
               isArabic ? 'تفاصيل الطلب' : 'Order details',
               style: context.textTheme.boldTitleLarge?.copyWith(
-                    fontSize: 18.sp(context),
-                    color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                  ),
+                fontSize: 18.sp(context),
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
+              ),
             ),
             Text(
               'Order #IVY-2431 · placed 15 Sep 2026',
-              style: context.textTheme.bodySmall?.copyWith(fontSize: 11.sp(context)),
+              style: context.textTheme.bodySmall?.copyWith(
+                fontSize: 11.sp(context),
+              ),
             ),
           ],
         ),
@@ -76,7 +86,11 @@ class OrderDetailsScreen extends ConsumerWidget {
                 ],
               ),
               child: IconButton(
-                icon: Icon(Icons.download, size: 18.sp(context), color: AppColors.lightTextPrimary),
+                icon: Icon(
+                  Icons.download,
+                  size: 18.sp(context),
+                  color: AppColors.lightTextPrimary,
+                ),
                 onPressed: () {},
               ),
             ),
@@ -87,7 +101,12 @@ class OrderDetailsScreen extends ConsumerWidget {
         children: [
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: EdgeInsets.fromLTRB(20.w(context), 10.h(context), 20.w(context), 110.h(context)),
+            padding: EdgeInsets.fromLTRB(
+              20.w(context),
+              10.h(context),
+              20.w(context),
+              110.h(context),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -116,39 +135,59 @@ class OrderDetailsScreen extends ConsumerWidget {
                                 width: 36.w(context),
                                 height: 36.h(context),
                                 decoration: BoxDecoration(
-                                  color: AppColors.mintTeal.withValues(alpha: 0.15),
+                                  color: AppColors.mintTeal.withValues(
+                                    alpha: 0.15,
+                                  ),
                                   shape: BoxShape.circle,
                                 ),
-                                child: Icon(Icons.local_shipping_outlined, color: AppColors.mintTeal, size: 18.sp(context)),
+                                child: Icon(
+                                  Icons.local_shipping_outlined,
+                                  color: AppColors.mintTeal,
+                                  size: 18.sp(context),
+                                ),
                               ),
                               SizedBox(width: 10.w(context)),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    isArabic ? 'قيد التوصيل' : 'Out for delivery',
-                                    style: context.textTheme.boldTitleMedium?.copyWith(
+                                    isArabic
+                                        ? 'قيد التوصيل'
+                                        : 'Out for delivery',
+                                    style: context.textTheme.boldTitleMedium
+                                        ?.copyWith(
                                           fontSize: 15.sp(context),
-                                          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                          color: isDark
+                                              ? AppColors.darkTextPrimary
+                                              : AppColors.lightTextPrimary,
                                         ),
                                   ),
                                   Text(
                                     'Expected today · arriving 21 Sep',
-                                    style: context.textTheme.bodySmall?.copyWith(fontSize: 11.sp(context)),
+                                    style: context.textTheme.bodySmall
+                                        ?.copyWith(fontSize: 11.sp(context)),
                                   ),
                                 ],
                               ),
                             ],
                           ),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10.w(context), vertical: 4.h(context)),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 10.w(context),
+                              vertical: 4.h(context),
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.mintTeal.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(12.w(context)),
+                              borderRadius: BorderRadius.circular(
+                                12.w(context),
+                              ),
                             ),
                             child: Text(
                               'ON TIME',
-                              style: context.textTheme.labelSmall?.copyWith(fontSize: 10.sp(context), color: AppColors.mintTeal),
+                              style: context.textTheme.labelSmall?.copyWith(
+                                fontSize: 10.sp(context),
+                                color: AppColors.mintTeal,
+                              ),
                             ),
                           ),
                         ],
@@ -156,14 +195,47 @@ class OrderDetailsScreen extends ConsumerWidget {
                       SizedBox(height: 16.h(context)),
                       Text(
                         'Standard delivery · PL-8842019-SG',
-                        style: context.textTheme.bodySmall?.copyWith(fontSize: 12.sp(context)),
+                        style: context.textTheme.bodySmall?.copyWith(
+                          fontSize: 12.sp(context),
+                        ),
                       ),
                       SizedBox(height: 16.h(context)),
-                      _buildTimelineItem(context, title: 'Order placed', subtitle: '15 Sep 2026, 10:42', isCompleted: true, isLast: false),
-                      _buildTimelineItem(context, title: 'Packed at the studio', subtitle: '15 Sep 2026, 16:05', isCompleted: true, isLast: false),
-                      _buildTimelineItem(context, title: 'Shipped', subtitle: '17 Sep 2026, 08:20', isCompleted: true, isLast: false),
-                      _buildTimelineItem(context, title: 'Out for delivery', subtitle: 'Today, 08:05', isCompleted: true, isCurrent: true, isLast: false),
-                      _buildTimelineItem(context, title: 'Delivered', subtitle: 'Expected 21 Sep 2026', isCompleted: false, isLast: true),
+                      _buildTimelineItem(
+                        context,
+                        title: 'Order placed',
+                        subtitle: '15 Sep 2026, 10:42',
+                        isCompleted: true,
+                        isLast: false,
+                      ),
+                      _buildTimelineItem(
+                        context,
+                        title: 'Packed at the studio',
+                        subtitle: '15 Sep 2026, 16:05',
+                        isCompleted: true,
+                        isLast: false,
+                      ),
+                      _buildTimelineItem(
+                        context,
+                        title: 'Shipped',
+                        subtitle: '17 Sep 2026, 08:20',
+                        isCompleted: true,
+                        isLast: false,
+                      ),
+                      _buildTimelineItem(
+                        context,
+                        title: 'Out for delivery',
+                        subtitle: 'Today, 08:05',
+                        isCompleted: true,
+                        isCurrent: true,
+                        isLast: false,
+                      ),
+                      _buildTimelineItem(
+                        context,
+                        title: 'Delivered',
+                        subtitle: 'Expected 21 Sep 2026',
+                        isCompleted: false,
+                        isLast: true,
+                      ),
                     ],
                   ),
                 ),
@@ -171,9 +243,11 @@ class OrderDetailsScreen extends ConsumerWidget {
                 Text(
                   isArabic ? 'عنوان التوصيل' : 'Delivery address',
                   style: context.textTheme.boldTitleLarge?.copyWith(
-                        fontSize: 16.sp(context),
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                      ),
+                    fontSize: 16.sp(context),
+                    color: isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.lightTextPrimary,
+                  ),
                 ),
                 SizedBox(height: 8.h(context)),
                 Container(
@@ -198,7 +272,11 @@ class OrderDetailsScreen extends ConsumerWidget {
                           color: AppColors.peach.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(Icons.location_pin, color: AppColors.primary, size: 20.sp(context)),
+                        child: Icon(
+                          Icons.location_pin,
+                          color: AppColors.primary,
+                          size: 20.sp(context),
+                        ),
                       ),
                       SizedBox(width: 14.w(context)),
                       Expanded(
@@ -207,15 +285,20 @@ class OrderDetailsScreen extends ConsumerWidget {
                           children: [
                             Text(
                               'Amelia Wood',
-                              style: context.textTheme.boldTitleMedium?.copyWith(
+                              style: context.textTheme.boldTitleMedium
+                                  ?.copyWith(
                                     fontSize: 14.sp(context),
-                                    color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                    color: isDark
+                                        ? AppColors.darkTextPrimary
+                                        : AppColors.lightTextPrimary,
                                   ),
                             ),
                             SizedBox(height: 2.h(context)),
                             Text(
                               '12 Rosewood Lane, Apt 4B\nSingapore 238461\n+65 8123 4567',
-                              style: context.textTheme.addressBody?.copyWith(fontSize: 12.sp(context)),
+                              style: context.textTheme.addressBody?.copyWith(
+                                fontSize: 12.sp(context),
+                              ),
                             ),
                           ],
                         ),
@@ -227,9 +310,11 @@ class OrderDetailsScreen extends ConsumerWidget {
                 Text(
                   isArabic ? 'العناصر (4)' : 'Items (4)',
                   style: context.textTheme.boldTitleLarge?.copyWith(
-                        fontSize: 16.sp(context),
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                      ),
+                    fontSize: 16.sp(context),
+                    color: isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.lightTextPrimary,
+                  ),
                 ),
                 SizedBox(height: 8.h(context)),
                 Container(
@@ -248,7 +333,8 @@ class OrderDetailsScreen extends ConsumerWidget {
                     children: [
                       _buildOrderItem(
                         context,
-                        imageUrl: 'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?q=80&w=600&auto=format&fit=crop',
+                        imageUrl:
+                            'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?q=80&w=600&auto=format&fit=crop',
                         name: 'Cuddle Bear Soft Toy',
                         details: 'Cream · Medium 35cm · Qty 1',
                         price: '\$24.00',
@@ -257,7 +343,8 @@ class OrderDetailsScreen extends ConsumerWidget {
                       ),
                       _buildOrderItem(
                         context,
-                        imageUrl: 'https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?q=80&w=600&auto=format&fit=crop',
+                        imageUrl:
+                            'https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?q=80&w=600&auto=format&fit=crop',
                         name: 'Daisy Summer Dress',
                         details: 'Mustard · 3–4 years · Qty 2',
                         price: '\$37.00',
@@ -266,7 +353,8 @@ class OrderDetailsScreen extends ConsumerWidget {
                       ),
                       _buildOrderItem(
                         context,
-                        imageUrl: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?q=80&w=600&auto=format&fit=crop',
+                        imageUrl:
+                            'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?q=80&w=600&auto=format&fit=crop',
                         name: 'Rainbow Arch Stacker',
                         details: 'Natural · 7 arches · Qty 1',
                         price: '\$29.90',
@@ -280,9 +368,11 @@ class OrderDetailsScreen extends ConsumerWidget {
                 Text(
                   isArabic ? 'الدفع' : 'Payment',
                   style: context.textTheme.boldTitleLarge?.copyWith(
-                        fontSize: 16.sp(context),
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                      ),
+                    fontSize: 16.sp(context),
+                    color: isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.lightTextPrimary,
+                  ),
                 ),
                 SizedBox(height: 8.h(context)),
                 Container(
@@ -307,7 +397,11 @@ class OrderDetailsScreen extends ConsumerWidget {
                           color: AppColors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(10.w(context)),
                         ),
-                        child: Icon(Icons.credit_card, color: AppColors.primary, size: 20.sp(context)),
+                        child: Icon(
+                          Icons.credit_card,
+                          color: AppColors.primary,
+                          size: 20.sp(context),
+                        ),
                       ),
                       SizedBox(width: 14.w(context)),
                       Column(
@@ -316,13 +410,17 @@ class OrderDetailsScreen extends ConsumerWidget {
                           Text(
                             'Card ending 4242',
                             style: context.textTheme.boldTitleMedium?.copyWith(
-                                  fontSize: 14.sp(context),
-                                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                                ),
+                              fontSize: 14.sp(context),
+                              color: isDark
+                                  ? AppColors.darkTextPrimary
+                                  : AppColors.lightTextPrimary,
+                            ),
                           ),
                           Text(
                             'Paid 15 Sep 2026, 10:43',
-                            style: context.textTheme.bodySmall?.copyWith(fontSize: 11.sp(context)),
+                            style: context.textTheme.bodySmall?.copyWith(
+                              fontSize: 11.sp(context),
+                            ),
                           ),
                         ],
                       ),
@@ -333,9 +431,11 @@ class OrderDetailsScreen extends ConsumerWidget {
                 Text(
                   isArabic ? 'ملخص السعر' : 'Price summary',
                   style: context.textTheme.boldTitleLarge?.copyWith(
-                        fontSize: 16.sp(context),
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                      ),
+                    fontSize: 16.sp(context),
+                    color: isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.lightTextPrimary,
+                  ),
                 ),
                 SizedBox(height: 8.h(context)),
                 Container(
@@ -353,19 +453,46 @@ class OrderDetailsScreen extends ConsumerWidget {
                   ),
                   child: Column(
                     children: [
-                      _buildPriceRow(context, 'Subtotal (4 items)', '\$90.90', isDark),
+                      _buildPriceRow(
+                        context,
+                        'Subtotal (4 items)',
+                        '\$90.90',
+                        isDark,
+                      ),
                       SizedBox(height: 12.h(context)),
-                      _buildPriceRow(context, 'Discount (IVY10)', '-\$9.09', isDark, valueColor: AppColors.mintTeal),
+                      _buildPriceRow(
+                        context,
+                        'Discount (IVY10)',
+                        '-\$9.09',
+                        isDark,
+                        valueColor: AppColors.mintTeal,
+                      ),
                       SizedBox(height: 12.h(context)),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Delivery', style: context.textTheme.bodyMedium?.copyWith(fontSize: 14.sp(context))),
+                          Text(
+                            'Delivery',
+                            style: context.textTheme.bodyMedium?.copyWith(
+                              fontSize: 14.sp(context),
+                            ),
+                          ),
                           Row(
                             children: [
-                              Text('\$4.90', style: context.textTheme.strikeThroughBodySmall?.copyWith(fontSize: 13.sp(context))),
+                              Text(
+                                '\$4.90',
+                                style: context.textTheme.strikeThroughBodySmall
+                                    ?.copyWith(fontSize: 13.sp(context)),
+                              ),
                               SizedBox(width: 6.w(context)),
-                              Text('Free', style: context.textTheme.boldTitleMedium?.copyWith(fontSize: 14.sp(context), color: AppColors.mintTeal)),
+                              Text(
+                                'Free',
+                                style: context.textTheme.boldTitleMedium
+                                    ?.copyWith(
+                                      fontSize: 14.sp(context),
+                                      color: AppColors.mintTeal,
+                                    ),
+                              ),
                             ],
                           ),
                         ],
@@ -382,25 +509,30 @@ class OrderDetailsScreen extends ConsumerWidget {
                             children: [
                               Text(
                                 'Total',
-                                style: context.textTheme.boldTitleLarge?.copyWith(
+                                style: context.textTheme.boldTitleLarge
+                                    ?.copyWith(
                                       fontSize: 18.sp(context),
-                                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                      color: isDark
+                                          ? AppColors.darkTextPrimary
+                                          : AppColors.lightTextPrimary,
                                     ),
                               ),
                               SizedBox(height: 2.h(context)),
                               Text(
                                 'Including tax',
-                                style: context.textTheme.bodySmall?.copyWith(fontSize: 11.sp(context)),
+                                style: context.textTheme.bodySmall?.copyWith(
+                                  fontSize: 11.sp(context),
+                                ),
                               ),
                             ],
                           ),
                           Text(
                             '\$81.81',
                             style: context.textTheme.displayMedium?.copyWith(
-                                  fontSize: 22.sp(context),
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.primary,
-                                ),
+                              fontSize: 22.sp(context),
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                            ),
                           ),
                         ],
                       ),
@@ -415,7 +547,12 @@ class OrderDetailsScreen extends ConsumerWidget {
             left: 0,
             right: 0,
             child: Container(
-              padding: EdgeInsets.fromLTRB(24.w(context), 16.h(context), 24.w(context), 28.h(context)),
+              padding: EdgeInsets.fromLTRB(
+                24.w(context),
+                16.h(context),
+                24.w(context),
+                28.h(context),
+              ),
               decoration: BoxDecoration(
                 color: isDark ? AppColors.darkSurface : Colors.white,
                 boxShadow: [
@@ -434,14 +571,23 @@ class OrderDetailsScreen extends ConsumerWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('TOTAL', style: context.textTheme.labelLarge?.copyWith(fontSize: 11.sp(context), color: AppColors.lightTextSecondary, fontWeight: FontWeight.bold)),
+                          Text(
+                            'TOTAL',
+                            style: context.textTheme.labelLarge?.copyWith(
+                              fontSize: 11.sp(context),
+                              color: AppColors.lightTextSecondary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           SizedBox(height: 2.h(context)),
                           Text(
                             '\$81.81',
                             style: context.textTheme.boldTitleLarge?.copyWith(
-                                  fontSize: 22.sp(context),
-                                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                                ),
+                              fontSize: 22.sp(context),
+                              color: isDark
+                                  ? AppColors.darkTextPrimary
+                                  : AppColors.lightTextPrimary,
+                            ),
                           ),
                         ],
                       ),
@@ -454,14 +600,21 @@ class OrderDetailsScreen extends ConsumerWidget {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(27.w(context)),
+                                borderRadius: BorderRadius.circular(
+                                  27.w(context),
+                                ),
                               ),
                               elevation: 4,
                             ),
-                            icon: Icon(Icons.lock_outline, color: Colors.white, size: 18.sp(context)),
+                            icon: Icon(
+                              Icons.lock_outline,
+                              color: Colors.white,
+                              size: 18.sp(context),
+                            ),
                             label: Text(
                               'BUY AGAIN',
-                              style: context.textTheme.whiteLabelLarge?.copyWith(
+                              style: context.textTheme.whiteLabelLarge
+                                  ?.copyWith(
                                     fontSize: 15.sp(context),
                                     letterSpacing: 1.0,
                                   ),
@@ -474,7 +627,9 @@ class OrderDetailsScreen extends ConsumerWidget {
                   SizedBox(height: 10.h(context)),
                   Text(
                     'Secure checkout · You can review before paying',
-                    style: context.textTheme.bodySmall?.copyWith(fontSize: 11.sp(context)),
+                    style: context.textTheme.bodySmall?.copyWith(
+                      fontSize: 11.sp(context),
+                    ),
                   ),
                 ],
               ),
@@ -529,14 +684,20 @@ class OrderDetailsScreen extends ConsumerWidget {
               Text(
                 title,
                 style: context.textTheme.boldTitleMedium?.copyWith(
-                      fontSize: 14.sp(context),
-                      color: isCompleted ? (Theme.of(context).brightness == Brightness.dark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary) : AppColors.lightTextSecondary,
-                    ),
+                  fontSize: 14.sp(context),
+                  color: isCompleted
+                      ? (Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.lightTextPrimary)
+                      : AppColors.lightTextSecondary,
+                ),
               ),
               SizedBox(height: 2.h(context)),
               Text(
                 subtitle,
-                style: context.textTheme.bodySmall?.copyWith(fontSize: 11.sp(context)),
+                style: context.textTheme.bodySmall?.copyWith(
+                  fontSize: 11.sp(context),
+                ),
               ),
               SizedBox(height: 16.h(context)),
             ],
@@ -573,7 +734,8 @@ class OrderDetailsScreen extends ConsumerWidget {
                   child: CachedNetworkImage(
                     imageUrl: imageUrl,
                     fit: BoxFit.cover,
-                    errorWidget: (context, url, error) => const Icon(Icons.image_not_supported_outlined),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.image_not_supported_outlined),
                   ),
                 ),
               ),
@@ -585,14 +747,18 @@ class OrderDetailsScreen extends ConsumerWidget {
                     Text(
                       name,
                       style: context.textTheme.boldTitleMedium?.copyWith(
-                            fontSize: 14.sp(context),
-                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                          ),
+                        fontSize: 14.sp(context),
+                        color: isDark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.lightTextPrimary,
+                      ),
                     ),
                     SizedBox(height: 4.h(context)),
                     Text(
                       details,
-                      style: context.textTheme.bodySmall?.copyWith(fontSize: 12.sp(context)),
+                      style: context.textTheme.bodySmall?.copyWith(
+                        fontSize: 12.sp(context),
+                      ),
                     ),
                   ],
                 ),
@@ -600,32 +766,47 @@ class OrderDetailsScreen extends ConsumerWidget {
               Text(
                 price,
                 style: context.textTheme.boldTitleMedium?.copyWith(
-                      fontSize: 15.sp(context),
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                    ),
+                  fontSize: 15.sp(context),
+                  color: isDark
+                      ? AppColors.darkTextPrimary
+                      : AppColors.lightTextPrimary,
+                ),
               ),
             ],
           ),
         ),
-        if (!isLast) Divider(height: 1, color: Colors.grey.withValues(alpha: 0.15)),
+        if (!isLast)
+          Divider(height: 1, color: Colors.grey.withValues(alpha: 0.15)),
       ],
     );
   }
 
-  Widget _buildPriceRow(BuildContext context, String label, String value, bool isDark, {Color? valueColor}) {
+  Widget _buildPriceRow(
+    BuildContext context,
+    String label,
+    String value,
+    bool isDark, {
+    Color? valueColor,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: context.textTheme.bodyMedium?.copyWith(fontSize: 14.sp(context)),
+          style: context.textTheme.bodyMedium?.copyWith(
+            fontSize: 14.sp(context),
+          ),
         ),
         Text(
           value,
           style: context.textTheme.boldTitleMedium?.copyWith(
-                fontSize: 14.sp(context),
-                color: valueColor ?? (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
-              ),
+            fontSize: 14.sp(context),
+            color:
+                valueColor ??
+                (isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary),
+          ),
         ),
       ],
     );

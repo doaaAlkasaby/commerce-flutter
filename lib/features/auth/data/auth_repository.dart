@@ -9,10 +9,10 @@ class AuthRepository {
   AuthRepository(this._dio);
 
   Future<ApiResponse<AuthDataDto>> login(String email, String password) async {
-    final response = await _dio.post(ApiEndpoints.login, data: {
-      'email': email,
-      'password': password,
-    });
+    final response = await _dio.post(
+      ApiEndpoints.login,
+      data: {'email': email, 'password': password},
+    );
     return ApiResponse.fromJson(
       response.data,
       (json) => AuthDataDto.fromJson(json as Map<String, dynamic>),
@@ -25,12 +25,15 @@ class AuthRepository {
     required String firstName,
     required String lastName,
   }) async {
-    final response = await _dio.post(ApiEndpoints.register, data: {
-      'email': email,
-      'password': password,
-      'firstName': firstName,
-      'lastName': lastName,
-    });
+    final response = await _dio.post(
+      ApiEndpoints.register,
+      data: {
+        'email': email,
+        'password': password,
+        'firstName': firstName,
+        'lastName': lastName,
+      },
+    );
     return ApiResponse.fromJson(
       response.data,
       (json) => AuthDataDto.fromJson(json as Map<String, dynamic>),
@@ -42,17 +45,20 @@ class AuthRepository {
   }
 
   Future<void> resetPassword(String token, String newPassword) async {
-    await _dio.post(ApiEndpoints.resetPassword, data: {
-      'token': token,
-      'newPassword': newPassword,
-    });
+    await _dio.post(
+      ApiEndpoints.resetPassword,
+      data: {'token': token, 'newPassword': newPassword},
+    );
   }
 
-  Future<void> changePassword(String currentPassword, String newPassword) async {
-    await _dio.post(ApiEndpoints.changePassword, data: {
-      'currentPassword': currentPassword,
-      'newPassword': newPassword,
-    });
+  Future<void> changePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
+    await _dio.post(
+      ApiEndpoints.changePassword,
+      data: {'currentPassword': currentPassword, 'newPassword': newPassword},
+    );
   }
 
   Future<void> logout(String refreshToken) async {
@@ -60,12 +66,18 @@ class AuthRepository {
   }
 
   Future<ApiResponse<void>> verifyEmail(String token) async {
-    final response = await _dio.get(ApiEndpoints.verifyEmail, queryParameters: {'token': token});
+    final response = await _dio.get(
+      ApiEndpoints.verifyEmail,
+      queryParameters: {'token': token},
+    );
     return ApiResponse.fromJson(response.data, (_) {});
   }
 
   Future<ApiResponse<void>> resendVerification(String email) async {
-    final response = await _dio.post(ApiEndpoints.resendVerification, data: {'email': email});
+    final response = await _dio.post(
+      ApiEndpoints.resendVerification,
+      data: {'email': email},
+    );
     return ApiResponse.fromJson(response.data, (_) {});
   }
 

@@ -1,7 +1,10 @@
-import 'dart:io';
+import 'package:ecommerce/core/config/app_environment.dart';
 
 class ApiEndpoints {
-  static String baseUrl = (Platform.isIOS) ? "http://127.0.0.1:3000/api/v1" : 'http://10.0.2.2:3000/api/v1';
+  static String get baseUrl => AppEnvironment.baseUrl;
+
+  // Storefront Bootstrap
+  static const String storefront = '/storefront';
 
   // App settings
   static const String appSettings = '/app-settings';
@@ -57,14 +60,17 @@ class ApiEndpoints {
   // Wishlist
   static const String wishlist = '/wishlist';
   static const String wishlistItems = '/wishlist/items';
-  static String wishlistByProduct(String productId) => '/wishlist/items/$productId';
+  static String wishlistByProduct(String productId) =>
+      '/wishlist/items/$productId';
   static String wishlistCheck(String productId) => '/wishlist/check/$productId';
 
   // Addresses
   static const String addresses = '/addresses';
   static String addressById(String id) => '/addresses/$id';
-  static String addressDefaultShipping(String id) => '/addresses/$id/default-shipping';
-  static String addressDefaultBilling(String id) => '/addresses/$id/default-billing';
+  static String addressDefaultShipping(String id) =>
+      '/addresses/$id/default-shipping';
+  static String addressDefaultBilling(String id) =>
+      '/addresses/$id/default-billing';
 
   // Orders & Checkout
   static const String ordersMy = '/orders/my';
@@ -82,7 +88,8 @@ class ApiEndpoints {
 
   // Devices
   static const String devices = '/devices';
-  static String deviceDeactivate(String deviceId) => '/devices/$deviceId/deactivate';
+  static String deviceDeactivate(String deviceId) =>
+      '/devices/$deviceId/deactivate';
   static String deviceById(String deviceId) => '/devices/$deviceId';
 
   // Notifications

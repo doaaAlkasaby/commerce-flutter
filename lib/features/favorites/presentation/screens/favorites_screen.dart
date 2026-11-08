@@ -28,7 +28,9 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
   }
 
   void _loadWishlist() {
-    _wishlistFuture = FavoritesRepository(ref.read(dioClientProvider)).getWishlist();
+    _wishlistFuture = FavoritesRepository(
+      ref.read(dioClientProvider),
+    ).getWishlist();
   }
 
   Future<void> _removeItem(ProductModel product, AppStrings strings) async {
@@ -51,9 +53,9 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -67,9 +69,13 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
       appBar: AppBar(
-        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        backgroundColor: isDark
+            ? AppColors.darkBackground
+            : AppColors.lightBackground,
         elevation: 0,
         leading: Padding(
           padding: EdgeInsets.all(8.w(context)),
@@ -89,7 +95,9 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
               icon: Icon(
                 isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
                 size: 16.sp(context),
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
@@ -98,9 +106,11 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
         title: Text(
           strings.favorites,
           style: context.textTheme.titleLarge?.copyWith(
-                fontSize: 20.sp(context),
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-              ),
+            fontSize: 20.sp(context),
+            color: isDark
+                ? AppColors.darkTextPrimary
+                : AppColors.lightTextPrimary,
+          ),
         ),
       ),
       body: FutureBuilder<List<ProductModel>>(
@@ -128,7 +138,11 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          Icon(Icons.favorite_border, size: 48.sp(context), color: AppColors.primary),
+                          Icon(
+                            Icons.favorite_border,
+                            size: 48.sp(context),
+                            color: AppColors.primary,
+                          ),
                           Positioned(
                             top: 24.h(context),
                             right: 28.w(context),
@@ -148,19 +162,21 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                     Text(
                       strings.noFavoritesYet,
                       style: context.textTheme.headlineSmall?.copyWith(
-                            fontSize: 22.sp(context),
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                          ),
+                        fontSize: 22.sp(context),
+                        fontWeight: FontWeight.bold,
+                        color: isDark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.lightTextPrimary,
+                      ),
                     ),
                     SizedBox(height: 8.h(context)),
                     Text(
                       strings.tapTheHeart,
                       textAlign: TextAlign.center,
                       style: context.textTheme.addressBody?.copyWith(
-                            fontSize: 14.sp(context),
-                            color: AppColors.lightTextSecondary,
-                          ),
+                        fontSize: 14.sp(context),
+                        color: AppColors.lightTextSecondary,
+                      ),
                     ),
                     SizedBox(height: 32.h(context)),
                     SizedBox(
@@ -174,7 +190,10 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                     SizedBox(height: 16.h(context)),
                     Text(
                       strings.syncDevices,
-                      style: context.textTheme.bodySmall?.copyWith(fontSize: 11.sp(context), color: AppColors.lightTextSecondary),
+                      style: context.textTheme.bodySmall?.copyWith(
+                        fontSize: 11.sp(context),
+                        color: AppColors.lightTextSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -223,15 +242,24 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                             Container(
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                color: isDark ? AppColors.darkCategoryBg : AppColors.lightCategoryBg,
-                                borderRadius: BorderRadius.vertical(top: Radius.circular(24.w(context))),
+                                color: isDark
+                                    ? AppColors.darkCategoryBg
+                                    : AppColors.lightCategoryBg,
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(24.w(context)),
+                                ),
                               ),
                               child: ClipRRect(
-                                borderRadius: BorderRadius.vertical(top: Radius.circular(24.w(context))),
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(24.w(context)),
+                                ),
                                 child: CachedNetworkImage(
                                   imageUrl: product.image,
                                   fit: BoxFit.cover,
-                                  errorWidget: (context, url, error) => const Icon(Icons.image_not_supported_outlined),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(
+                                        Icons.image_not_supported_outlined,
+                                      ),
                                 ),
                               ),
                             ),
@@ -244,7 +272,9 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                                   width: 30.w(context),
                                   height: 30.w(context),
                                   decoration: BoxDecoration(
-                                    color: isDark ? AppColors.darkSurface : Colors.white,
+                                    color: isDark
+                                        ? AppColors.darkSurface
+                                        : Colors.white,
                                     shape: BoxShape.circle,
                                     boxShadow: const [
                                       BoxShadow(
@@ -254,7 +284,11 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                                       ),
                                     ],
                                   ),
-                                  child: Icon(Icons.close, size: 16.sp(context), color: AppColors.lightTextSecondary),
+                                  child: Icon(
+                                    Icons.close,
+                                    size: 16.sp(context),
+                                    color: AppColors.lightTextSecondary,
+                                  ),
                                 ),
                               ),
                             ),
@@ -270,9 +304,12 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                               product.name,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: context.textTheme.boldTitleMedium?.copyWith(
+                              style: context.textTheme.boldTitleMedium
+                                  ?.copyWith(
                                     fontSize: 14.sp(context),
-                                    color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                    color: isDark
+                                        ? AppColors.darkTextPrimary
+                                        : AppColors.lightTextPrimary,
                                   ),
                             ),
                             SizedBox(height: 8.h(context)),
@@ -284,18 +321,24 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                                   children: [
                                     Text(
                                       '\$${product.priceInfo.finalPrice.toStringAsFixed(2)}',
-                                      style: context.textTheme.boldTitleMedium?.copyWith(
+                                      style: context.textTheme.boldTitleMedium
+                                          ?.copyWith(
                                             fontSize: 15.sp(context),
-                                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                            color: isDark
+                                                ? AppColors.darkTextPrimary
+                                                : AppColors.lightTextPrimary,
                                           ),
                                     ),
-                                    if (product.priceInfo.discountPercentage != null) ...[
+                                    if (product.priceInfo.discountPercentage !=
+                                        null) ...[
                                       SizedBox(height: 2.h(context)),
                                       Text(
                                         '\$${product.priceInfo.originalPrice.toStringAsFixed(2)}',
-                                        style: context.textTheme.bodySmall?.copyWith(
+                                        style: context.textTheme.bodySmall
+                                            ?.copyWith(
                                               fontSize: 11.sp(context),
-                                              decoration: TextDecoration.lineThrough,
+                                              decoration:
+                                                  TextDecoration.lineThrough,
                                             ),
                                       ),
                                     ],
@@ -309,13 +352,19 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: AppColors.primary.withValues(alpha: 0.3),
+                                        color: AppColors.primary.withValues(
+                                          alpha: 0.3,
+                                        ),
                                         blurRadius: 6,
                                         offset: Offset(0, 3.h(context)),
                                       ),
                                     ],
                                   ),
-                                  child: Icon(Icons.add, color: Colors.white, size: 18.sp(context)),
+                                  child: Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                    size: 18.sp(context),
+                                  ),
                                 ),
                               ],
                             ),

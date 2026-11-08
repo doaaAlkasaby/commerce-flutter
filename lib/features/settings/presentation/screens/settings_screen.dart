@@ -28,11 +28,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.fromLTRB(20.w(context), 12.h(context), 20.w(context), 100.h(context)),
+          padding: EdgeInsets.fromLTRB(
+            20.w(context),
+            12.h(context),
+            20.w(context),
+            100.h(context),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -98,7 +105,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   child: Text(
                     badgeCount,
-                    style: context.textTheme.whiteLabelLarge?.copyWith(fontSize: 10.sp(context)),
+                    style: context.textTheme.whiteLabelLarge?.copyWith(
+                      fontSize: 10.sp(context),
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -108,7 +117,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           SizedBox(height: 8.h(context)),
           Text(
             label,
-            style: context.textTheme.description?.copyWith(fontSize: 13.sp(context)),
+            style: context.textTheme.description?.copyWith(
+              fontSize: 13.sp(context),
+            ),
           ),
         ],
       ),
@@ -139,10 +150,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         title: Text(
           title,
           style: context.textTheme.titleMedium?.copyWith(
-                fontSize: 15.sp(context),
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).brightness == Brightness.dark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-              ),
+            fontSize: 15.sp(context),
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkTextPrimary
+                : AppColors.lightTextPrimary,
+          ),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -150,7 +163,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ?trailing,
             if (showArrow) ...[
               SizedBox(width: 8.w(context)),
-              Icon(Icons.arrow_forward_ios, size: 14.sp(context), color: AppColors.lightTextSecondary),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 14.sp(context),
+                color: AppColors.lightTextSecondary,
+              ),
             ],
           ],
         ),
@@ -165,9 +182,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         Text(
           isArabic ? 'الإعدادات' : 'Settings',
           style: context.textTheme.displayLarge?.copyWith(
-                fontSize: 28.sp(context),
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-              ),
+            fontSize: 28.sp(context),
+            color: isDark
+                ? AppColors.darkTextPrimary
+                : AppColors.lightTextPrimary,
+          ),
         ),
         Row(
           children: [
@@ -261,11 +280,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           SizedBox(height: 16.h(context)),
           Text(
-            isArabic ? 'أنت لم تقم بتسجيل الدخول بعد' : "You're not signed in yet",
+            isArabic
+                ? 'أنت لم تقم بتسجيل الدخول بعد'
+                : "You're not signed in yet",
             style: context.textTheme.boldTitleLarge?.copyWith(
-                  fontSize: 18.sp(context),
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                ),
+              fontSize: 18.sp(context),
+              color: isDark
+                  ? AppColors.darkTextPrimary
+                  : AppColors.lightTextPrimary,
+            ),
           ),
           SizedBox(height: 6.h(context)),
           Text(
@@ -274,33 +297,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 : 'Sign in to save favourites, track orders and get picks made for your family.',
             textAlign: TextAlign.center,
             style: context.textTheme.secondaryHint?.copyWith(
-                  fontSize: 13.sp(context),
-                ),
+              fontSize: 13.sp(context),
+            ),
           ),
           SizedBox(height: 20.h(context)),
           AppButton(
             text: isArabic ? 'تسجيل الدخول' : 'SIGN IN',
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-              );
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
             },
             height: 50.h(context),
           ),
           SizedBox(height: 12.h(context)),
           GestureDetector(
             onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-              );
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
             },
             child: Text(
               isArabic ? 'إنشاء حساب' : 'Create an account',
               style: context.textTheme.primaryTitleMedium?.copyWith(
-                    fontSize: 13.sp(context),
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
-                  ),
+                fontSize: 13.sp(context),
+                fontWeight: FontWeight.bold,
+                decoration: TextDecoration.underline,
+              ),
             ),
           ),
         ],
@@ -319,9 +342,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           label: isArabic ? 'المفضلة' : 'Favorites',
           badgeCount: '12',
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const FavoritesScreen()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const FavoritesScreen()));
           },
         ),
         _buildShortcutItem(
@@ -331,9 +354,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           label: isArabic ? 'العناوين' : 'Addresses',
           badgeCount: '2',
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const AddressesScreen()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const AddressesScreen()));
           },
         ),
         _buildShortcutItem(
@@ -374,8 +397,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             trailing: Text(
               currentLang == AppLanguage.en ? 'English' : 'العربية',
               style: context.textTheme.primaryTitleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                fontWeight: FontWeight.bold,
+              ),
             ),
             onTap: () {
               ref.read(languageProvider.notifier).toggleLanguage();
@@ -387,10 +410,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             iconColor: AppColors.primary,
             title: isArabic ? 'مظهر التطبيق' : 'App Theme',
             trailing: Text(
-              isDark ? (isArabic ? 'داكن' : 'Dark') : (isArabic ? 'فاتح' : 'Light'),
+              isDark
+                  ? (isArabic ? 'داكن' : 'Dark')
+                  : (isArabic ? 'فاتح' : 'Light'),
               style: context.textTheme.primaryTitleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                fontWeight: FontWeight.bold,
+              ),
             ),
             onTap: () {
               ref.read(themeProvider.notifier).toggleTheme();
@@ -404,8 +429,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             trailing: Text(
               '1.0.1',
               style: context.textTheme.secondaryHint?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                fontWeight: FontWeight.w600,
+              ),
             ),
             onTap: () {
               Navigator.of(context).push(
@@ -470,22 +495,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _buildMenuItem(
             icon: Icons.logout,
             iconColor: AppColors.badgeRed,
-            title: isArabic ? 'تسجيل الخروج من كل الأجهزة' : 'Logout All Devices',
+            title: isArabic
+                ? 'تسجيل الخروج من كل الأجهزة'
+                : 'Logout All Devices',
             onTap: () async {
+              final messenger = ScaffoldMessenger.of(context);
               try {
                 final authRepo = AuthRepository(ref.read(dioClientProvider));
                 await authRepo.logoutAll();
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Logged out from all devices successfully.')),
-                  );
-                }
+                messenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('Logged out from all devices successfully.'),
+                  ),
+                );
               } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
-                  );
-                }
+                messenger.showSnackBar(SnackBar(content: Text('Error: $e')));
               }
             },
           ),
@@ -493,22 +517,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _buildMenuItem(
             icon: Icons.mark_email_unread_outlined,
             iconColor: AppColors.mintTeal,
-            title: isArabic ? 'إعادة إرسال تفعيل البريد' : 'Resend Verification Email',
+            title: isArabic
+                ? 'إعادة إرسال تفعيل البريد'
+                : 'Resend Verification Email',
             onTap: () async {
+              final messenger = ScaffoldMessenger.of(context);
               try {
                 final authRepo = AuthRepository(ref.read(dioClientProvider));
                 await authRepo.resendVerification('amelia.wood@gmail.com');
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Verification email sent successfully.')),
-                  );
-                }
+                messenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('Verification email sent successfully.'),
+                  ),
+                );
               } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
-                  );
-                }
+                messenger.showSnackBar(SnackBar(content: Text('Error: $e')));
               }
             },
           ),

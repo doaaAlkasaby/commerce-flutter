@@ -42,18 +42,33 @@ class AppButton extends StatelessWidget {
           onPressed: isLoading ? null : onPressed,
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: backgroundColor ?? AppColors.primary),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(btnHeight / 2)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(btnHeight / 2),
+            ),
           ),
           icon: isLoading
-              ? SizedBox(width: 18.w(context), height: 18.h(context), child: CircularProgressIndicator(color: backgroundColor ?? AppColors.primary, strokeWidth: 2))
-              : (icon != null ? Icon(icon, size: 18.sp(context), color: textColor ?? AppColors.primary) : const SizedBox.shrink()),
+              ? SizedBox(
+                  width: 18.w(context),
+                  height: 18.h(context),
+                  child: CircularProgressIndicator(
+                    color: backgroundColor ?? AppColors.primary,
+                    strokeWidth: 2,
+                  ),
+                )
+              : (icon != null
+                    ? Icon(
+                        icon,
+                        size: 18.sp(context),
+                        color: textColor ?? AppColors.primary,
+                      )
+                    : const SizedBox.shrink()),
           label: Text(
             text,
             style: context.textTheme.labelLarge?.copyWith(
-                  fontSize: 15.sp(context),
-                  fontWeight: FontWeight.bold,
-                  color: textColor ?? AppColors.primary,
-                ),
+              fontSize: 15.sp(context),
+              fontWeight: FontWeight.bold,
+              color: textColor ?? AppColors.primary,
+            ),
           ),
         ),
       );
@@ -65,10 +80,10 @@ class AppButton extends StatelessWidget {
         child: Text(
           text,
           style: context.textTheme.labelLarge?.copyWith(
-                fontSize: 14.sp(context),
-                fontWeight: FontWeight.bold,
-                color: textColor ?? AppColors.primary,
-              ),
+            fontSize: 14.sp(context),
+            fontWeight: FontWeight.bold,
+            color: textColor ?? AppColors.primary,
+          ),
         ),
       );
     }
@@ -80,20 +95,35 @@ class AppButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor ?? AppColors.primary,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(btnHeight / 2)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(btnHeight / 2),
+          ),
           elevation: 4,
         ),
         icon: isLoading
-            ? SizedBox(width: 18.w(context), height: 18.h(context), child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-            : (icon != null ? Icon(icon, color: textColor ?? Colors.white, size: 18.sp(context)) : const SizedBox.shrink()),
+            ? SizedBox(
+                width: 18.w(context),
+                height: 18.h(context),
+                child: const CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : (icon != null
+                  ? Icon(
+                      icon,
+                      color: textColor ?? Colors.white,
+                      size: 18.sp(context),
+                    )
+                  : const SizedBox.shrink()),
         label: Text(
           text,
           style: context.textTheme.whiteLabelLarge?.copyWith(
-                fontSize: 15.sp(context),
-                fontWeight: FontWeight.bold,
-                color: textColor ?? Colors.white,
-                letterSpacing: 1.0,
-              ),
+            fontSize: 15.sp(context),
+            fontWeight: FontWeight.bold,
+            color: textColor ?? Colors.white,
+            letterSpacing: 1.0,
+          ),
         ),
       ),
     );

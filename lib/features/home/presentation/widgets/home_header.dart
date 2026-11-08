@@ -47,14 +47,18 @@ class HomeHeaderWidget extends StatelessWidget {
                 ),
                 // child: ClipRRect(
                 //   borderRadius: BorderRadius.circular(14.w(context)),
-                  child: Image.asset(
-                    AppAssets.logo,
-                    width: 44.w(context),
-                    height: 44.w(context),
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => const Center(
-                      child: Icon(Icons.storefront, color: AppColors.primary, size: 24),
+                child: Image.asset(
+                  AppAssets.logo,
+                  width: 44.w(context),
+                  height: 44.w(context),
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) => const Center(
+                    child: Icon(
+                      Icons.storefront,
+                      color: AppColors.primary,
+                      size: 24,
                     ),
+                  ),
                   // ),
                 ),
               ),
@@ -64,23 +68,29 @@ class HomeHeaderWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isLoggedIn ? strings.goodMorning : (isArabic ? 'مرحباً بك' : 'Welcome'),
+                      isLoggedIn
+                          ? strings.goodMorning
+                          : (isArabic ? 'مرحباً بك' : 'Welcome'),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontSize: 12.sp(context),
-                            fontWeight: FontWeight.w500,
-                          ),
+                        fontSize: 12.sp(context),
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     SizedBox(height: 2.h(context)),
                     Text(
-                      isLoggedIn ? 'Hi, $userName!' : (isArabic ? 'أهلاً بك، زائرنا الكريم' : 'Hello, Guest!'),
+                      isLoggedIn
+                          ? 'Hi, $userName!'
+                          : (isArabic
+                                ? 'أهلاً بك، زائرنا الكريم'
+                                : 'Hello, Guest!'),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontSize: 18.sp(context),
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontSize: 18.sp(context),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -109,12 +119,16 @@ class HomeHeaderWidget extends StatelessWidget {
               child: IconButton(
                 icon: Icon(
                   Icons.search,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                  color: isDark
+                      ? AppColors.darkTextPrimary
+                      : AppColors.lightTextPrimary,
                   size: 20.sp(context),
                 ),
                 onPressed: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const SearchFilterScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const SearchFilterScreen(),
+                    ),
                   );
                 },
                 padding: EdgeInsets.zero,
@@ -141,7 +155,9 @@ class HomeHeaderWidget extends StatelessWidget {
                   child: IconButton(
                     icon: Icon(
                       Icons.notifications_outlined,
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                      color: isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.lightTextPrimary,
                       size: 20.sp(context),
                     ),
                     onPressed: () {
@@ -171,10 +187,10 @@ class HomeHeaderWidget extends StatelessWidget {
                     child: Text(
                       '5',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: Colors.white,
-                            fontSize: 10.sp(context),
-                            fontWeight: FontWeight.bold,
-                          ),
+                        color: Colors.white,
+                        fontSize: 10.sp(context),
+                        fontWeight: FontWeight.bold,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),

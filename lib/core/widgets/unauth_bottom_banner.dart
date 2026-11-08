@@ -24,8 +24,16 @@ class _UnAuthBottomBannerState extends ConsumerState<UnAuthBottomBanner> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      margin: EdgeInsets.fromLTRB(16.w(context), 0, 16.w(context), 12.h(context)),
-      padding: EdgeInsets.symmetric(horizontal: 16.w(context), vertical: 12.h(context)),
+      margin: EdgeInsets.fromLTRB(
+        16.w(context),
+        0,
+        16.w(context),
+        12.h(context),
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: 16.w(context),
+        vertical: 12.h(context),
+      ),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(30.w(context)),
@@ -46,28 +54,39 @@ class _UnAuthBottomBannerState extends ConsumerState<UnAuthBottomBanner> {
               color: AppColors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.lock_outline, color: AppColors.primary, size: 18.sp(context)),
+            child: Icon(
+              Icons.lock_outline,
+              color: AppColors.primary,
+              size: 18.sp(context),
+            ),
           ),
           SizedBox(width: 12.w(context)),
           Expanded(
             child: Text(
-              isArabic ? 'تسجيل الدخول لحفظ تقدمك' : 'Sign in to save your progress',
+              isArabic
+                  ? 'تسجيل الدخول لحفظ تقدمك'
+                  : 'Sign in to save your progress',
               style: TextStyle(
                 fontSize: 13.sp(context),
                 fontWeight: FontWeight.w600,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
               ),
             ),
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-              );
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
-              padding: EdgeInsets.symmetric(horizontal: 16.w(context), vertical: 8.h(context)),
+              padding: EdgeInsets.symmetric(
+                horizontal: 16.w(context),
+                vertical: 8.h(context),
+              ),
               minimumSize: Size.zero,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18.w(context)),
@@ -84,7 +103,11 @@ class _UnAuthBottomBannerState extends ConsumerState<UnAuthBottomBanner> {
           ),
           SizedBox(width: 8.w(context)),
           IconButton(
-            icon: Icon(Icons.close, size: 18.sp(context), color: AppColors.lightTextSecondary),
+            icon: Icon(
+              Icons.close,
+              size: 18.sp(context),
+              color: AppColors.lightTextSecondary,
+            ),
             onPressed: () {
               setState(() {
                 _dismissed = true;

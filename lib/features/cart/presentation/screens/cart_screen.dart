@@ -22,15 +22,19 @@ class CartScreen extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
       appBar: AppBar(
-        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        backgroundColor: isDark
+            ? AppColors.darkBackground
+            : AppColors.lightBackground,
         elevation: 0,
         title: Text(
           strings.cart,
           style: context.textTheme.titleLarge?.copyWith(
-                fontSize: 22.sp(context),
-              ),
+            fontSize: 22.sp(context),
+          ),
         ),
       ),
       body: cartAsync.when(
@@ -40,11 +44,17 @@ class CartScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.shopping_cart_outlined, size: 64.sp(context), color: AppColors.lightTextSecondary),
+                  Icon(
+                    Icons.shopping_cart_outlined,
+                    size: 64.sp(context),
+                    color: AppColors.lightTextSecondary,
+                  ),
                   SizedBox(height: 16.h(context)),
                   Text(
                     isArabic ? 'سلة التسوق فارغة' : 'Your cart is empty',
-                    style: context.textTheme.boldTitleLarge?.copyWith(fontSize: 18.sp(context)),
+                    style: context.textTheme.boldTitleLarge?.copyWith(
+                      fontSize: 18.sp(context),
+                    ),
                   ),
                 ],
               ),
@@ -60,7 +70,9 @@ class CartScreen extends ConsumerWidget {
                   itemCount: cart.items.length,
                   itemBuilder: (context, index) {
                     final item = cart.items[index];
-                    final imageUrl = item.variant.images.isNotEmpty ? item.variant.images.first.url : '';
+                    final imageUrl = item.variant.images.isNotEmpty
+                        ? item.variant.images.first.url
+                        : '';
                     return Container(
                       margin: EdgeInsets.only(bottom: 16.h(context)),
                       padding: EdgeInsets.all(12.w(context)),
@@ -85,7 +97,10 @@ class CartScreen extends ConsumerWidget {
                               child: CachedNetworkImage(
                                 imageUrl: imageUrl,
                                 fit: BoxFit.cover,
-                                errorWidget: (context, url, error) => const Icon(Icons.image_not_supported_outlined),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(
+                                      Icons.image_not_supported_outlined,
+                                    ),
                               ),
                             ),
                           ),
@@ -98,22 +113,22 @@ class CartScreen extends ConsumerWidget {
                                   item.variant.product.name,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: context.textTheme.boldTitleMedium?.copyWith(
-                                        fontSize: 15.sp(context),
-                                      ),
+                                  style: context.textTheme.boldTitleMedium
+                                      ?.copyWith(fontSize: 15.sp(context)),
                                 ),
                                 SizedBox(height: 4.h(context)),
                                 Text(
                                   '\$${item.finalUnitPrice} each',
                                   style: context.textTheme.bodySmall?.copyWith(
-                                        fontSize: 13.sp(context),
-                                        color: AppColors.lightTextSecondary,
-                                      ),
+                                    fontSize: 13.sp(context),
+                                    color: AppColors.lightTextSecondary,
+                                  ),
                                 ),
                                 SizedBox(height: 2.h(context)),
                                 Text(
                                   'Subtotal: \$${item.totalPrice}',
-                                  style: context.textTheme.boldTitleSmall?.copyWith(
+                                  style: context.textTheme.boldTitleSmall
+                                      ?.copyWith(
                                         fontSize: 14.sp(context),
                                         color: AppColors.primary,
                                       ),
@@ -124,9 +139,16 @@ class CartScreen extends ConsumerWidget {
                                     GestureDetector(
                                       onTap: () {
                                         if (item.quantity > 1) {
-                                          ref.read(cartProvider.notifier).updateQuantity(item.variantId, item.quantity - 1);
+                                          ref
+                                              .read(cartProvider.notifier)
+                                              .updateQuantity(
+                                                item.variantId,
+                                                item.quantity - 1,
+                                              );
                                         } else {
-                                          ref.read(cartProvider.notifier).deleteItem(item.variantId);
+                                          ref
+                                              .read(cartProvider.notifier)
+                                              .deleteItem(item.variantId);
                                         }
                                       },
                                       child: Container(
@@ -135,18 +157,36 @@ class CartScreen extends ConsumerWidget {
                                         decoration: BoxDecoration(
                                           color: AppColors.lightBackground,
                                           shape: BoxShape.circle,
-                                          border: Border.all(color: Colors.grey.shade300),
+                                          border: Border.all(
+                                            color: Colors.grey.shade300,
+                                          ),
                                         ),
-                                        child: const Icon(Icons.remove, size: 14),
+                                        child: const Icon(
+                                          Icons.remove,
+                                          size: 14,
+                                        ),
                                       ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 12.w(context)),
-                                      child: Text('${item.quantity}', style: context.textTheme.boldTitleMedium?.copyWith(fontSize: 14.sp(context))),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12.w(context),
+                                      ),
+                                      child: Text(
+                                        '${item.quantity}',
+                                        style: context.textTheme.boldTitleMedium
+                                            ?.copyWith(
+                                              fontSize: 14.sp(context),
+                                            ),
+                                      ),
                                     ),
                                     GestureDetector(
                                       onTap: () {
-                                        ref.read(cartProvider.notifier).updateQuantity(item.variantId, item.quantity + 1);
+                                        ref
+                                            .read(cartProvider.notifier)
+                                            .updateQuantity(
+                                              item.variantId,
+                                              item.quantity + 1,
+                                            );
                                       },
                                       child: Container(
                                         width: 28.w(context),
@@ -154,7 +194,9 @@ class CartScreen extends ConsumerWidget {
                                         decoration: BoxDecoration(
                                           color: AppColors.lightBackground,
                                           shape: BoxShape.circle,
-                                          border: Border.all(color: Colors.grey.shade300),
+                                          border: Border.all(
+                                            color: Colors.grey.shade300,
+                                          ),
                                         ),
                                         child: const Icon(Icons.add, size: 14),
                                       ),
@@ -165,9 +207,14 @@ class CartScreen extends ConsumerWidget {
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.delete_outline, color: AppColors.badgeRed),
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              color: AppColors.badgeRed,
+                            ),
                             onPressed: () {
-                              ref.read(cartProvider.notifier).deleteItem(item.variantId);
+                              ref
+                                  .read(cartProvider.notifier)
+                                  .deleteItem(item.variantId);
                             },
                           ),
                         ],
@@ -193,10 +240,21 @@ class CartScreen extends ConsumerWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(strings.total, style: context.textTheme.boldTitleMedium?.copyWith(fontSize: 14.sp(context), color: AppColors.lightTextSecondary)),
+                        Text(
+                          strings.total,
+                          style: context.textTheme.boldTitleMedium?.copyWith(
+                            fontSize: 14.sp(context),
+                            color: AppColors.lightTextSecondary,
+                          ),
+                        ),
                         Text(
                           '\$${cart.subtotal}',
-                          style: context.textTheme.displayMedium?.copyWith(fontSize: 22.sp(context), color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
+                          style: context.textTheme.displayMedium?.copyWith(
+                            fontSize: 22.sp(context),
+                            color: isDark
+                                ? AppColors.darkTextPrimary
+                                : AppColors.lightTextPrimary,
+                          ),
                         ),
                       ],
                     ),
@@ -205,7 +263,9 @@ class CartScreen extends ConsumerWidget {
                       text: strings.checkout,
                       onPressed: () {
                         Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const CheckoutScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => const CheckoutScreen(),
+                          ),
                         );
                       },
                     ),

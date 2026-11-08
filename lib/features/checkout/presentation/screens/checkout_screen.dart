@@ -25,7 +25,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   bool _billingSameAsDelivery = true;
   final TextEditingController _orderNoteController = TextEditingController();
   bool _isLoading = false;
-  
+
   String? _selectedShippingAddressId;
   String? _selectedBillingAddressId;
   String _paymentMethod = 'CASH_ON_DELIVERY';
@@ -35,7 +35,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   @override
   void initState() {
     super.initState();
-    _addressesFuture = AddressRepository(ref.read(dioClientProvider)).getAddresses();
+    _addressesFuture = AddressRepository(
+      ref.read(dioClientProvider),
+    ).getAddresses();
   }
 
   Future<void> _placeOrder(BuildContext context, AppStrings strings) async {
@@ -77,9 +79,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error placing order: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error placing order: $e')));
       }
     } finally {
       if (mounted) {
@@ -100,9 +102,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
       appBar: AppBar(
-        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        backgroundColor: isDark
+            ? AppColors.darkBackground
+            : AppColors.lightBackground,
         elevation: 0,
         leading: Padding(
           padding: EdgeInsets.all(8.w(context)),
@@ -122,7 +128,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               icon: Icon(
                 isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
                 size: 16.sp(context),
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
@@ -131,9 +139,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         title: Text(
           strings.checkout,
           style: context.textTheme.titleLarge?.copyWith(
-                fontSize: 20.sp(context),
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-              ),
+            fontSize: 20.sp(context),
+            color: isDark
+                ? AppColors.darkTextPrimary
+                : AppColors.lightTextPrimary,
+          ),
         ),
       ),
       body: cartAsync.when(
@@ -150,12 +160,22 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 children: [
                   SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    padding: EdgeInsets.fromLTRB(20.w(context), 10.h(context), 20.w(context), 130.h(context)),
+                    padding: EdgeInsets.fromLTRB(
+                      20.w(context),
+                      10.h(context),
+                      20.w(context),
+                      130.h(context),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         addresses.isEmpty
-                            ? Text('No saved addresses. Please add one.', style: context.textTheme.description?.copyWith(fontSize: 13.sp(context)))
+                            ? Text(
+                                'No saved addresses. Please add one.',
+                                style: context.textTheme.description?.copyWith(
+                                  fontSize: 13.sp(context),
+                                ),
+                              )
                             : AppDropDown<String>(
                                 value: _selectedShippingAddressId,
                                 labelText: strings.deliveryAddress,
@@ -163,10 +183,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                 items: addresses.map((addr) {
                                   return DropdownMenuItem(
                                     value: addr.id,
-                                    child: Text('${addr.title}: ${addr.streetAddress}, ${addr.city}'),
+                                    child: Text(
+                                      '${addr.title}: ${addr.streetAddress}, ${addr.city}',
+                                    ),
                                   );
                                 }).toList(),
-                                onChanged: (val) => setState(() => _selectedShippingAddressId = val),
+                                onChanged: (val) => setState(
+                                  () => _selectedShippingAddressId = val,
+                                ),
                               ),
                         SizedBox(height: 16.h(context)),
                         Row(
@@ -174,13 +198,20 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                             Checkbox.adaptive(
                               value: _billingSameAsDelivery,
                               activeColor: AppColors.primary,
-                              onChanged: (val) => setState(() => _billingSameAsDelivery = val ?? true),
+                              onChanged: (val) => setState(
+                                () => _billingSameAsDelivery = val ?? true,
+                              ),
                             ),
                             Text(
-                              isArabic ? 'عنوان الفواتير هو نفس عنوان التوصيل' : 'Billing address is the same as delivery',
-                              style: context.textTheme.boldTitleMedium?.copyWith(
+                              isArabic
+                                  ? 'عنوان الفواتير هو نفس عنوان التوصيل'
+                                  : 'Billing address is the same as delivery',
+                              style: context.textTheme.boldTitleMedium
+                                  ?.copyWith(
                                     fontSize: 13.sp(context),
-                                    color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                    color: isDark
+                                        ? AppColors.darkTextPrimary
+                                        : AppColors.lightTextPrimary,
                                   ),
                             ),
                           ],
@@ -188,16 +219,21 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         SizedBox(height: 12.h(context)),
                         if (!_billingSameAsDelivery) ...[
                           AppDropDown<String>(
-                            value: _selectedBillingAddressId ?? addresses.firstOrNull?.id,
+                            value:
+                                _selectedBillingAddressId ??
+                                addresses.firstOrNull?.id,
                             labelText: strings.billingAddress,
                             hintText: 'Select billing address',
                             items: addresses.map((addr) {
                               return DropdownMenuItem(
                                 value: addr.id,
-                                child: Text('${addr.title}: ${addr.streetAddress}, ${addr.city}'),
+                                child: Text(
+                                  '${addr.title}: ${addr.streetAddress}, ${addr.city}',
+                                ),
                               );
                             }).toList(),
-                            onChanged: (val) => setState(() => _selectedBillingAddressId = val),
+                            onChanged: (val) =>
+                                setState(() => _selectedBillingAddressId = val),
                           ),
                           SizedBox(height: 16.h(context)),
                         ],
@@ -206,18 +242,28 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           labelText: 'Payment Method',
                           hintText: 'Select payment method',
                           items: const [
-                            DropdownMenuItem(value: 'CASH_ON_DELIVERY', child: Text('Cash on Delivery')),
-                            DropdownMenuItem(value: 'CREDIT_CARD', child: Text('Credit Card')),
+                            DropdownMenuItem(
+                              value: 'CASH_ON_DELIVERY',
+                              child: Text('Cash on Delivery'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'CREDIT_CARD',
+                              child: Text('Credit Card'),
+                            ),
                           ],
-                          onChanged: (val) => setState(() => _paymentMethod = val ?? 'CASH_ON_DELIVERY'),
+                          onChanged: (val) => setState(
+                            () => _paymentMethod = val ?? 'CASH_ON_DELIVERY',
+                          ),
                         ),
                         SizedBox(height: 20.h(context)),
                         Text(
                           '${strings.yourOrder} (${cart.itemCount} items)',
                           style: context.textTheme.boldTitleLarge?.copyWith(
-                                fontSize: 16.sp(context),
-                                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                              ),
+                            fontSize: 16.sp(context),
+                            color: isDark
+                                ? AppColors.darkTextPrimary
+                                : AppColors.lightTextPrimary,
+                          ),
                         ),
                         SizedBox(height: 8.h(context)),
                         Container(
@@ -235,12 +281,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           child: Column(
                             children: List.generate(cart.items.length, (index) {
                               final item = cart.items[index];
-                              final imageUrl = item.variant.images.isNotEmpty ? item.variant.images.first.url : '';
+                              final imageUrl = item.variant.images.isNotEmpty
+                                  ? item.variant.images.first.url
+                                  : '';
                               return _buildOrderItem(
                                 context,
                                 imageUrl: imageUrl,
                                 name: item.variant.product.name,
-                                details: 'Qty: ${item.quantity} · \$${item.finalUnitPrice}',
+                                details:
+                                    'Qty: ${item.quantity} · \$${item.finalUnitPrice}',
                                 price: '\$${item.totalPrice}',
                                 isLast: index == cart.items.length - 1,
                                 isDark: isDark,
@@ -252,16 +301,19 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         AppTextField(
                           controller: _orderNoteController,
                           labelText: strings.orderNote,
-                          hintText: 'Delivery instructions, a gift message, or anything we should know...',
+                          hintText:
+                              'Delivery instructions, a gift message, or anything we should know...',
                           maxLines: 3,
                         ),
                         SizedBox(height: 20.h(context)),
                         Text(
                           strings.priceSummary,
                           style: context.textTheme.boldTitleLarge?.copyWith(
-                                fontSize: 16.sp(context),
-                                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                              ),
+                            fontSize: 16.sp(context),
+                            color: isDark
+                                ? AppColors.darkTextPrimary
+                                : AppColors.lightTextPrimary,
+                          ),
                         ),
                         SizedBox(height: 8.h(context)),
                         Container(
@@ -279,42 +331,73 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           ),
                           child: Column(
                             children: [
-                              _buildPriceRow(context, 'Subtotal (${cart.itemCount} items)', '\$${cart.subtotal}', isDark),
+                              _buildPriceRow(
+                                context,
+                                'Subtotal (${cart.itemCount} items)',
+                                '\$${cart.subtotal}',
+                                isDark,
+                              ),
                               SizedBox(height: 12.h(context)),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('Delivery', style: context.textTheme.bodyMedium?.copyWith(fontSize: 14.sp(context))),
-                                  Text('Free', style: context.textTheme.boldTitleMedium?.copyWith(fontSize: 14.sp(context), color: AppColors.mintTeal)),
+                                  Text(
+                                    'Delivery',
+                                    style: context.textTheme.bodyMedium
+                                        ?.copyWith(fontSize: 14.sp(context)),
+                                  ),
+                                  Text(
+                                    'Free',
+                                    style: context.textTheme.boldTitleMedium
+                                        ?.copyWith(
+                                          fontSize: 14.sp(context),
+                                          color: AppColors.mintTeal,
+                                        ),
+                                  ),
                                 ],
                               ),
                               Padding(
-                                padding: EdgeInsets.symmetric(vertical: 16.h(context)),
-                                child: Divider(height: 1, color: Colors.grey.shade300),
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 16.h(context),
+                                ),
+                                child: Divider(
+                                  height: 1,
+                                  color: Colors.grey.shade300,
+                                ),
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Total',
-                                        style: context.textTheme.boldTitleLarge?.copyWith(
+                                        style: context.textTheme.boldTitleLarge
+                                            ?.copyWith(
                                               fontSize: 18.sp(context),
-                                              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                              color: isDark
+                                                  ? AppColors.darkTextPrimary
+                                                  : AppColors.lightTextPrimary,
                                             ),
                                       ),
                                       SizedBox(height: 2.h(context)),
                                       Text(
                                         'Including tax',
-                                        style: context.textTheme.bodySmall?.copyWith(fontSize: 11.sp(context)),
+                                        style: context.textTheme.bodySmall
+                                            ?.copyWith(
+                                              fontSize: 11.sp(context),
+                                            ),
                                       ),
                                     ],
                                   ),
                                   Text(
                                     '\$${cart.subtotal}',
-                                    style: context.textTheme.displayMedium?.copyWith(
+                                    style: context.textTheme.displayMedium
+                                        ?.copyWith(
                                           fontSize: 22.sp(context),
                                           fontWeight: FontWeight.bold,
                                           color: AppColors.primary,
@@ -333,7 +416,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                     left: 0,
                     right: 0,
                     child: Container(
-                      padding: EdgeInsets.fromLTRB(24.w(context), 16.h(context), 24.w(context), 28.h(context)),
+                      padding: EdgeInsets.fromLTRB(
+                        24.w(context),
+                        16.h(context),
+                        24.w(context),
+                        28.h(context),
+                      ),
                       decoration: BoxDecoration(
                         color: isDark ? AppColors.darkSurface : Colors.white,
                         boxShadow: [
@@ -352,13 +440,24 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(strings.total, style: context.textTheme.labelLarge?.copyWith(fontSize: 11.sp(context), color: AppColors.lightTextSecondary, fontWeight: FontWeight.bold)),
+                                  Text(
+                                    strings.total,
+                                    style: context.textTheme.labelLarge
+                                        ?.copyWith(
+                                          fontSize: 11.sp(context),
+                                          color: AppColors.lightTextSecondary,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
                                   SizedBox(height: 2.h(context)),
                                   Text(
                                     '\$${cart.subtotal}',
-                                    style: context.textTheme.boldTitleLarge?.copyWith(
+                                    style: context.textTheme.boldTitleLarge
+                                        ?.copyWith(
                                           fontSize: 22.sp(context),
-                                          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                          color: isDark
+                                              ? AppColors.darkTextPrimary
+                                              : AppColors.lightTextPrimary,
                                         ),
                                   ),
                                 ],
@@ -367,7 +466,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                               Expanded(
                                 child: AppButton(
                                   text: strings.placeOrder,
-                                  onPressed: () => _placeOrder(context, strings),
+                                  onPressed: () =>
+                                      _placeOrder(context, strings),
                                   isLoading: _isLoading,
                                   icon: Icons.lock_outline,
                                 ),
@@ -377,7 +477,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           SizedBox(height: 10.h(context)),
                           Text(
                             'Secure checkout · You can review before paying',
-                            style: context.textTheme.bodySmall?.copyWith(fontSize: 11.sp(context)),
+                            style: context.textTheme.bodySmall?.copyWith(
+                              fontSize: 11.sp(context),
+                            ),
                           ),
                         ],
                       ),
@@ -421,7 +523,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   child: CachedNetworkImage(
                     imageUrl: imageUrl,
                     fit: BoxFit.cover,
-                    errorWidget: (context, url, error) => const Icon(Icons.image_not_supported_outlined),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.image_not_supported_outlined),
                   ),
                 ),
               ),
@@ -433,14 +536,18 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                     Text(
                       name,
                       style: context.textTheme.boldTitleMedium?.copyWith(
-                            fontSize: 14.sp(context),
-                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                          ),
+                        fontSize: 14.sp(context),
+                        color: isDark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.lightTextPrimary,
+                      ),
                     ),
                     SizedBox(height: 4.h(context)),
                     Text(
                       details,
-                      style: context.textTheme.bodySmall?.copyWith(fontSize: 12.sp(context)),
+                      style: context.textTheme.bodySmall?.copyWith(
+                        fontSize: 12.sp(context),
+                      ),
                     ),
                   ],
                 ),
@@ -448,32 +555,47 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               Text(
                 price,
                 style: context.textTheme.boldTitleMedium?.copyWith(
-                      fontSize: 15.sp(context),
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                    ),
+                  fontSize: 15.sp(context),
+                  color: isDark
+                      ? AppColors.darkTextPrimary
+                      : AppColors.lightTextPrimary,
+                ),
               ),
             ],
           ),
         ),
-        if (!isLast) Divider(height: 1, color: Colors.grey.withValues(alpha: 0.15)),
+        if (!isLast)
+          Divider(height: 1, color: Colors.grey.withValues(alpha: 0.15)),
       ],
     );
   }
 
-  Widget _buildPriceRow(BuildContext context, String label, String value, bool isDark, {Color? valueColor}) {
+  Widget _buildPriceRow(
+    BuildContext context,
+    String label,
+    String value,
+    bool isDark, {
+    Color? valueColor,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: context.textTheme.bodyMedium?.copyWith(fontSize: 14.sp(context)),
+          style: context.textTheme.bodyMedium?.copyWith(
+            fontSize: 14.sp(context),
+          ),
         ),
         Text(
           value,
           style: context.textTheme.boldTitleMedium?.copyWith(
-                fontSize: 14.sp(context),
-                color: valueColor ?? (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary),
-              ),
+            fontSize: 14.sp(context),
+            color:
+                valueColor ??
+                (isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary),
+          ),
         ),
       ],
     );

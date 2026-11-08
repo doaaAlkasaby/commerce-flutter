@@ -39,12 +39,19 @@ class AppTextField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (labelText != null) ...[
-          Text(labelText!, style: context.textTheme.fieldLabel?.copyWith(fontSize: 13.sp(context))),
+          Text(
+            labelText!,
+            style: context.textTheme.fieldLabel?.copyWith(
+              fontSize: 13.sp(context),
+            ),
+          ),
           SizedBox(height: 6.h(context)),
         ],
         Container(
           decoration: BoxDecoration(
-            color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+            color: isDark
+                ? AppColors.darkBackground
+                : AppColors.lightBackground,
             borderRadius: BorderRadius.circular(16.w(context)),
             border: Border.all(color: Colors.grey.shade300),
           ),
@@ -57,16 +64,29 @@ class AppTextField extends StatelessWidget {
             onSubmitted: onSubmitted,
             textInputAction: textInputAction,
             style: context.textTheme.bodyMedium?.copyWith(
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                  fontSize: 14.sp(context),
-                ),
+              color: isDark
+                  ? AppColors.darkTextPrimary
+                  : AppColors.lightTextPrimary,
+              fontSize: 14.sp(context),
+            ),
             decoration: InputDecoration(
               hintText: hintText,
-              hintStyle: context.textTheme.secondaryHint?.copyWith(fontSize: 13.sp(context)),
-              prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: AppColors.lightTextSecondary, size: 20.sp(context)) : null,
+              hintStyle: context.textTheme.secondaryHint?.copyWith(
+                fontSize: 13.sp(context),
+              ),
+              prefixIcon: prefixIcon != null
+                  ? Icon(
+                      prefixIcon,
+                      color: AppColors.lightTextSecondary,
+                      size: 20.sp(context),
+                    )
+                  : null,
               suffixIcon: suffixIcon,
               border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16.w(context), vertical: maxLines > 1 ? 14.h(context) : 12.h(context)),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16.w(context),
+                vertical: maxLines > 1 ? 14.h(context) : 12.h(context),
+              ),
             ),
           ),
         ),

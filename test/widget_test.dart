@@ -6,11 +6,7 @@ import 'package:ecommerce/app.dart';
 void main() {
   testWidgets('App loads smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(
-      const ProviderScope(
-        child: EcommerceApp(),
-      ),
-    );
+    await tester.pumpWidget(const ProviderScope(child: EcommerceApp()));
 
     // Wait for async repository data to load
     await tester.pump(const Duration(milliseconds: 500));

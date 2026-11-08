@@ -3,11 +3,7 @@ class ApiResponse<T> {
   final String? message;
   final T? data;
 
-  const ApiResponse({
-    required this.success,
-    this.message,
-    this.data,
-  });
+  const ApiResponse({required this.success, this.message, this.data});
 
   factory ApiResponse.fromJson(
     Map<String, dynamic> json,

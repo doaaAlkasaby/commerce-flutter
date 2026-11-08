@@ -20,9 +20,13 @@ class AddressesScreen extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
       appBar: AppBar(
-        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        backgroundColor: isDark
+            ? AppColors.darkBackground
+            : AppColors.lightBackground,
         elevation: 0,
         leading: Padding(
           padding: EdgeInsets.all(8.w(context)),
@@ -42,7 +46,9 @@ class AddressesScreen extends ConsumerWidget {
               icon: Icon(
                 isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
                 size: 16.sp(context),
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
@@ -51,14 +57,23 @@ class AddressesScreen extends ConsumerWidget {
         title: Text(
           strings.myAddresses,
           style: context.textTheme.titleLarge?.copyWith(
-                fontSize: 20.sp(context),
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-              ),
+            fontSize: 20.sp(context),
+            color: isDark
+                ? AppColors.darkTextPrimary
+                : AppColors.lightTextPrimary,
+          ),
         ),
       ),
       body: addressesAsync.when(
         data: (addresses) => addresses.isEmpty
-            ? Center(child: Text(strings.noProductsFound, style: context.textTheme.bodyMedium?.copyWith(fontSize: 14.sp(context))))
+            ? Center(
+                child: Text(
+                  strings.noProductsFound,
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    fontSize: 14.sp(context),
+                  ),
+                ),
+              )
             : ListView.builder(
                 physics: const BouncingScrollPhysics(),
                 padding: EdgeInsets.all(20.w(context)),
@@ -89,35 +104,54 @@ class AddressesScreen extends ConsumerWidget {
                               children: [
                                 Text(
                                   address.fullName,
-                                  style: context.textTheme.boldTitleMedium?.copyWith(
+                                  style: context.textTheme.boldTitleMedium
+                                      ?.copyWith(
                                         fontSize: 16.sp(context),
-                                        color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                        color: isDark
+                                            ? AppColors.darkTextPrimary
+                                            : AppColors.lightTextPrimary,
                                       ),
                                 ),
                                 SizedBox(width: 8.w(context)),
                                 Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 8.w(context), vertical: 2.h(context)),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8.w(context),
+                                    vertical: 2.h(context),
+                                  ),
                                   decoration: BoxDecoration(
                                     color: AppColors.lightBackground,
-                                    borderRadius: BorderRadius.circular(6.w(context)),
+                                    borderRadius: BorderRadius.circular(
+                                      6.w(context),
+                                    ),
                                   ),
                                   child: Text(
                                     address.title,
-                                    style: context.textTheme.labelSmall?.copyWith(fontSize: 10.sp(context)),
+                                    style: context.textTheme.labelSmall
+                                        ?.copyWith(fontSize: 10.sp(context)),
                                   ),
                                 ),
                               ],
                             ),
                             if (address.isDefault)
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8.w(context), vertical: 4.h(context)),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8.w(context),
+                                  vertical: 4.h(context),
+                                ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(10.w(context)),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(
+                                    10.w(context),
+                                  ),
                                 ),
                                 child: Text(
                                   strings.defaultLabel,
-                                  style: context.textTheme.labelSmall?.copyWith(fontSize: 10.sp(context), color: AppColors.primary),
+                                  style: context.textTheme.labelSmall?.copyWith(
+                                    fontSize: 10.sp(context),
+                                    color: AppColors.primary,
+                                  ),
                                 ),
                               ),
                           ],
@@ -125,7 +159,9 @@ class AddressesScreen extends ConsumerWidget {
                         SizedBox(height: 8.h(context)),
                         Text(
                           '${address.streetAddress}\n${address.city} ${address.postalCode}\n${address.phoneNumber}',
-                          style: context.textTheme.addressBody?.copyWith(fontSize: 13.sp(context)),
+                          style: context.textTheme.addressBody?.copyWith(
+                            fontSize: 13.sp(context),
+                          ),
                         ),
                         SizedBox(height: 14.h(context)),
                         const Divider(height: 1),
@@ -136,28 +172,64 @@ class AddressesScreen extends ConsumerWidget {
                             if (!address.isDefault)
                               TextButton(
                                 onPressed: () {
-                                  ref.read(addressProvider.notifier).setDefault(address.id);
+                                  ref
+                                      .read(addressProvider.notifier)
+                                      .setDefault(address.id);
                                 },
-                                child: Text(strings.setAsDefault, style: context.textTheme.labelMedium?.copyWith(fontSize: 12.sp(context), fontWeight: FontWeight.bold, color: AppColors.mintTeal)),
+                                child: Text(
+                                  strings.setAsDefault,
+                                  style: context.textTheme.labelMedium
+                                      ?.copyWith(
+                                        fontSize: 12.sp(context),
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.mintTeal,
+                                      ),
+                                ),
                               ),
                             const Spacer(),
                             TextButton.icon(
                               onPressed: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) => AddEditAddressScreen(addressToEdit: address),
+                                    builder: (_) => AddEditAddressScreen(
+                                      addressToEdit: address,
+                                    ),
                                   ),
                                 );
                               },
-                              icon: Icon(Icons.edit_outlined, size: 16.sp(context), color: AppColors.primary),
-                              label: Text(strings.edit, style: context.textTheme.labelMedium?.copyWith(fontSize: 12.sp(context), fontWeight: FontWeight.bold, color: AppColors.primary)),
+                              icon: Icon(
+                                Icons.edit_outlined,
+                                size: 16.sp(context),
+                                color: AppColors.primary,
+                              ),
+                              label: Text(
+                                strings.edit,
+                                style: context.textTheme.labelMedium?.copyWith(
+                                  fontSize: 12.sp(context),
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primary,
+                                ),
+                              ),
                             ),
                             TextButton.icon(
                               onPressed: () {
-                                ref.read(addressProvider.notifier).deleteAddress(address.id);
+                                ref
+                                    .read(addressProvider.notifier)
+                                    .deleteAddress(address.id);
                               },
-                              icon: Icon(Icons.delete_outline, size: 16.sp(context), color: AppColors.badgeRed),
-                              label: Text(strings.delete, style: context.textTheme.labelMedium?.copyWith(fontSize: 12.sp(context), fontWeight: FontWeight.bold, color: AppColors.badgeRed)),
+                              icon: Icon(
+                                Icons.delete_outline,
+                                size: 16.sp(context),
+                                color: AppColors.badgeRed,
+                              ),
+                              label: Text(
+                                strings.delete,
+                                style: context.textTheme.labelMedium?.copyWith(
+                                  fontSize: 12.sp(context),
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.badgeRed,
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -172,14 +244,17 @@ class AddressesScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const AddEditAddressScreen(),
-            ),
+            MaterialPageRoute(builder: (_) => const AddEditAddressScreen()),
           );
         },
         backgroundColor: AppColors.primary,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(strings.addAddress, style: context.textTheme.whiteLabelLarge?.copyWith(fontSize: 14.sp(context))),
+        label: Text(
+          strings.addAddress,
+          style: context.textTheme.whiteLabelLarge?.copyWith(
+            fontSize: 14.sp(context),
+          ),
+        ),
       ),
     );
   }

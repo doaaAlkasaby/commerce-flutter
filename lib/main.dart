@@ -8,9 +8,5 @@ late SharedPreferences sharedPreferences;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sharedPreferences = await SharedPreferences.getInstance();
-  runApp(
-    const ProviderScope(
-      child: EcommerceApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: EcommerceApp()));
 }

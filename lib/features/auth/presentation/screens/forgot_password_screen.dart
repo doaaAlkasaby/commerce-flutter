@@ -13,7 +13,8 @@ class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  ConsumerState<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  ConsumerState<ForgotPasswordScreen> createState() =>
+      _ForgotPasswordScreenState();
 }
 
 class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
@@ -49,9 +50,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) {
@@ -72,7 +73,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w(context), vertical: 12.h(context)),
+              padding: EdgeInsets.symmetric(
+                horizontal: 20.w(context),
+                vertical: 12.h(context),
+              ),
               child: Row(
                 children: [
                   Container(
@@ -91,7 +95,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     ),
                     child: IconButton(
                       icon: Icon(
-                        isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
+                        isArabic
+                            ? Icons.arrow_forward_ios
+                            : Icons.arrow_back_ios_new,
                         size: 16.sp(context),
                         color: AppColors.lightTextPrimary,
                       ),

@@ -22,7 +22,7 @@ class AppImagePlaceholder extends StatelessWidget {
         child: SizedBox(
           width: 24,
           height: 24,
-          child: Icon(icon, size: 24, color: AppColors.primary)
+          child: Icon(icon, size: 24, color: AppColors.primary),
         ),
       ),
     );

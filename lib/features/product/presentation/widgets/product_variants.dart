@@ -36,23 +36,32 @@ class ProductVariantsWidget extends StatelessWidget {
               Text(
                 'Available Variant SKU',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13.sp(context),
-                      color: AppColors.lightTextSecondary,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13.sp(context),
+                  color: AppColors.lightTextSecondary,
+                ),
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w(context), vertical: 3.h(context)),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 8.w(context),
+                  vertical: 3.h(context),
+                ),
                 decoration: BoxDecoration(
-                  color: (selectedVariant?.isActive ?? true) ? AppColors.mintTeal.withValues(alpha: 0.15) : AppColors.badgeRed.withValues(alpha: 0.15),
+                  color: (selectedVariant?.isActive ?? true)
+                      ? AppColors.mintTeal.withValues(alpha: 0.15)
+                      : AppColors.badgeRed.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8.w(context)),
                 ),
                 child: Text(
-                  (selectedVariant?.isActive ?? true) ? 'In Stock' : 'Out of Stock',
+                  (selectedVariant?.isActive ?? true)
+                      ? 'In Stock'
+                      : 'Out of Stock',
                   style: TextStyle(
                     fontSize: 11.sp(context),
                     fontWeight: FontWeight.bold,
-                    color: (selectedVariant?.isActive ?? true) ? AppColors.mintTeal : AppColors.badgeRed,
+                    color: (selectedVariant?.isActive ?? true)
+                        ? AppColors.mintTeal
+                        : AppColors.badgeRed,
                   ),
                 ),
               ),
@@ -62,10 +71,12 @@ class ProductVariantsWidget extends StatelessWidget {
           Text(
             selectedVariant?.sku ?? product.slug.toUpperCase(),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14.sp(context),
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                ),
+              fontWeight: FontWeight.w600,
+              fontSize: 14.sp(context),
+              color: isDark
+                  ? AppColors.darkTextPrimary
+                  : AppColors.lightTextPrimary,
+            ),
           ),
         ],
       ),

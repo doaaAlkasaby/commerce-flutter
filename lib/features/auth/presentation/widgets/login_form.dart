@@ -36,7 +36,9 @@ class LoginFormWidget extends StatelessWidget {
       padding: EdgeInsets.all(24.w(context)),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(36.w(context))),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(36.w(context)),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.08),
@@ -62,18 +64,20 @@ class LoginFormWidget extends StatelessWidget {
           Text(
             isArabic ? 'تسجيل الدخول' : 'Welcome back',
             style: context.textTheme.displaySmall?.copyWith(
-                  fontSize: 26.sp(context),
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.lightTextPrimary,
-                ),
+              fontSize: 26.sp(context),
+              fontWeight: FontWeight.bold,
+              color: AppColors.lightTextPrimary,
+            ),
           ),
           SizedBox(height: 8.h(context)),
           Text(
-            isArabic ? 'الرجاء إدخال بيانات حسابك' : 'Please enter your account details',
+            isArabic
+                ? 'الرجاء إدخال بيانات حسابك'
+                : 'Please enter your account details',
             style: context.textTheme.bodyMedium?.copyWith(
-                  fontSize: 14.sp(context),
-                  color: AppColors.lightTextSecondary,
-                ),
+              fontSize: 14.sp(context),
+              color: AppColors.lightTextSecondary,
+            ),
           ),
           SizedBox(height: 28.h(context)),
           AppTextField(
@@ -92,7 +96,9 @@ class LoginFormWidget extends StatelessWidget {
             obscureText: obscurePassword,
             suffixIcon: IconButton(
               icon: Icon(
-                obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                obscurePassword
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
                 color: AppColors.lightTextSecondary,
               ),
               onPressed: onTogglePasswordVisibility,
@@ -111,10 +117,10 @@ class LoginFormWidget extends StatelessWidget {
               child: Text(
                 isArabic ? 'هل نسيت كلمة المرور؟' : 'Forgot password?',
                 style: context.textTheme.bodySmall?.copyWith(
-                      fontSize: 13.sp(context),
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
+                  fontSize: 13.sp(context),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
               ),
             ),
           ),
@@ -125,19 +131,19 @@ class LoginFormWidget extends StatelessWidget {
               Text(
                 isArabic ? 'ليس لديك حساب؟' : "Don't have an account?",
                 style: context.textTheme.titleSmall?.copyWith(
-                      fontSize: 13.sp(context),
-                      color: AppColors.lightTextSecondary,
-                    ),
+                  fontSize: 13.sp(context),
+                  color: AppColors.lightTextSecondary,
+                ),
               ),
               TextButton(
                 onPressed: onCreateAccountPressed,
                 child: Text(
                   isArabic ? 'إنشاء حساب' : 'Sign up',
                   style: context.textTheme.labelLarge?.copyWith(
-                        fontSize: 13.sp(context),
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                      ),
+                    fontSize: 13.sp(context),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
             ],

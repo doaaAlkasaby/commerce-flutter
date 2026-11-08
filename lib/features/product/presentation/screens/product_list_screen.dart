@@ -43,7 +43,10 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 && !_isLoading && _hasMore) {
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !_isLoading &&
+        _hasMore) {
       _fetchProducts();
     }
   }
@@ -61,7 +64,11 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
 
     try {
       final repo = ProductRepository(ref.read(dioClientProvider));
-      final newProducts = await repo.getProductsByEndpoint(widget.endpoint, page: _page, limit: 10);
+      final newProducts = await repo.getProductsByEndpoint(
+        widget.endpoint,
+        page: _page,
+        limit: 10,
+      );
 
       if (mounted) {
         setState(() {
@@ -89,7 +96,13 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
       appBar: AppBar(
-        title: Text(widget.title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20.sp(context), fontWeight: FontWeight.bold)),
+        title: Text(
+          widget.title,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontSize: 20.sp(context),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -100,45 +113,52 @@ class _ProductListScreenState extends ConsumerState<ProductListScreen> {
           child: _products.isEmpty && _isLoading
               ? const Center(child: CircularProgressIndicator())
               : _products.isEmpty
-                  ? Center(child: Text('No products found', style: Theme.of(context).textTheme.bodyMedium))
-                  : GridView.builder(
-                      controller: _scrollController,
-                      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                      padding: EdgeInsets.all(20.w(context)),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.68,
-                        crossAxisSpacing: 16.w(context),
-                        mainAxisSpacing: 16.h(context),
-                      ),
-                      itemCount: _products.length + (_hasMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index == _products.length) {
-                          return _hasMore
-                              ? const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(16.0),
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                )
-                              : const SizedBox.shrink();
-                        }
-                        final product = _products[index];
-                        return ProductCard(
-                          product: product,
-                          onFavoriteTap: () {},
-                          onAddTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Added to cart: ${product.name}'),
-                                duration: const Duration(seconds: 1),
-                                behavior: SnackBarBehavior.floating,
+              ? Center(
+                  child: Text(
+                    'No products found',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                )
+              : GridView.builder(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  padding: EdgeInsets.all(20.w(context)),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.68,
+                    crossAxisSpacing: 16.w(context),
+                    mainAxisSpacing: 16.h(context),
+                  ),
+                  itemCount: _products.length + (_hasMore ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index == _products.length) {
+                      return _hasMore
+                          ? const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child: CircularProgressIndicator(),
                               ),
-                            );
-                          },
+                            )
+                          : const SizedBox.shrink();
+                    }
+                    final product = _products[index];
+                    return ProductCard(
+                      product: product,
+                      onFavoriteTap: () {},
+                      onAddTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Added to cart: ${product.name}'),
+                            duration: const Duration(seconds: 1),
+                            behavior: SnackBarBehavior.floating,
+                          ),
                         );
                       },
-                    ),
+                    );
+                  },
+                ),
         ),
       ),
     );

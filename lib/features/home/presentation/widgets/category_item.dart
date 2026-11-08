@@ -8,11 +8,7 @@ class CategoryItem extends StatelessWidget {
   final CategoryModel category;
   final VoidCallback onTap;
 
-  const CategoryItem({
-    super.key,
-    required this.category,
-    required this.onTap,
-  });
+  const CategoryItem({super.key, required this.category, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +32,8 @@ class CategoryItem extends StatelessWidget {
                     fit: BoxFit.cover,
                     width: 32.w(context),
                     height: 32.w(context),
-                    errorWidget: (context, url, error) => const Icon(Icons.category_outlined, size: 16),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.category_outlined, size: 16),
                   ),
                 ),
               ),
@@ -47,9 +44,9 @@ class CategoryItem extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontSize: 9.sp(context),
-                      fontWeight: FontWeight.w500,
-                    ),
+                  fontSize: 9.sp(context),
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),

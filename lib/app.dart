@@ -25,7 +25,9 @@ class EcommerceApp extends ConsumerWidget {
       themeMode: themeMode,
       builder: (context, child) => ResponsiveBreakpoints.builder(
         child: Theme(
-          data: themeMode == ThemeMode.dark ? AppTheme.darkTheme(context) : AppTheme.lightTheme(context),
+          data: themeMode == ThemeMode.dark
+              ? AppTheme.darkTheme(context)
+              : AppTheme.lightTheme(context),
           child: Directionality(
             textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
             child: child!,

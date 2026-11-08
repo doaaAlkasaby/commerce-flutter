@@ -21,7 +21,9 @@ class CartNotifier extends _$CartNotifier {
 
   Future<void> refreshCart() async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => ref.read(cartRepositoryProvider).getCart());
+    state = await AsyncValue.guard(
+      () => ref.read(cartRepositoryProvider).getCart(),
+    );
   }
 
   Future<void> addItem(String variantId, int quantity) async {

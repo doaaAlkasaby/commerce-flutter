@@ -23,8 +23,12 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _obscurePassword = true;
   bool _isLoading = false;
-  final TextEditingController _emailController = TextEditingController(text: kDebugMode ? 'customer1@example.com' : '');
-  final TextEditingController _passwordController = TextEditingController(text: kDebugMode ? 'Password123!' : '');
+  final TextEditingController _emailController = TextEditingController(
+    text: kDebugMode ? 'customer1@example.com' : '',
+  );
+  final TextEditingController _passwordController = TextEditingController(
+    text: kDebugMode ? 'Password123!' : '',
+  );
 
   Future<void> _handleLogin() async {
     final email = _emailController.text.trim();
@@ -48,7 +52,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (response.success && response.data != null) {
         final accessToken = response.data!.accessToken;
         final refreshToken = response.data!.refreshToken;
-        
+
         ref.read(authTokenProvider.notifier).setToken(accessToken);
 
         final prefs = await SharedPreferences.getInstance();
@@ -56,9 +60,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         await prefs.setString('refresh_token', refreshToken);
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Login successful!')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Login successful!')));
           Navigator.of(context).pop();
         }
       } else {
@@ -70,9 +74,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) {
@@ -85,9 +89,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      body: _buildContentWidget(),
-    );
+    return AppScaffold(body: _buildContentWidget());
   }
 
   Widget _buildContentWidget() {
@@ -98,7 +100,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       child: Column(
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w(context), vertical: 12.h(context)),
+            padding: EdgeInsets.symmetric(
+              horizontal: 20.w(context),
+              vertical: 12.h(context),
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -118,7 +123,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   child: IconButton(
                     icon: Icon(
-                      isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
+                      isArabic
+                          ? Icons.arrow_forward_ios
+                          : Icons.arrow_back_ios_new,
                       size: 16.sp(context),
                       color: AppColors.lightTextPrimary,
                     ),
@@ -128,7 +135,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(),
                   icon: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w(context), vertical: 8.h(context)),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w(context),
+                      vertical: 8.h(context),
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20.w(context)),
@@ -143,20 +153,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     child: Text(
                       isArabic ? 'تخطي' : 'Skip',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14.sp(context),
-                            color: AppColors.primary,
-                          ),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.sp(context),
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          const Expanded(
-            flex: 2,
-            child: LoginHeaderWidget(),
-          ),
+          const Expanded(flex: 2, child: LoginHeaderWidget()),
           LoginFormWidget(
             emailController: _emailController,
             passwordController: _passwordController,
@@ -174,9 +181,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               );
             },
             onCreateAccountPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const RegisterScreen()),
-              );
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const RegisterScreen()));
             },
             isArabic: isArabic,
           ),

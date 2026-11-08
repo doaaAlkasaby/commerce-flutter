@@ -7,12 +7,14 @@ class OrdersRepository {
 
   OrdersRepository(this._dio);
 
-  Future<List<OrderModel>> getMyOrders({String? status, String? paymentStatus, int page = 1, int limit = 20}) async {
+  Future<List<OrderModel>> getMyOrders({
+    String? status,
+    String? paymentStatus,
+    int page = 1,
+    int limit = 20,
+  }) async {
     try {
-      final queryParams = <String, dynamic>{
-        'page': page,
-        'limit': limit,
-      };
+      final queryParams = <String, dynamic>{'page': page, 'limit': limit};
       if (status != null && status.isNotEmpty && status != 'All') {
         queryParams['status'] = status;
       }
@@ -20,9 +22,14 @@ class OrdersRepository {
         queryParams['paymentStatus'] = paymentStatus;
       }
 
-      final response = await _dio.get(ApiEndpoints.ordersMy, queryParameters: queryParams);
+      final response = await _dio.get(
+        ApiEndpoints.ordersMy,
+        queryParameters: queryParams,
+      );
       final rawData = response.data['data'];
-      final List list = rawData is List ? rawData : (rawData['orders'] ?? rawData['items'] ?? []);
+      final List list = rawData is List
+          ? rawData
+          : (rawData['orders'] ?? rawData['items'] ?? []);
       return list.map((item) {
         return OrderModel(
           id: item['id']?.toString() ?? '',
@@ -30,16 +37,21 @@ class OrdersRepository {
           status: item['status']?.toString() ?? 'IN_TRANSIT',
           placedDate: item['createdAt']?.toString() ?? '15 Sep 2026',
           deliveryDate: item['deliveryDate']?.toString(),
-          totalAmount: double.tryParse(item['totalAmount']?.toString() ?? '0.0') ?? 0.0,
+          totalAmount:
+              double.tryParse(item['totalAmount']?.toString() ?? '0.0') ?? 0.0,
           items: (item['items'] as List? ?? []).map((i) {
             final prod = i['variant']?['product'] ?? {};
-            final img = (i['variant']?['images'] as List? ?? []).firstOrNull?['url'] ?? '';
+            final img =
+                (i['variant']?['images'] as List? ?? []).firstOrNull?['url'] ??
+                '';
             return OrderItemModel(
               id: i['id']?.toString() ?? '',
               name: prod['name']?.toString() ?? 'Product',
               imageUrl: img,
               details: '',
-              price: double.tryParse(i['finalUnitPrice']?.toString() ?? '0.0') ?? 0.0,
+              price:
+                  double.tryParse(i['finalUnitPrice']?.toString() ?? '0.0') ??
+                  0.0,
               quantity: (i['quantity'] as num?)?.toInt() ?? 1,
             );
           }).toList(),

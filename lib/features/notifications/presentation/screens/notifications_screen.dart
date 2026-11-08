@@ -12,7 +12,8 @@ class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
 
   @override
-  ConsumerState<NotificationsScreen> createState() => _NotificationsScreenState();
+  ConsumerState<NotificationsScreen> createState() =>
+      _NotificationsScreenState();
 }
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
@@ -25,7 +26,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   }
 
   void _loadNotifications() {
-    _notificationsFuture = NotificationsRepository(ref.read(dioClientProvider)).getNotifications();
+    _notificationsFuture = NotificationsRepository(
+      ref.read(dioClientProvider),
+    ).getNotifications();
   }
 
   Future<void> _markAllAsRead() async {
@@ -67,9 +70,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
       appBar: AppBar(
-        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        backgroundColor: isDark
+            ? AppColors.darkBackground
+            : AppColors.lightBackground,
         elevation: 0,
         leading: Padding(
           padding: EdgeInsets.all(8.w(context)),
@@ -89,7 +96,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               icon: Icon(
                 isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
                 size: 16.sp(context),
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
@@ -98,9 +107,11 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         title: Text(
           strings.notifications,
           style: context.textTheme.titleLarge?.copyWith(
-                fontSize: 20.sp(context),
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-              ),
+            fontSize: 20.sp(context),
+            color: isDark
+                ? AppColors.darkTextPrimary
+                : AppColors.lightTextPrimary,
+          ),
         ),
         actions: [
           TextButton(
@@ -108,9 +119,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             child: Text(
               strings.markAllRead,
               style: context.textTheme.labelLarge?.copyWith(
-                    fontSize: 12.sp(context),
-                    color: AppColors.primary,
-                  ),
+                fontSize: 12.sp(context),
+                color: AppColors.primary,
+              ),
             ),
           ),
         ],
@@ -130,20 +141,28 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.notifications_none_outlined, size: 64.sp(context), color: AppColors.lightTextSecondary),
+                    Icon(
+                      Icons.notifications_none_outlined,
+                      size: 64.sp(context),
+                      color: AppColors.lightTextSecondary,
+                    ),
                     SizedBox(height: 16.h(context)),
                     Text(
                       strings.noNotifications,
                       style: context.textTheme.boldTitleLarge?.copyWith(
-                            fontSize: 18.sp(context),
-                            color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                          ),
+                        fontSize: 18.sp(context),
+                        color: isDark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.lightTextPrimary,
+                      ),
                     ),
                     SizedBox(height: 6.h(context)),
                     Text(
                       strings.noNotificationsDesc,
                       textAlign: TextAlign.center,
-                      style: context.textTheme.description?.copyWith(fontSize: 13.sp(context)),
+                      style: context.textTheme.description?.copyWith(
+                        fontSize: 13.sp(context),
+                      ),
                     ),
                   ],
                 ),
@@ -160,7 +179,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               await _notificationsFuture;
             },
             child: ListView.builder(
-              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
               padding: EdgeInsets.all(20.w(context)),
               itemCount: notifications.length,
               itemBuilder: (context, index) {
@@ -176,7 +197,11 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       color: AppColors.badgeRed,
                       borderRadius: BorderRadius.circular(20.w(context)),
                     ),
-                    child: Icon(Icons.delete, color: Colors.white, size: 22.sp(context)),
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                      size: 22.sp(context),
+                    ),
                   ),
                   child: GestureDetector(
                     onTap: () => _markAsRead(notification.id),
@@ -184,10 +209,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       margin: EdgeInsets.only(bottom: 14.h(context)),
                       padding: EdgeInsets.all(16.w(context)),
                       decoration: BoxDecoration(
-                        color: notification.isRead ? (isDark ? AppColors.darkCardBg : Colors.white) : AppColors.primary.withValues(alpha: 0.05),
+                        color: notification.isRead
+                            ? (isDark ? AppColors.darkCardBg : Colors.white)
+                            : AppColors.primary.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(20.w(context)),
                         border: Border.all(
-                          color: notification.isRead ? Colors.transparent : AppColors.primary.withValues(alpha: 0.3),
+                          color: notification.isRead
+                              ? Colors.transparent
+                              : AppColors.primary.withValues(alpha: 0.3),
                           width: 1,
                         ),
                         boxShadow: [
@@ -209,7 +238,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
-                              notification.isRead ? Icons.notifications_outlined : Icons.notifications_active,
+                              notification.isRead
+                                  ? Icons.notifications_outlined
+                                  : Icons.notifications_active,
                               color: AppColors.primary,
                               size: 20.sp(context),
                             ),
@@ -220,29 +251,37 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Expanded(
                                       child: Text(
                                         notification.title,
-                                        style: context.textTheme.boldTitleMedium?.copyWith(
+                                        style: context.textTheme.boldTitleMedium
+                                            ?.copyWith(
                                               fontSize: 15.sp(context),
-                                              color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                                              color: isDark
+                                                  ? AppColors.darkTextPrimary
+                                                  : AppColors.lightTextPrimary,
                                             ),
                                       ),
                                     ),
                                     Text(
                                       notification.createdAt,
-                                      style: context.textTheme.bodySmall?.copyWith(fontSize: 11.sp(context)),
+                                      style: context.textTheme.bodySmall
+                                          ?.copyWith(fontSize: 11.sp(context)),
                                     ),
                                   ],
                                 ),
                                 SizedBox(height: 6.h(context)),
                                 Text(
                                   notification.message,
-                                  style: context.textTheme.addressBody?.copyWith(
+                                  style: context.textTheme.addressBody
+                                      ?.copyWith(
                                         fontSize: 13.sp(context),
-                                        color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                                        color: isDark
+                                            ? AppColors.darkTextSecondary
+                                            : AppColors.lightTextSecondary,
                                       ),
                                 ),
                               ],

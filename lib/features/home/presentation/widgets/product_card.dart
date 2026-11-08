@@ -50,23 +50,45 @@ class _ProductCardState extends ConsumerState<ProductCard> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.w(context))),
-        title: Text('Login Required', style: context.textTheme.boldTitleLarge?.copyWith(fontSize: 18.sp(context))),
-        content: Text('You must log in first to add items to your cart or favorites.', style: context.textTheme.bodyMedium?.copyWith(fontSize: 14.sp(context))),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24.w(context)),
+        ),
+        title: Text(
+          'Login Required',
+          style: context.textTheme.boldTitleLarge?.copyWith(
+            fontSize: 18.sp(context),
+          ),
+        ),
+        content: Text(
+          'You must log in first to add items to your cart or favorites.',
+          style: context.textTheme.bodyMedium?.copyWith(
+            fontSize: 14.sp(context),
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Cancel', style: context.textTheme.description?.copyWith(fontSize: 14.sp(context))),
+            child: Text(
+              'Cancel',
+              style: context.textTheme.description?.copyWith(
+                fontSize: 14.sp(context),
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-              );
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-            child: Text('Login', style: context.textTheme.whiteLabelLarge?.copyWith(fontSize: 14.sp(context))),
+            child: Text(
+              'Login',
+              style: context.textTheme.whiteLabelLarge?.copyWith(
+                fontSize: 14.sp(context),
+              ),
+            ),
           ),
         ],
       ),
@@ -114,9 +136,9 @@ class _ProductCardState extends ConsumerState<ProductCard> {
         }
       }
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
       }
     }
   }
@@ -177,9 +199,9 @@ class _ProductCardState extends ConsumerState<ProductCard> {
         _isFavorite = previousState;
       });
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
       }
     }
   }
@@ -217,15 +239,22 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                   AppImageContainer(
                     width: double.infinity,
                     height: double.infinity,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(24.w(context))),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(24.w(context)),
+                    ),
                     child: CachedNetworkImage(
                       imageUrl: widget.product.image,
                       fit: BoxFit.cover,
                       httpHeaders: const {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'User-Agent':
+                            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                       },
-                      placeholder: (context, url) => const AppImagePlaceholder(),
-                      errorWidget: (context, url, error) => const AppImagePlaceholder(icon: Icons.broken_image_outlined),
+                      placeholder: (context, url) =>
+                          const AppImagePlaceholder(),
+                      errorWidget: (context, url, error) =>
+                          const AppImagePlaceholder(
+                            icon: Icons.broken_image_outlined,
+                          ),
                     ),
                   ),
                   Positioned(
@@ -249,7 +278,11 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                         ),
                         child: Icon(
                           _isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: _isFavorite ? AppColors.badgeRed : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+                          color: _isFavorite
+                              ? AppColors.badgeRed
+                              : (isDark
+                                    ? AppColors.darkTextSecondary
+                                    : AppColors.lightTextSecondary),
                           size: 18.sp(context),
                         ),
                       ),
@@ -268,9 +301,9 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontSize: 15.sp(context),
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontSize: 15.sp(context),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   SizedBox(height: 10.h(context)),
                   Row(
@@ -284,18 +317,21 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                               '\$${widget.product.priceInfo.finalPrice.toStringAsFixed(2)}',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(
                                     fontSize: 16.sp(context),
                                     fontWeight: FontWeight.bold,
                                   ),
                             ),
-                            if (widget.product.priceInfo.discountPercentage != null) ...[
+                            if (widget.product.priceInfo.discountPercentage !=
+                                null) ...[
                               SizedBox(height: 2.h(context)),
                               Text(
                                 '\$${widget.product.priceInfo.originalPrice.toStringAsFixed(2)}',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
                                       fontSize: 12.sp(context),
                                       decoration: TextDecoration.lineThrough,
                                     ),

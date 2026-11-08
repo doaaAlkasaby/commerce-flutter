@@ -40,7 +40,12 @@ class AppTheme {
         elevation: 0,
         centerTitle: false,
         iconTheme: const IconThemeData(color: AppColors.lightTextPrimary),
-        titleTextStyle: TextStyle(fontFamily: AppTypography.fontFamily, fontSize: 20.sp(context), fontWeight: FontWeight.bold, color: AppColors.lightTextPrimary),
+        titleTextStyle: TextStyle(
+          fontFamily: AppTypography.fontFamily,
+          fontSize: 20.sp(context),
+          fontWeight: FontWeight.bold,
+          color: AppColors.lightTextPrimary,
+        ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.lightSurface,
@@ -71,7 +76,12 @@ class AppTheme {
         elevation: 0,
         centerTitle: false,
         iconTheme: const IconThemeData(color: AppColors.darkTextPrimary),
-        titleTextStyle: TextStyle(fontFamily: AppTypography.fontFamily, fontSize: 20.sp(context), fontWeight: FontWeight.bold, color: AppColors.darkTextPrimary),
+        titleTextStyle: TextStyle(
+          fontFamily: AppTypography.fontFamily,
+          fontSize: 20.sp(context),
+          fontWeight: FontWeight.bold,
+          color: AppColors.darkTextPrimary,
+        ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.darkSurface,

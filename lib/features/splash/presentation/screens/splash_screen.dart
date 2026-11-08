@@ -79,8 +79,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 Text(
                   'kids studio',
                   style: context.textTheme.primaryDisplayLarge?.copyWith(
-                        fontSize: 28.sp(context),
-                      ),
+                    fontSize: 28.sp(context),
+                  ),
                 ),
                 SizedBox(height: 32.h(context)),
                 SizedBox(
@@ -88,7 +88,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   height: 28.h(context),
                   child: const CircularProgressIndicator(
                     strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primary,
+                    ),
                   ),
                 ),
               ],

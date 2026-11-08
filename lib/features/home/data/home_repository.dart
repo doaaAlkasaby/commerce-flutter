@@ -9,7 +9,10 @@ class HomeRepository {
 
   Future<HomeResponseModel> getHomeData() async {
     try {
-      final response = await _dio.get(ApiEndpoints.home, queryParameters: {'platform': 'mobile'});
+      final response = await _dio.get(
+        ApiEndpoints.home,
+        queryParameters: {'platform': 'mobile'},
+      );
       return HomeResponseModel.fromJson(response.data);
     } catch (_) {
       // Robust offline fallback so UI never stays stuck in loading state
@@ -19,8 +22,18 @@ class HomeRepository {
         data: HomeDataModel(
           platform: 'mobile',
           banners: const [
-            BannerModel(id: 'seed-banner-1', title: 'New Collection', subtitle: 'Discover our latest products', imageUrl: 'https://placehold.co/1600x600?text=New%20Collection'),
-            BannerModel(id: 'seed-banner-2', title: 'Summer Sale', subtitle: 'Up to 30% off selected products', imageUrl: 'https://placehold.co/1600x600?text=Summer%20Sale'),
+            BannerModel(
+              id: 'seed-banner-1',
+              title: 'New Collection',
+              subtitle: 'Discover our latest products',
+              imageUrl: 'https://placehold.co/1600x600?text=New%20Collection',
+            ),
+            BannerModel(
+              id: 'seed-banner-2',
+              title: 'Summer Sale',
+              subtitle: 'Up to 30% off selected products',
+              imageUrl: 'https://placehold.co/1600x600?text=Summer%20Sale',
+            ),
           ],
           categories: const [
             CategoryModel(id: '1', name: 'Accessories', slug: 'accessories'),
@@ -38,7 +51,11 @@ class HomeRepository {
                   id: 'p1',
                   name: 'Classic T-Shirt',
                   slug: 'classic-t-shirt',
-                  priceInfo: const ProductPriceModel(originalPrice: 29.99, finalPrice: 23.99, discountPercentage: 20.01),
+                  priceInfo: const ProductPriceModel(
+                    originalPrice: 29.99,
+                    finalPrice: 23.99,
+                    discountPercentage: 20.01,
+                  ),
                   image: 'https://placehold.co/800x800?text=Classic%20T-Shirt',
                   isFavorite: false,
                   rating: 4.8,
@@ -49,7 +66,11 @@ class HomeRepository {
                   id: 'p2',
                   name: 'Premium Hoodie',
                   slug: 'premium-hoodie',
-                  priceInfo: const ProductPriceModel(originalPrice: 59.99, finalPrice: 50.99, discountPercentage: 15),
+                  priceInfo: const ProductPriceModel(
+                    originalPrice: 59.99,
+                    finalPrice: 50.99,
+                    discountPercentage: 15,
+                  ),
                   image: 'https://placehold.co/800x800?text=Premium%20Hoodie',
                   isFavorite: true,
                   rating: 4.9,

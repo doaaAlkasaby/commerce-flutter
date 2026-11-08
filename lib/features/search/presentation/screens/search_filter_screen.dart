@@ -75,10 +75,14 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
           builder: (context, setModalState) {
             return Container(
               padding: EdgeInsets.all(24.w(context)),
-              constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.8,
+              ),
               decoration: BoxDecoration(
                 color: isDark ? AppColors.darkSurface : Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(32.w(context))),
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(32.w(context)),
+                ),
               ),
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -91,26 +95,43 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
                       children: [
                         Text(
                           strings.filterProducts,
-                          style: context.textTheme.boldTitleLarge?.copyWith(fontSize: 20.sp(context)),
+                          style: context.textTheme.boldTitleLarge?.copyWith(
+                            fontSize: 20.sp(context),
+                          ),
                         ),
                         TextButton(
                           onPressed: () {
                             ref.read(filterProvider.notifier).resetFilter();
                             Navigator.of(context).pop();
                           },
-                          child: Text(strings.reset, style: context.textTheme.primaryTitleMedium?.copyWith(fontSize: 14.sp(context), fontWeight: FontWeight.bold)),
+                          child: Text(
+                            strings.reset,
+                            style: context.textTheme.primaryTitleMedium
+                                ?.copyWith(
+                                  fontSize: 14.sp(context),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
                         ),
                       ],
                     ),
                     SizedBox(height: 16.h(context)),
-                    Text('${strings.priceRange} (\$0 - \$20000)', style: context.textTheme.fieldLabel?.copyWith(fontSize: 14.sp(context))),
+                    Text(
+                      '${strings.priceRange} (\$0 - \$20000)',
+                      style: context.textTheme.fieldLabel?.copyWith(
+                        fontSize: 14.sp(context),
+                      ),
+                    ),
                     RangeSlider(
                       values: RangeValues(minPrice, maxPrice),
                       min: 0,
                       max: 20000,
                       activeColor: AppColors.primary,
                       inactiveColor: Colors.grey.shade300,
-                      labels: RangeLabels('\$${minPrice.toStringAsFixed(0)}', '\$${maxPrice.toStringAsFixed(0)}'),
+                      labels: RangeLabels(
+                        '\$${minPrice.toStringAsFixed(0)}',
+                        '\$${maxPrice.toStringAsFixed(0)}',
+                      ),
                       onChanged: (values) {
                         setModalState(() {
                           minPrice = values.start;
@@ -124,11 +145,16 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
                       labelText: 'Category',
                       hintText: 'All Categories',
                       items: [
-                        const DropdownMenuItem<String?>(value: null, child: Text('All Categories')),
-                        ...categories.map((cat) => DropdownMenuItem<String?>(
-                              value: cat['id']?.toString(),
-                              child: Text(cat['name']?.toString() ?? ''),
-                            )),
+                        const DropdownMenuItem<String?>(
+                          value: null,
+                          child: Text('All Categories'),
+                        ),
+                        ...categories.map(
+                          (cat) => DropdownMenuItem<String?>(
+                            value: cat['id']?.toString(),
+                            child: Text(cat['name']?.toString() ?? ''),
+                          ),
+                        ),
                       ],
                       onChanged: (val) => setModalState(() => categoryId = val),
                     ),
@@ -138,11 +164,16 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
                       labelText: 'Brand',
                       hintText: 'All Brands',
                       items: [
-                        const DropdownMenuItem<String?>(value: null, child: Text('All Brands')),
-                        ...brands.map((brand) => DropdownMenuItem<String?>(
-                              value: brand['id']?.toString(),
-                              child: Text(brand['name']?.toString() ?? ''),
-                            )),
+                        const DropdownMenuItem<String?>(
+                          value: null,
+                          child: Text('All Brands'),
+                        ),
+                        ...brands.map(
+                          (brand) => DropdownMenuItem<String?>(
+                            value: brand['id']?.toString(),
+                            child: Text(brand['name']?.toString() ?? ''),
+                          ),
+                        ),
                       ],
                       onChanged: (val) => setModalState(() => brandId = val),
                     ),
@@ -155,11 +186,22 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
                             labelText: 'Sort By',
                             hintText: 'Date Added',
                             items: const [
-                              DropdownMenuItem(value: 'createdAt', child: Text('Date Added')),
-                              DropdownMenuItem(value: 'basePrice', child: Text('Price')),
-                              DropdownMenuItem(value: 'name', child: Text('Name')),
+                              DropdownMenuItem(
+                                value: 'createdAt',
+                                child: Text('Date Added'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'basePrice',
+                                child: Text('Price'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'name',
+                                child: Text('Name'),
+                              ),
                             ],
-                            onChanged: (val) => setModalState(() => sortBy = val ?? 'createdAt'),
+                            onChanged: (val) => setModalState(
+                              () => sortBy = val ?? 'createdAt',
+                            ),
                           ),
                         ),
                         SizedBox(width: 12.w(context)),
@@ -169,10 +211,17 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
                             labelText: 'Order',
                             hintText: 'Descending',
                             items: const [
-                              DropdownMenuItem(value: 'desc', child: Text('Descending')),
-                              DropdownMenuItem(value: 'asc', child: Text('Ascending')),
+                              DropdownMenuItem(
+                                value: 'desc',
+                                child: Text('Descending'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'asc',
+                                child: Text('Ascending'),
+                              ),
                             ],
-                            onChanged: (val) => setModalState(() => sortOrder = val ?? 'desc'),
+                            onChanged: (val) =>
+                                setModalState(() => sortOrder = val ?? 'desc'),
                           ),
                         ),
                       ],
@@ -181,7 +230,9 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
                     AppButton(
                       text: strings.applyFilters,
                       onPressed: () {
-                        ref.read(filterProvider.notifier).updateFilter(
+                        ref
+                            .read(filterProvider.notifier)
+                            .updateFilter(
                               currentFilter.copyWith(
                                 minPrice: minPrice,
                                 maxPrice: maxPrice,
@@ -221,9 +272,13 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
     ref.watch(activeBrandsListProvider);
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
       appBar: AppBar(
-        backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        backgroundColor: isDark
+            ? AppColors.darkBackground
+            : AppColors.lightBackground,
         elevation: 0,
         leading: Padding(
           padding: EdgeInsets.all(8.w(context)),
@@ -243,7 +298,9 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
               icon: Icon(
                 isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
                 size: 16.sp(context),
-                color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
               ),
               onPressed: () => Navigator.of(context).pop(),
             ),
@@ -259,7 +316,11 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
         ),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 16.w(context), top: 8.h(context), bottom: 8.h(context)),
+            padding: EdgeInsets.only(
+              right: 16.w(context),
+              top: 8.h(context),
+              bottom: 8.h(context),
+            ),
             child: Container(
               decoration: BoxDecoration(
                 color: isDark ? AppColors.darkSurface : Colors.white,
@@ -273,7 +334,11 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
                 ],
               ),
               child: IconButton(
-                icon: Icon(Icons.tune, size: 18.sp(context), color: AppColors.primary),
+                icon: Icon(
+                  Icons.tune,
+                  size: 18.sp(context),
+                  color: AppColors.primary,
+                ),
                 onPressed: () => _showFilterBottomSheet(context, strings),
               ),
             ),
@@ -301,19 +366,27 @@ class _SearchFilterScreenState extends ConsumerState<SearchFilterScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.search_off, size: 64.sp(context), color: AppColors.lightTextSecondary),
+                  Icon(
+                    Icons.search_off,
+                    size: 64.sp(context),
+                    color: AppColors.lightTextSecondary,
+                  ),
                   SizedBox(height: 16.h(context)),
                   Text(
                     strings.noProductsFound,
                     style: context.textTheme.boldTitleLarge?.copyWith(
-                          fontSize: 18.sp(context),
-                          color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                        ),
+                      fontSize: 18.sp(context),
+                      color: isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.lightTextPrimary,
+                    ),
                   ),
                   SizedBox(height: 6.h(context)),
                   Text(
                     strings.tryAdjusting,
-                    style: context.textTheme.description?.copyWith(fontSize: 13.sp(context)),
+                    style: context.textTheme.description?.copyWith(
+                      fontSize: 13.sp(context),
+                    ),
                   ),
                 ],
               ),

@@ -82,9 +82,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) {
@@ -105,7 +105,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w(context), vertical: 12.h(context)),
+              padding: EdgeInsets.symmetric(
+                horizontal: 20.w(context),
+                vertical: 12.h(context),
+              ),
               child: Row(
                 children: [
                   Container(
@@ -124,7 +127,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                     child: IconButton(
                       icon: Icon(
-                        isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
+                        isArabic
+                            ? Icons.arrow_forward_ios
+                            : Icons.arrow_back_ios_new,
                         size: 16.sp(context),
                         color: AppColors.lightTextPrimary,
                       ),

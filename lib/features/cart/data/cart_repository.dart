@@ -13,32 +13,51 @@ class CartRepository {
       final data = response.data['data'] ?? {};
       return CartModel.fromJson(data as Map<String, dynamic>);
     } catch (_) {
-      return const CartModel(id: '1', userId: '1', items: [], itemCount: 0, subtotal: '0.00');
+      return const CartModel(
+        id: '1',
+        userId: '1',
+        items: [],
+        itemCount: 0,
+        subtotal: '0.00',
+      );
     }
   }
 
   Future<CartModel> addToCart(String variantId, int quantity) async {
     try {
-      final response = await _dio.post(ApiEndpoints.cartItems, data: {
-        'variantId': variantId,
-        'quantity': quantity,
-      });
+      final response = await _dio.post(
+        ApiEndpoints.cartItems,
+        data: {'variantId': variantId, 'quantity': quantity},
+      );
       final data = response.data['data'] ?? {};
       return CartModel.fromJson(data as Map<String, dynamic>);
     } catch (_) {
-      return const CartModel(id: '1', userId: '1', items: [], itemCount: 0, subtotal: '0.00');
+      return const CartModel(
+        id: '1',
+        userId: '1',
+        items: [],
+        itemCount: 0,
+        subtotal: '0.00',
+      );
     }
   }
 
   Future<CartModel> updateItemQuantity(String variantId, int quantity) async {
     try {
-      final response = await _dio.patch(ApiEndpoints.cartItemById(variantId), data: {
-        'quantity': quantity,
-      });
+      final response = await _dio.patch(
+        ApiEndpoints.cartItemById(variantId),
+        data: {'quantity': quantity},
+      );
       final data = response.data['data'] ?? {};
       return CartModel.fromJson(data as Map<String, dynamic>);
     } catch (_) {
-      return const CartModel(id: '1', userId: '1', items: [], itemCount: 0, subtotal: '0.00');
+      return const CartModel(
+        id: '1',
+        userId: '1',
+        items: [],
+        itemCount: 0,
+        subtotal: '0.00',
+      );
     }
   }
 
@@ -48,7 +67,13 @@ class CartRepository {
       final data = response.data['data'] ?? {};
       return CartModel.fromJson(data as Map<String, dynamic>);
     } catch (_) {
-      return const CartModel(id: '1', userId: '1', items: [], itemCount: 0, subtotal: '0.00');
+      return const CartModel(
+        id: '1',
+        userId: '1',
+        items: [],
+        itemCount: 0,
+        subtotal: '0.00',
+      );
     }
   }
 

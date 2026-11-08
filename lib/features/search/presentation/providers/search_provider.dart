@@ -47,7 +47,8 @@ List<ProductModel> filteredProducts(Ref ref) {
 
       return productsList.where((p) {
         final matchesQuery = p.name.toLowerCase().contains(query);
-        final matchesPrice = (p.priceInfo.finalPrice) >= filter.minPrice &&
+        final matchesPrice =
+            (p.priceInfo.finalPrice) >= filter.minPrice &&
             (p.priceInfo.finalPrice) <= filter.maxPrice;
 
         return matchesQuery && matchesPrice;

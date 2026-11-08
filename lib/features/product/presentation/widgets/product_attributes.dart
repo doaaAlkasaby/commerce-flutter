@@ -30,7 +30,9 @@ class ProductAttributesWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: attributes.map((attr) {
-        final isColor = attr.name.toLowerCase() == 'color' || attr.name.toLowerCase() == 'colour';
+        final isColor =
+            attr.name.toLowerCase() == 'color' ||
+            attr.name.toLowerCase() == 'colour';
         final selectedVal = isColor ? selectedColor : selectedSize;
 
         return Column(
@@ -43,17 +45,19 @@ class ProductAttributesWidget extends StatelessWidget {
                 Text(
                   attr.name,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15.sp(context),
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15.sp(context),
+                    color: isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.lightTextPrimary,
+                  ),
                 ),
                 Text(
                   selectedVal,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.lightTextSecondary,
-                        fontSize: 14.sp(context),
-                      ),
+                    color: AppColors.lightTextSecondary,
+                    fontSize: 14.sp(context),
+                  ),
                 ),
               ],
             ),
@@ -63,7 +67,8 @@ class ProductAttributesWidget extends StatelessWidget {
               runSpacing: 8.h(context),
               children: attr.values.map((val) {
                 final isSelected = selectedVal == val.value;
-                final hasImage = val.imageUrl != null && val.imageUrl!.isNotEmpty;
+                final hasImage =
+                    val.imageUrl != null && val.imageUrl!.isNotEmpty;
 
                 return GestureDetector(
                   onTap: () {
@@ -74,12 +79,21 @@ class ProductAttributesWidget extends StatelessWidget {
                     }
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: hasImage ? 10.w(context) : 16.w(context), vertical: 8.h(context)),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: hasImage ? 10.w(context) : 16.w(context),
+                      vertical: 8.h(context),
+                    ),
                     decoration: BoxDecoration(
-                      color: isSelected ? AppColors.primary : (isDark ? AppColors.darkBackground : AppColors.lightBackground),
+                      color: isSelected
+                          ? AppColors.primary
+                          : (isDark
+                                ? AppColors.darkBackground
+                                : AppColors.lightBackground),
                       borderRadius: BorderRadius.circular(16.w(context)),
                       border: Border.all(
-                        color: isSelected ? AppColors.primary : Colors.grey.shade300,
+                        color: isSelected
+                            ? AppColors.primary
+                            : Colors.grey.shade300,
                         width: isSelected ? 2 : 1,
                       ),
                     ),
@@ -94,16 +108,22 @@ class ProductAttributesWidget extends StatelessWidget {
                               width: 24.w(context),
                               height: 24.h(context),
                               fit: BoxFit.cover,
-                              errorWidget: (context, url, error) => const SizedBox.shrink(),
+                              errorWidget: (context, url, error) =>
+                                  const SizedBox.shrink(),
                             ),
                           ),
                           SizedBox(width: 6.w(context)),
                         ],
                         Text(
                           val.value,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                                color: isSelected ? Colors.white : AppColors.lightTextSecondary,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.w500,
+                                color: isSelected
+                                    ? Colors.white
+                                    : AppColors.lightTextSecondary,
                                 fontSize: 13.sp(context),
                               ),
                         ),
