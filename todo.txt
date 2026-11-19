@@ -1,5 +1,17 @@
 notifications api
 notifications counter
-ads
+apis localization
 
 countries , coities apis
+
+make address to be according to latitude and longitude
+ads
+
+
+
+//screens :
+1- notifications api
+2-payment card
+3-dark mode review
+-test register, forget password
+app not save darkmode and language when restart

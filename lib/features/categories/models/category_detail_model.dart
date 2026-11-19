@@ -1,3 +1,4 @@
+import '../../../core/config/app_environment.dart';
 import '../../home/models/home_response_model.dart';
 
 class SubCategoryModel {
@@ -12,6 +13,36 @@ class SubCategoryModel {
     required this.imageUrl,
     required this.products,
   });
+
+  factory SubCategoryModel.fromJson(Map<String, dynamic> json) {
+    final rawImg = json['imageUrl']?.toString();
+    return SubCategoryModel(
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      imageUrl: rawImg != null ? AppEnvironment.resolveImageUrl(rawImg) : '',
+      products: (json['products'] as List? ?? [])
+          .map((p) => ProductModel.fromJson(p as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  SubCategoryModel copyWith({List<ProductModel>? products}) {
+    return SubCategoryModel(
+      id: id,
+      name: name,
+      imageUrl: imageUrl,
+      products: products ?? this.products,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'imageUrl': imageUrl,
+      'products': products.map((p) => p.toJson()).toList(),
+    };
+  }
 }
 
 class MainCategoryModel {
@@ -32,4 +63,42 @@ class MainCategoryModel {
     this.subCategories = const [],
     this.directProducts = const [],
   });
+
+  factory MainCategoryModel.fromJson(Map<String, dynamic> json) {
+    final rawImg = json['imageUrl']?.toString();
+    return MainCategoryModel(
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      iconName: json['iconName']?.toString() ?? '',
+      imageUrl: rawImg != null ? AppEnvironment.resolveImageUrl(rawImg) : '',
+      hasChildren: json['hasChildren'] ?? false,
+      subCategories: (json['subCategories'] as List? ?? [])
+          .map((c) => MainCategoryModel.fromJson(c as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  MainCategoryModel copyWith({List<ProductModel>? directProducts}) {
+    return MainCategoryModel(
+      id: id,
+      name: name,
+      iconName: iconName,
+      imageUrl: imageUrl,
+      hasChildren: hasChildren,
+      subCategories: subCategories,
+      directProducts: directProducts ?? this.directProducts,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'iconName': iconName,
+      'imageUrl': imageUrl,
+      'hasChildren': hasChildren,
+      'subCategories': subCategories.map((c) => c.toJson()).toList(),
+      'directProducts': directProducts.map((p) => p.toJson()).toList(),
+    };
+  }
 }

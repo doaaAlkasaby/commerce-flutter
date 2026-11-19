@@ -33,9 +33,9 @@ class CategoriesMainScreen extends ConsumerWidget {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(
-                    20.w(context),
+                    12.w(context),
                     16.h(context),
-                    20.w(context),
+                    12.w(context),
                     12.h(context),
                   ),
                   child: Row(
@@ -43,8 +43,7 @@ class CategoriesMainScreen extends ConsumerWidget {
                     children: [
                       Text(
                         strings.exploreCollections,
-                        style: Theme.of(context).textTheme.displayMedium
-                            ?.copyWith(fontSize: 26.sp(context)),
+                        style: Theme.of(context).textTheme.displayLarge,
                       ),
                     ],
                   ),

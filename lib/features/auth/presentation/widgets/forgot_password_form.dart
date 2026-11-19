@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/core/widgets/app_text_field.dart';
 import 'package:ecommerce/core/widgets/app_button.dart';
 
-class ForgotPasswordFormWidget extends StatelessWidget {
+class ForgotPasswordFormWidget extends ConsumerWidget {
   final TextEditingController emailController;
   final bool isLoading;
   final VoidCallback onSubmitPressed;
@@ -16,20 +18,25 @@ class ForgotPasswordFormWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentLang = ref.watch(languageProvider);
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppTextField(
           controller: emailController,
-          labelText: 'Email',
-          hintText: 'amelia.wood@gmail.com',
+          labelText: strings.emailAddress,
+          hintText: 'name@example.com',
           prefixIcon: Icons.email_outlined,
           keyboardType: TextInputType.emailAddress,
+          bkgColor: Theme.of(context).cardColor,
         ),
         SizedBox(height: 32.h(context)),
         AppButton(
-          text: 'SEND INSTRUCTIONS',
+          text: strings.sendInstructions,
           onPressed: onSubmitPressed,
           isLoading: isLoading,
         ),

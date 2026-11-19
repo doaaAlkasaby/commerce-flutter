@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecommerce/core/config/app_environment.dart';
+import 'package:ecommerce/core/config/tenant_config.dart';
 import 'package:ecommerce/core/constants/app_assets.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
+import 'package:ecommerce/core/theme/text_theme_extension.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/features/search/presentation/screens/search_filter_screen.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-class HomeHeaderWidget extends StatelessWidget {
+class HomeHeaderWidget extends ConsumerWidget {
   final AppStrings strings;
   final bool isDark;
   final bool isLoggedIn;
@@ -22,8 +28,42 @@ class HomeHeaderWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final isArabic = currentLang == AppLanguage.ar;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tenant = ref.watch(tenantProvider);
+    Widget defaultLogo = Image.asset(
+      AppAssets.logo,
+      width: 50.w(context),
+      height: 50.w(context),
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) =>
+          const Icon(Icons.storefront, color: AppColors.primary, size: 24),
+    );
+
+    final resolvedLogoUrl = AppEnvironment.resolveImageUrl(tenant.logoUrl);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    Widget logoWidget;
+    if (resolvedLogoUrl.isNotEmpty) {
+      if (resolvedLogoUrl.toLowerCase().contains('.svg')) {
+        logoWidget = SvgPicture.network(
+          resolvedLogoUrl,
+          width: 50.w(context),
+          height: 50.w(context),
+          fit: BoxFit.fill,
+          placeholderBuilder: (_) => defaultLogo,
+        );
+      } else {
+        logoWidget = CachedNetworkImage(
+          imageUrl: resolvedLogoUrl,
+          width: 50.w(context),
+          height: 50.w(context),
+          fit: BoxFit.fill,
+          errorWidget: (context, url, error) => defaultLogo,
+        );
+      }
+    } else {
+      logoWidget = defaultLogo;
+    }
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -32,65 +72,35 @@ class HomeHeaderWidget extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                width: 44.w(context),
-                height: 44.w(context),
+                width: 50.w(context),
+                height: 50.w(context),
                 decoration: BoxDecoration(
-                  // color: Colors.white,
                   borderRadius: BorderRadius.circular(14.w(context)),
-                  // boxShadow: [
-                  //   BoxShadow(
-                  //     color: Colors.black.withValues(alpha: 0.08),
-                  //     blurRadius: 8,
-                  //     offset: Offset(0, 4.h(context)),
-                  //   ),
-                  // ],
                 ),
-                // child: ClipRRect(
-                //   borderRadius: BorderRadius.circular(14.w(context)),
-                child: Image.asset(
-                  AppAssets.logo,
-                  width: 44.w(context),
-                  height: 44.w(context),
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) => const Center(
-                    child: Icon(
-                      Icons.storefront,
-                      color: AppColors.primary,
-                      size: 24,
-                    ),
-                  ),
-                  // ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15.w(context)),
+                  child: logoWidget,
                 ),
               ),
-              SizedBox(width: 12.w(context)),
+              SizedBox(width: 5.w(context)),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isLoggedIn
-                          ? strings.goodMorning
-                          : (isArabic ? 'مرحباً بك' : 'Welcome'),
+                      tenant.appName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontSize: 12.sp(context),
-                        fontWeight: FontWeight.w500,
+                      style: context.textTheme.primaryDisplayMedium?.copyWith(
+                        color: isDark ? Colors.white : AppColors.primary,
                       ),
                     ),
                     SizedBox(height: 2.h(context)),
                     Text(
-                      isLoggedIn
-                          ? 'Hi, $userName!'
-                          : (isArabic
-                                ? 'أهلاً بك، زائرنا الكريم'
-                                : 'Hello, Guest!'),
+                      isLoggedIn ? 'Hi, $userName!' : strings.helloGuest,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontSize: 18.sp(context),
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: context.textTheme.bodySmall,
                     ),
                   ],
                 ),
@@ -117,12 +127,16 @@ class HomeHeaderWidget extends StatelessWidget {
                 ],
               ),
               child: IconButton(
-                icon: Icon(
-                  Icons.search,
-                  color: isDark
-                      ? AppColors.darkTextPrimary
-                      : AppColors.lightTextPrimary,
-                  size: 20.sp(context),
+                icon: SvgPicture.asset(
+                  AppAssets.searchSvg,
+                  colorFilter: ColorFilter.mode(
+                    isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.lightTextPrimary,
+                    BlendMode.srcIn,
+                  ),
+                  width: 17.sp(context),
+                  height: 17.sp(context),
                 ),
                 onPressed: () {
                   Navigator.of(context).push(
@@ -153,12 +167,16 @@ class HomeHeaderWidget extends StatelessWidget {
                     ],
                   ),
                   child: IconButton(
-                    icon: Icon(
-                      Icons.notifications_outlined,
-                      color: isDark
-                          ? AppColors.darkTextPrimary
-                          : AppColors.lightTextPrimary,
-                      size: 20.sp(context),
+                    icon: SvgPicture.asset(
+                      AppAssets.bell,
+                      colorFilter: ColorFilter.mode(
+                        isDark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.lightTextPrimary,
+                        BlendMode.srcIn,
+                      ),
+                      width: 17.sp(context),
+                      height: 17.sp(context),
                     ),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(

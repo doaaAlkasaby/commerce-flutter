@@ -1,17 +1,25 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/network/dio_client.dart';
+import 'package:ecommerce/core/utils/app_error_utils.dart';
 import 'package:ecommerce/core/widgets/app_scaffold.dart';
+import 'package:ecommerce/core/theme/text_theme_extension.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/features/auth/data/auth_repository.dart';
 import 'package:ecommerce/features/auth/presentation/widgets/login_header.dart';
 import 'package:ecommerce/features/auth/presentation/widgets/login_form.dart';
 import 'package:ecommerce/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:ecommerce/features/auth/presentation/screens/register_screen.dart';
+
+import '../../../../core/config/app_environment.dart';
+import '../../../../core/config/tenant_config.dart';
+import '../../../../core/constants/app_assets.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -24,20 +32,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _obscurePassword = true;
   bool _isLoading = false;
   final TextEditingController _emailController = TextEditingController(
-    text: kDebugMode ? 'customer1@example.com' : '',
+    text: kDebugMode ? 'fashion-customer@dev81.example.test' : '',
   );
   final TextEditingController _passwordController = TextEditingController(
-    text: kDebugMode ? 'Password123!' : '',
+    text: kDebugMode ? 'DevCustomer!2026' : '',
   );
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleLogin(AppStrings strings) async {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(strings.enterEmailAndPassword)));
       return;
     }
 
@@ -62,21 +70,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         if (mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(const SnackBar(content: Text('Login successful!')));
+          ).showSnackBar(SnackBar(content: Text(strings.loginSuccessful)));
           Navigator.of(context).pop();
         }
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(response.message ?? 'Login failed')),
+            SnackBar(content: Text(response.message ?? strings.loginFailed)),
           );
         }
       }
     } catch (e) {
       if (mounted) {
+        final errorMessage = AppErrorUtils.extractErrorMessage(
+          e,
+          fallback: strings.loginFailedCheckCredentials,
+        );
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
       }
     } finally {
       if (mounted) {
@@ -94,7 +106,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget _buildContentWidget() {
     final currentLang = ref.watch(languageProvider);
-    final isArabic = currentLang == AppLanguage.ar;
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
+    final isArabic = strings.isArabic;
 
     return SafeArea(
       child: Column(
@@ -123,9 +137,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   child: IconButton(
                     icon: Icon(
-                      isArabic
-                          ? Icons.arrow_forward_ios
-                          : Icons.arrow_back_ios_new,
+                      Icons.arrow_back_ios_new,
                       size: 16.sp(context),
                       color: AppColors.lightTextPrimary,
                     ),
@@ -151,12 +163,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ],
                     ),
                     child: Text(
-                      isArabic ? 'تخطي' : 'Skip',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14.sp(context),
-                        color: AppColors.primary,
-                      ),
+                      strings.skip,
+                      style: context.textTheme.primaryTitleMedium,
                     ),
                   ),
                 ),
@@ -174,7 +182,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 _obscurePassword = !_obscurePassword;
               });
             },
-            onLoginPressed: _handleLogin,
+            onLoginPressed: () => _handleLogin(strings),
             onForgotPasswordPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),

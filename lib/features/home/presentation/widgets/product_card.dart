@@ -1,16 +1,23 @@
+import 'package:ecommerce/core/constants/app_assets.dart';
+import 'package:ecommerce/core/widgets/app_price_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
+import 'package:ecommerce/core/config/tenant_config.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
+import 'package:ecommerce/core/utils/app_error_utils.dart';
 import 'package:ecommerce/core/widgets/app_image_container.dart';
 import 'package:ecommerce/core/widgets/app_image_placeholder.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/core/theme/text_theme_extension.dart';
+import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/network/dio_client.dart';
 import 'package:ecommerce/features/auth/presentation/screens/login_screen.dart';
-import 'package:ecommerce/features/product/data/product_repository.dart';
+import 'package:ecommerce/features/cart/presentation/providers/cart_provider.dart';
+import 'package:ecommerce/features/favorites/presentation/providers/favorites_provider.dart';
 import 'package:ecommerce/features/product/presentation/screens/product_details_screen.dart';
+import 'package:flutter_svg/svg.dart';
 import '../../models/home_response_model.dart';
 
 class ProductCard extends ConsumerStatefulWidget {
@@ -30,50 +37,22 @@ class ProductCard extends ConsumerStatefulWidget {
 }
 
 class _ProductCardState extends ConsumerState<ProductCard> {
-  late bool _isFavorite;
-
-  @override
-  void initState() {
-    super.initState();
-    _isFavorite = widget.product.isFavorite;
-  }
-
-  @override
-  void didUpdateWidget(covariant ProductCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.product.isFavorite != widget.product.isFavorite) {
-      _isFavorite = widget.product.isFavorite;
-    }
-  }
-
-  void _showLoginRequiredDialog(BuildContext context) {
+  void _showLoginRequiredDialog(BuildContext context, AppStrings strings) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24.w(context)),
         ),
-        title: Text(
-          'Login Required',
-          style: context.textTheme.boldTitleLarge?.copyWith(
-            fontSize: 18.sp(context),
-          ),
-        ),
+        title: Text(strings.loginRequired, style: context.textTheme.titleLarge),
         content: Text(
-          'You must log in first to add items to your cart or favorites.',
-          style: context.textTheme.bodyMedium?.copyWith(
-            fontSize: 14.sp(context),
-          ),
+          strings.loginRequiredDesc,
+          style: context.textTheme.bodyMedium,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              'Cancel',
-              style: context.textTheme.description?.copyWith(
-                fontSize: 14.sp(context),
-              ),
-            ),
+            child: Text(strings.cancel, style: context.textTheme.bodyMedium),
           ),
           ElevatedButton(
             onPressed: () {
@@ -84,10 +63,8 @@ class _ProductCardState extends ConsumerState<ProductCard> {
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
             child: Text(
-              'Login',
-              style: context.textTheme.whiteLabelLarge?.copyWith(
-                fontSize: 14.sp(context),
-              ),
+              strings.signIn,
+              style: context.textTheme.whiteLabelLarge,
             ),
           ),
         ],
@@ -95,16 +72,25 @@ class _ProductCardState extends ConsumerState<ProductCard> {
     );
   }
 
-  Future<void> _handleAddToCart(BuildContext context) async {
+  Future<void> _handleAddToCart(
+    BuildContext context,
+    AppStrings strings,
+  ) async {
     final token = ref.read(authTokenProvider);
     final isLoggedIn = token != null && token.isNotEmpty;
 
     if (!isLoggedIn) {
-      _showLoginRequiredDialog(context);
+      _showLoginRequiredDialog(context, strings);
       return;
     }
 
-    if (widget.product.hasVariants) {
+    final variantId =
+        widget.product.defaultVariantId ??
+        (widget.product.variants.isNotEmpty
+            ? widget.product.variants.first.id
+            : null);
+
+    if (widget.product.hasVariants || variantId == null) {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => ProductDetailsScreen(product: widget.product),
@@ -114,26 +100,30 @@ class _ProductCardState extends ConsumerState<ProductCard> {
     }
 
     try {
-      final repo = ProductRepository(ref.read(dioClientProvider));
-      final variantId = widget.product.defaultVariantId ?? widget.product.id;
-      await repo.addToCart(variantId, 1);
+      await ref.read(cartProvider.notifier).addItem(variantId, 1);
       widget.onAddTap();
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Added to cart: ${widget.product.name}'),
+            content: Text(
+              strings
+                  .get('added_to_cart_item')
+                  .replaceAll('{productName}', widget.product.name),
+            ),
             duration: const Duration(seconds: 1),
             behavior: SnackBarBehavior.floating,
           ),
         );
       }
     } catch (e) {
-      String errorMessage = 'Error adding to cart';
+      String errorMessage = strings.errorAddingToCart;
       if (e is DioException && e.response?.data != null) {
         final data = e.response?.data;
         if (data is Map<String, dynamic> && data['message'] != null) {
           errorMessage = data['message'].toString();
         }
+      } else if (e is StateError) {
+        errorMessage = e.message;
       }
       if (context.mounted) {
         ScaffoldMessenger.of(
@@ -143,72 +133,60 @@ class _ProductCardState extends ConsumerState<ProductCard> {
     }
   }
 
-  Future<void> _handleFavoriteToggle(BuildContext context) async {
+  Future<void> _handleFavoriteToggle(
+    BuildContext context,
+    AppStrings strings,
+  ) async {
     final token = ref.read(authTokenProvider);
     final isLoggedIn = token != null && token.isNotEmpty;
 
     if (!isLoggedIn) {
-      _showLoginRequiredDialog(context);
+      _showLoginRequiredDialog(context, strings);
       return;
     }
 
-    final previousState = _isFavorite;
-    setState(() {
-      _isFavorite = !_isFavorite;
-    });
-
     try {
-      final repo = ProductRepository(ref.read(dioClientProvider));
-      await repo.toggleFavorite(widget.product.id, _isFavorite);
+      await ref
+          .read(wishlistControllerProvider.notifier)
+          .toggleFavorite(widget.product.id);
       widget.onFavoriteTap();
-      if (context.mounted && _isFavorite) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Product added to wishlist successfully'),
-            duration: Duration(seconds: 1),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
     } catch (e) {
-      String errorMessage = 'Error updating favorite';
-      if (e is DioException && e.response?.data != null) {
-        final data = e.response?.data;
-        if (data is Map<String, dynamic> && data['message'] != null) {
-          errorMessage = data['message'].toString();
-        }
-      }
-
-      if (e is DioException && e.response?.statusCode == 409) {
-        setState(() {
-          _isFavorite = true;
-        });
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              duration: const Duration(seconds: 1),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        }
-        return;
-      }
-
-      setState(() {
-        _isFavorite = previousState;
-      });
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(errorMessage)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppErrorUtils.extractErrorMessage(e))),
+        );
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
+    final currentLang = ref.watch(languageProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tenant = ref.watch(tenantProvider);
+    final currencyStr = tenant.currencySymbol.isNotEmpty
+        ? tenant.currencySymbol
+        : '\$';
+
+    final wishlistData = ref.watch(wishlistControllerProvider).value;
+    final isFavorite =
+        wishlistData?.isFavorite(widget.product.id) ??
+        widget.product.isFavorite;
+
+    final origPrice = widget.product.priceInfo.originalPrice;
+    final finalPrice = widget.product.priceInfo.finalPrice;
+    final discountPctVal =
+        widget.product.priceInfo.discountPercentage?.round() ??
+        (origPrice > finalPrice && origPrice > 0
+            ? (((origPrice - finalPrice) / origPrice) * 100).round()
+            : 0);
+
+    final hasDiscount =
+        discountPctVal > 0 &&
+        origPrice > finalPrice &&
+        (origPrice - finalPrice) > 0.001;
 
     return GestureDetector(
       onTap: () {
@@ -257,28 +235,63 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                           ),
                     ),
                   ),
+                  if (hasDiscount)
+                    Positioned(
+                      top: 12.h(context),
+                      left: strings.isArabic ? null : 12.w(context),
+                      right: strings.isArabic ? 12.w(context) : null,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w(context),
+                          vertical: 4.h(context),
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(8.w(context)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.15),
+                              blurRadius: 4,
+                              offset: Offset(0, 2.h(context)),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          '$discountPctVal% OFF',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10.sp(context),
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ),
+                    ),
                   Positioned(
                     top: 12.h(context),
-                    right: 12.w(context),
+                    right: strings.isArabic ? null : 12.w(context),
+                    left: strings.isArabic ? 12.w(context) : null,
                     child: GestureDetector(
-                      onTap: () => _handleFavoriteToggle(context),
+                      onTap: () => _handleFavoriteToggle(context, strings),
                       child: Container(
                         width: 34.w(context),
                         height: 34.w(context),
                         decoration: BoxDecoration(
-                          color: isDark ? AppColors.darkSurface : Colors.white,
+                          color: isDark
+                              ? AppColors.darkSurface
+                              : AppColors.darkBkg,
                           shape: BoxShape.circle,
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 6,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
+                          // boxShadow: const [
+                          //   BoxShadow(
+                          //     color: Colors.black12,
+                          //     blurRadius: 6,
+                          //     offset: Offset(0, 2),
+                          //   ),
+                          // ],
                         ),
                         child: Icon(
-                          _isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: _isFavorite
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite
                               ? AppColors.badgeRed
                               : (isDark
                                     ? AppColors.darkTextSecondary
@@ -298,14 +311,10 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                 children: [
                   Text(
                     widget.product.name,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontSize: 15.sp(context),
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: context.textTheme.titleSmall,
                   ),
-                  SizedBox(height: 10.h(context)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -313,28 +322,19 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              '\$${widget.product.priceInfo.finalPrice.toStringAsFixed(2)}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleLarge
-                                  ?.copyWith(
-                                    fontSize: 16.sp(context),
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: AppPriceTextRow(
+                                price: widget.product.priceInfo.finalPrice,
+                                currency: currencyStr,
+                              ),
                             ),
-                            if (widget.product.priceInfo.discountPercentage !=
-                                null) ...[
+                            if (hasDiscount) ...[
                               SizedBox(height: 2.h(context)),
-                              Text(
-                                '\$${widget.product.priceInfo.originalPrice.toStringAsFixed(2)}',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      fontSize: 12.sp(context),
-                                      decoration: TextDecoration.lineThrough,
-                                    ),
+                              AppPriceTextRow(
+                                price: '${widget.product.priceInfo.originalPrice.toStringAsFixed(2)} $currencyStr',
+                                priceStyle: context.textTheme.strikeThroughBodySmall,
                               ),
                             ],
                           ],
@@ -342,13 +342,15 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                       ),
                       SizedBox(width: 4.w(context)),
                       GestureDetector(
-                        onTap: () => _handleAddToCart(context),
+                        onTap: () => _handleAddToCart(context, strings),
                         child: Container(
-                          width: 36.w(context),
-                          height: 36.w(context),
+                          width: 33.w(context),
+                          height: 33.w(context),
+                          padding: EdgeInsets.all(10.w(context)),
                           decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            shape: BoxShape.circle,
+                            color: AppColors.darkBkg,
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(10.h(context)),
                             boxShadow: [
                               BoxShadow(
                                 color: AppColors.primary.withValues(alpha: 0.3),
@@ -357,10 +359,14 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                               ),
                             ],
                           ),
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white,
-                            size: 20.sp(context),
+                          child: SvgPicture.asset(
+                            AppAssets.cartAddSvg,
+                            colorFilter: const ColorFilter.mode(
+                              AppColors.primary,
+                              BlendMode.srcIn,
+                            ),
+                            width: 14.sp(context),
+                            height: 14.sp(context),
                           ),
                         ),
                       ),

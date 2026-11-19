@@ -24,17 +24,17 @@ class CategoriesSection extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return categoriesAsync.when(
-      data: (categories) => SliverPadding(
+      data: (List<MainCategoryModel> categories) => SliverPadding(
         padding: EdgeInsets.symmetric(horizontal: 20.w(context)),
         sliver: SliverGrid(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            childAspectRatio: 0.85,
+            childAspectRatio: 0.95,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
           ),
           delegate: SliverChildBuilderDelegate((context, index) {
-            final category = categories[index];
+            final MainCategoryModel category = categories[index];
             return GestureDetector(
               onTap: () {
                 if (category.hasChildren) {
@@ -74,8 +74,9 @@ class CategoriesSection extends ConsumerWidget {
                     AppImageContainer(
                       width: 88.w(context),
                       height: 88.h(context),
-                      borderRadius: BorderRadius.circular(32),
-                      child: ClipOval(
+                      borderRadius: BorderRadius.circular(28.w(context)),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(28.w(context)),
                         child: CachedNetworkImage(
                           imageUrl: category.imageUrl,
                           fit: BoxFit.cover,
@@ -100,8 +101,7 @@ class CategoriesSection extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontSize: 16.sp(context),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),

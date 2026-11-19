@@ -8,78 +8,38 @@ class CartRepository {
   CartRepository(this._dio);
 
   Future<CartModel> getCart() async {
-    try {
-      final response = await _dio.get(ApiEndpoints.cart);
-      final data = response.data['data'] ?? {};
-      return CartModel.fromJson(data as Map<String, dynamic>);
-    } catch (_) {
-      return const CartModel(
-        id: '1',
-        userId: '1',
-        items: [],
-        itemCount: 0,
-        subtotal: '0.00',
-      );
-    }
+    final response = await _dio.get(ApiEndpoints.cart);
+    final data = response.data['data'] ?? {};
+    return CartModel.fromJson(data as Map<String, dynamic>);
   }
 
   Future<CartModel> addToCart(String variantId, int quantity) async {
-    try {
-      final response = await _dio.post(
-        ApiEndpoints.cartItems,
-        data: {'variantId': variantId, 'quantity': quantity},
-      );
-      final data = response.data['data'] ?? {};
-      return CartModel.fromJson(data as Map<String, dynamic>);
-    } catch (_) {
-      return const CartModel(
-        id: '1',
-        userId: '1',
-        items: [],
-        itemCount: 0,
-        subtotal: '0.00',
-      );
-    }
+    final response = await _dio.post(
+      ApiEndpoints.cartItems,
+      data: {'variantId': variantId, 'quantity': quantity},
+    );
+    final data = response.data['data'] ?? {};
+    return CartModel.fromJson(data as Map<String, dynamic>);
   }
 
   Future<CartModel> updateItemQuantity(String variantId, int quantity) async {
-    try {
-      final response = await _dio.patch(
-        ApiEndpoints.cartItemById(variantId),
-        data: {'quantity': quantity},
-      );
-      final data = response.data['data'] ?? {};
-      return CartModel.fromJson(data as Map<String, dynamic>);
-    } catch (_) {
-      return const CartModel(
-        id: '1',
-        userId: '1',
-        items: [],
-        itemCount: 0,
-        subtotal: '0.00',
-      );
-    }
+    final response = await _dio.patch(
+      ApiEndpoints.cartItemById(variantId),
+      data: {'quantity': quantity},
+    );
+    final data = response.data['data'] ?? {};
+    return CartModel.fromJson(data as Map<String, dynamic>);
   }
 
   Future<CartModel> removeItem(String variantId) async {
-    try {
-      final response = await _dio.delete(ApiEndpoints.cartItemById(variantId));
-      final data = response.data['data'] ?? {};
-      return CartModel.fromJson(data as Map<String, dynamic>);
-    } catch (_) {
-      return const CartModel(
-        id: '1',
-        userId: '1',
-        items: [],
-        itemCount: 0,
-        subtotal: '0.00',
-      );
-    }
+    final response = await _dio.delete(ApiEndpoints.cartItemById(variantId));
+    final data = response.data['data'] ?? {};
+    return CartModel.fromJson(data as Map<String, dynamic>);
   }
 
-  Future<void> clearCart() async {
-    try {
-      await _dio.delete(ApiEndpoints.cart);
-    } catch (_) {}
+  Future<CartModel> clearCart() async {
+    final response = await _dio.delete(ApiEndpoints.cart);
+    final data = response.data['data'] ?? {};
+    return CartModel.fromJson(data as Map<String, dynamic>);
   }
 }

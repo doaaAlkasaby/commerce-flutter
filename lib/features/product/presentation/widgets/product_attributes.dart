@@ -3,37 +3,41 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/features/home/models/home_response_model.dart';
+import 'package:ecommerce/features/product/utils/variant_selection_helper.dart';
+
+typedef OnAttributeSelectedCallback =
+    void Function(String attributeId, String valueId);
 
 class ProductAttributesWidget extends StatelessWidget {
   final ProductModel product;
-  final String selectedColor;
-  final String selectedSize;
-  final ValueChanged<String> onColorSelected;
-  final ValueChanged<String> onSizeSelected;
+  final Map<String, String> selectedAttributeValues;
+  final OnAttributeSelectedCallback onAttributeSelected;
   final bool isDark;
 
   const ProductAttributesWidget({
     super.key,
     required this.product,
-    required this.selectedColor,
-    required this.selectedSize,
-    required this.onColorSelected,
-    required this.onSizeSelected,
+    required this.selectedAttributeValues,
+    required this.onAttributeSelected,
     required this.isDark,
   });
 
   @override
   Widget build(BuildContext context) {
-    List<ProductAttributeModel> attributes = product.attributes;
+    final List<ProductAttributeModel> attributes = product.attributes;
     if (attributes.isEmpty) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: attributes.map((attr) {
-        final isColor =
-            attr.name.toLowerCase() == 'color' ||
-            attr.name.toLowerCase() == 'colour';
-        final selectedVal = isColor ? selectedColor : selectedSize;
+        final selectedValId = selectedAttributeValues[attr.id];
+        final selectedValueModel = attr.values.firstWhere(
+          (v) => v.id == selectedValId,
+          orElse: () => attr.values.firstWhere(
+            (v) => selectedAttributeValues.containsValue(v.value),
+            orElse: () => const ProductAttributeValueModel(id: '', value: ''),
+          ),
+        );
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,13 +56,14 @@ class ProductAttributesWidget extends StatelessWidget {
                         : AppColors.lightTextPrimary,
                   ),
                 ),
-                Text(
-                  selectedVal,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.lightTextSecondary,
-                    fontSize: 14.sp(context),
+                if (selectedValueModel.value.isNotEmpty)
+                  Text(
+                    selectedValueModel.value,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.lightTextSecondary,
+                      fontSize: 14.sp(context),
+                    ),
                   ),
-                ),
               ],
             ),
             SizedBox(height: 12.h(context)),
@@ -66,19 +71,28 @@ class ProductAttributesWidget extends StatelessWidget {
               spacing: 12.w(context),
               runSpacing: 8.h(context),
               children: attr.values.map((val) {
-                final isSelected = selectedVal == val.value;
+                final isSelected =
+                    selectedValId == val.id ||
+                    selectedAttributeValues[attr.id] == val.value ||
+                    selectedAttributeValues.containsValue(val.value);
+
+                final isAvailable = VariantSelectionHelper.isValueAvailable(
+                  targetAttributeId: attr.id,
+                  candidateValueId: val.id,
+                  allAttributes: attributes,
+                  variants: product.variants,
+                  currentSelection: selectedAttributeValues,
+                );
+
                 final hasImage =
                     val.imageUrl != null && val.imageUrl!.isNotEmpty;
 
                 return GestureDetector(
-                  onTap: () {
-                    if (isColor) {
-                      onColorSelected(val.value);
-                    } else {
-                      onSizeSelected(val.value);
-                    }
-                  },
-                  child: Container(
+                  onTap: isAvailable
+                      ? () => onAttributeSelected(attr.id, val.id)
+                      : null,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
                     padding: EdgeInsets.symmetric(
                       horizontal: hasImage ? 10.w(context) : 16.w(context),
                       vertical: 8.h(context),
@@ -86,14 +100,18 @@ class ProductAttributesWidget extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isSelected
                           ? AppColors.primary
-                          : (isDark
-                                ? AppColors.darkBackground
-                                : AppColors.lightBackground),
+                          : (isAvailable
+                                ? (isDark
+                                      ? AppColors.darkBackground
+                                      : AppColors.peach.withValues(alpha: 0.3))
+                                : Colors.grey.shade400.withValues(alpha: 0.5)),
                       borderRadius: BorderRadius.circular(16.w(context)),
                       border: Border.all(
                         color: isSelected
                             ? AppColors.primary
-                            : Colors.grey.shade300,
+                            : (isAvailable
+                                  ? Colors.grey.shade300
+                                  : Colors.grey.shade200),
                         width: isSelected ? 2 : 1,
                       ),
                     ),
@@ -123,8 +141,13 @@ class ProductAttributesWidget extends StatelessWidget {
                                     : FontWeight.w500,
                                 color: isSelected
                                     ? Colors.white
-                                    : AppColors.lightTextSecondary,
+                                    : (isAvailable
+                                          ? AppColors.lightTextSecondary
+                                          : Colors.grey.shade800),
                                 fontSize: 13.sp(context),
+                                decoration: isAvailable
+                                    ? TextDecoration.none
+                                    : TextDecoration.lineThrough,
                               ),
                         ),
                       ],

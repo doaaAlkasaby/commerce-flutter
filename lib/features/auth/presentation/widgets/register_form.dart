@@ -1,9 +1,12 @@
+import 'package:ecommerce/core/theme/text_theme_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/core/widgets/app_text_field.dart';
 import 'package:ecommerce/core/widgets/app_button.dart';
 
-class RegisterFormWidget extends StatelessWidget {
+class RegisterFormWidget extends ConsumerWidget {
   final TextEditingController nameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
@@ -24,29 +27,35 @@ class RegisterFormWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentLang = ref.watch(languageProvider);
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppTextField(
           controller: nameController,
-          labelText: 'Full Name',
-          hintText: 'Amelia Wood',
+          labelText: strings.fullName,
+          hintText: strings.nameHint,
           prefixIcon: Icons.person_outline,
+          bkgColor: Theme.of(context).cardColor,
         ),
         SizedBox(height: 16.h(context)),
         AppTextField(
           controller: emailController,
-          labelText: 'Email',
-          hintText: 'amelia.wood@gmail.com',
+          labelText: strings.emailAddress,
+          hintText: 'name@example.com',
           prefixIcon: Icons.email_outlined,
           keyboardType: TextInputType.emailAddress,
+          bkgColor: Theme.of(context).cardColor,
         ),
         SizedBox(height: 16.h(context)),
         AppTextField(
           controller: passwordController,
-          labelText: 'Password',
-          hintText: 'Create a password',
+          labelText: strings.password,
+          hintText: strings.createAPassword,
           prefixIcon: Icons.lock_outline,
           obscureText: obscurePassword,
           suffixIcon: IconButton(
@@ -57,10 +66,13 @@ class RegisterFormWidget extends StatelessWidget {
             ),
             onPressed: onTogglePasswordVisibility,
           ),
+          bkgColor: Theme.of(context).cardColor,
         ),
+        SizedBox(height: 4.h(context)),
+        Text(strings.passwordValidation, style: context.textTheme.labelSmall),
         SizedBox(height: 32.h(context)),
         AppButton(
-          text: 'SIGN UP',
+          text: strings.signUp,
           onPressed: onRegisterPressed,
           isLoading: isLoading,
         ),

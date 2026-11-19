@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 
@@ -63,13 +64,33 @@ class AppLogger {
     if (kDebugMode) {
       final sanitizedPath = sanitizeUrlPath(url);
       final statusStr = statusCode != null ? ' Status: $statusCode' : '';
-      final durationStr = duration != null ? ' Duration: ${duration.inMilliseconds}ms' : '';
-      final errorStr = error != null ? ' [ERROR: Exception Occurred]' : '';
+      final durationStr = duration != null
+          ? ' Duration: ${duration.inMilliseconds}ms'
+          : '';
+      final errorStr = error != null ? ' [ERROR: $error]' : '';
 
-      developer.log(
-        '🌐 API [$method] -> $sanitizedPath$statusStr$durationStr$errorStr',
-        name: 'API_LOGGER',
-      );
+      final logMessage = StringBuffer()
+        ..writeln(
+          '🌐 API [$method] -> $sanitizedPath$statusStr$durationStr$errorStr',
+        );
+
+      if (queryParameters != null) {
+        logMessage.writeln(
+          ' 🔍 Query Params: ${sanitizeData(queryParameters)}',
+        );
+      }
+
+      if (data != null) {
+        logMessage.writeln(' 📤 Request Body: ${sanitizeData(data)}');
+      }
+
+      if (responseData != null) {
+        logMessage.writeln(
+          ' 📥 Response Data: ${sanitizeData(jsonEncode(responseData))}',
+        );
+      }
+
+      developer.log(logMessage.toString().trimRight(), name: 'API_LOGGER');
     }
   }
 }

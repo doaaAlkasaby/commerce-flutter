@@ -1,6 +1,8 @@
+const _sentinel = Object();
+
 class FilterModel {
   final double minPrice;
-  final double maxPrice;
+  final double? maxPrice;
   final String? categoryId;
   final String? brandId;
   final String sortBy;
@@ -8,7 +10,7 @@ class FilterModel {
 
   const FilterModel({
     this.minPrice = 0.0,
-    this.maxPrice = 200.0,
+    this.maxPrice,
     this.categoryId,
     this.brandId,
     this.sortBy = 'createdAt',
@@ -17,17 +19,19 @@ class FilterModel {
 
   FilterModel copyWith({
     double? minPrice,
-    double? maxPrice,
-    String? categoryId,
-    String? brandId,
+    Object? maxPrice = _sentinel,
+    Object? categoryId = _sentinel,
+    Object? brandId = _sentinel,
     String? sortBy,
     String? sortOrder,
   }) {
     return FilterModel(
       minPrice: minPrice ?? this.minPrice,
-      maxPrice: maxPrice ?? this.maxPrice,
-      categoryId: categoryId ?? this.categoryId,
-      brandId: brandId ?? this.brandId,
+      maxPrice: maxPrice == _sentinel ? this.maxPrice : maxPrice as double?,
+      categoryId: categoryId == _sentinel
+          ? this.categoryId
+          : categoryId as String?,
+      brandId: brandId == _sentinel ? this.brandId : brandId as String?,
       sortBy: sortBy ?? this.sortBy,
       sortOrder: sortOrder ?? this.sortOrder,
     );

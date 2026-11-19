@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
+import 'package:ecommerce/core/theme/text_theme_extension.dart';
 import 'package:ecommerce/features/product/presentation/screens/product_list_screen.dart';
 import '../providers/categories_provider.dart';
 import '../../models/category_detail_model.dart';
@@ -34,7 +35,6 @@ class _CategoryChildrenScreenState
     final localizationAsync = ref.watch(appLocalizationLoaderProvider);
     final currentLang = ref.watch(languageProvider);
     final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
-    final isArabic = currentLang == AppLanguage.ar;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -62,7 +62,7 @@ class _CategoryChildrenScreenState
             ),
             child: IconButton(
               icon: Icon(
-                isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
+                Icons.arrow_back_ios_new,
                 size: 16.sp(context),
                 color: isDark
                     ? AppColors.darkTextPrimary
@@ -72,16 +72,7 @@ class _CategoryChildrenScreenState
             ),
           ),
         ),
-        title: Text(
-          widget.category.name,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontSize: 20.sp(context),
-            fontWeight: FontWeight.bold,
-            color: isDark
-                ? AppColors.darkTextPrimary
-                : AppColors.lightTextPrimary,
-          ),
-        ),
+        title: Text(widget.category.name, style: context.textTheme.titleLarge),
       ),
       body: FutureBuilder<List<MainCategoryModel>>(
         future: _childrenFuture,
@@ -95,10 +86,7 @@ class _CategoryChildrenScreenState
             return Center(
               child: Text(
                 strings.noProductsFound,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontSize: 14.sp(context),
-                  color: AppColors.lightTextSecondary,
-                ),
+                style: context.textTheme.bodyMedium,
               ),
             );
           }
@@ -128,68 +116,64 @@ class _CategoryChildrenScreenState
                     );
                   }
                 },
-                child: Container(
-                  margin: EdgeInsets.only(bottom: 16.h(context)),
-                  height: 110.h(context),
-                  decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkCardBg : Colors.white,
-                    borderRadius: BorderRadius.circular(24.w(context)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 10,
-                        offset: Offset(0, 4.h(context)),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.horizontal(
-                          left: Radius.circular(24.w(context)),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24.w(context)),
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 16.h(context)),
+                    height: 90.h(context),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.darkCardBg : Colors.white,
+                      borderRadius: BorderRadius.circular(20.w(context)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 10,
+                          offset: Offset(0, 4.h(context)),
                         ),
-                        child: SizedBox(
-                          width: 110.w(context),
-                          height: 110.h(context),
-                          child: CachedNetworkImage(
-                            imageUrl: sub.imageUrl,
-                            fit: BoxFit.cover,
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.category_outlined),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20.w(context)),
+                          child: SizedBox(
+                            width: 90.w(context),
+                            height: 90.h(context),
+                            child: CachedNetworkImage(
+                              imageUrl: sub.imageUrl,
+                              fit: BoxFit.cover,
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.category_outlined),
+                            ),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.all(16.w(context)),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                sub.name,
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(
-                                      fontSize: 16.sp(context),
-                                      fontWeight: FontWeight.bold,
-                                      color: isDark
-                                          ? AppColors.darkTextPrimary
-                                          : AppColors.lightTextPrimary,
-                                    ),
-                              ),
-                            ],
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.w(context)),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  sub.name,
+                                  style: context.textTheme.titleMedium,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 16.w(context)),
-                        child: Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16.sp(context),
-                          color: AppColors.lightTextSecondary,
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w(context),
+                          ),
+                          child: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16.sp(context),
+                            color: AppColors.lightTextSecondary,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );

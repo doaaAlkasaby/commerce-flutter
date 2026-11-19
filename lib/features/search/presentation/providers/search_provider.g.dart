@@ -94,7 +94,7 @@ final class FilterNotifierProvider
   }
 }
 
-String _$filterNotifierHash() => r'93f479e5163c0fb8bb9b5fb90778544a90dbc859';
+String _$filterNotifierHash() => r'63c3dfeddfa8862f88a399e8e271f7368b5cf46b';
 
 abstract class _$FilterNotifier extends $Notifier<FilterModel> {
   FilterModel build();
@@ -107,6 +107,56 @@ abstract class _$FilterNotifier extends $Notifier<FilterModel> {
             as $ClassProviderElement<
               AnyNotifier<FilterModel, FilterModel>,
               FilterModel,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(SearchController)
+final searchControllerProvider = SearchControllerProvider._();
+
+final class SearchControllerProvider
+    extends $AsyncNotifierProvider<SearchController, PaginatedProductsState> {
+  SearchControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'searchControllerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$searchControllerHash();
+
+  @$internal
+  @override
+  SearchController create() => SearchController();
+}
+
+String _$searchControllerHash() => r'2aff4ff7040b81c52db03ae1b6bc371498876431';
+
+abstract class _$SearchController
+    extends $AsyncNotifier<PaginatedProductsState> {
+  FutureOr<PaginatedProductsState> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref
+            as $Ref<AsyncValue<PaginatedProductsState>, PaginatedProductsState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<PaginatedProductsState>,
+                PaginatedProductsState
+              >,
+              AsyncValue<PaginatedProductsState>,
               Object?,
               Object?
             >;
@@ -159,4 +209,4 @@ final class FilteredProductsProvider
   }
 }
 
-String _$filteredProductsHash() => r'd91d2960c3f84d548dfdfbc51f7b603c968788c9';
+String _$filteredProductsHash() => r'4aaf21884b011f57b9e206e0958b53e322831e66';

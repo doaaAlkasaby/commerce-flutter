@@ -55,44 +55,131 @@ final class OrdersRepositoryProvider
 
 String _$ordersRepositoryHash() => r'336c5b7e73d3e99b07a78dd11ed4100534b053d9';
 
-@ProviderFor(myOrders)
-final myOrdersProvider = MyOrdersProvider._();
+@ProviderFor(MyOrdersController)
+final myOrdersControllerProvider = MyOrdersControllerProvider._();
 
-final class MyOrdersProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<List<OrderModel>>,
-          List<OrderModel>,
-          FutureOr<List<OrderModel>>
-        >
-    with $FutureModifier<List<OrderModel>>, $FutureProvider<List<OrderModel>> {
-  MyOrdersProvider._()
+final class MyOrdersControllerProvider
+    extends $AsyncNotifierProvider<MyOrdersController, PaginatedOrdersState> {
+  MyOrdersControllerProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'myOrdersProvider',
+        name: r'myOrdersControllerProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$myOrdersHash();
+  String debugGetCreateSourceHash() => _$myOrdersControllerHash();
 
   @$internal
   @override
-  $FutureProviderElement<List<OrderModel>> $createElement(
+  MyOrdersController create() => MyOrdersController();
+}
+
+String _$myOrdersControllerHash() =>
+    r'8867fcd7d8832e8f15dd74da52576c51a10d75f8';
+
+abstract class _$MyOrdersController
+    extends $AsyncNotifier<PaginatedOrdersState> {
+  FutureOr<PaginatedOrdersState> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref
+            as $Ref<AsyncValue<PaginatedOrdersState>, PaginatedOrdersState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<PaginatedOrdersState>,
+                PaginatedOrdersState
+              >,
+              AsyncValue<PaginatedOrdersState>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(orderDetails)
+final orderDetailsProvider = OrderDetailsFamily._();
+
+final class OrderDetailsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<OrderModel?>,
+          OrderModel?,
+          FutureOr<OrderModel?>
+        >
+    with $FutureModifier<OrderModel?>, $FutureProvider<OrderModel?> {
+  OrderDetailsProvider._({
+    required OrderDetailsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'orderDetailsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$orderDetailsHash();
+
+  @override
+  String toString() {
+    return r'orderDetailsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<OrderModel?> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<List<OrderModel>> create(Ref ref) {
-    return myOrders(ref);
+  FutureOr<OrderModel?> create(Ref ref) {
+    final argument = this.argument as String;
+    return orderDetails(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is OrderDetailsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
   }
 }
 
-String _$myOrdersHash() => r'5de018cac733ca235fb1d06689e0651fe793b763';
+String _$orderDetailsHash() => r'9df6a4b327627e668c39e700d2525d769e6c73f0';
+
+final class OrderDetailsFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<OrderModel?>, String> {
+  OrderDetailsFamily._()
+    : super(
+        retry: null,
+        name: r'orderDetailsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  OrderDetailsProvider call(String orderId) =>
+      OrderDetailsProvider._(argument: orderId, from: this);
+
+  @override
+  String toString() => r'orderDetailsProvider';
+}
 
 @ProviderFor(OrderFilterNotifier)
 final orderFilterProvider = OrderFilterNotifierProvider._();

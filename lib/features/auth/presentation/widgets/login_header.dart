@@ -1,53 +1,70 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
+import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
+import 'package:ecommerce/core/theme/text_theme_extension.dart';
+import 'package:flutter_svg/svg.dart';
 
-class LoginHeaderWidget extends StatelessWidget {
+import '../../../../core/config/app_environment.dart';
+import '../../../../core/config/tenant_config.dart';
+import '../../../../core/constants/app_assets.dart';
+
+class LoginHeaderWidget extends ConsumerWidget {
   const LoginHeaderWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentLang = ref.watch(languageProvider);
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final tenant = ref.watch(tenantProvider);
+    Widget defaultLogo = Image.asset(
+      AppAssets.logo,
+      width: 50.w(context),
+      height: 50.w(context),
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) =>
+          const Icon(Icons.storefront, color: AppColors.primary, size: 24),
+    );
+
+    final resolvedLogoUrl = AppEnvironment.resolveImageUrl(tenant.logoUrl);
+
+    Widget logoWidget;
+    if (resolvedLogoUrl.isNotEmpty) {
+      if (resolvedLogoUrl.toLowerCase().contains('.svg')) {
+        logoWidget = SvgPicture.network(
+          resolvedLogoUrl,
+          width: 100.w(context),
+          height: 100.w(context),
+          fit: BoxFit.fill,
+          placeholderBuilder: (_) => defaultLogo,
+        );
+      } else {
+        logoWidget = CachedNetworkImage(
+          imageUrl: resolvedLogoUrl,
+          width: 100.w(context),
+          height: 100.w(context),
+          fit: BoxFit.fill,
+          errorWidget: (context, url, error) => defaultLogo,
+        );
+      }
+    } else {
+      logoWidget = defaultLogo;
+    }
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 36.w(context),
-              height: 36.w(context),
-              decoration: const BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
-              ),
-            ),
-            SizedBox(width: 8.w(context)),
-            Icon(
-              Icons.favorite,
-              color: AppColors.primary,
-              size: 48.sp(context),
-            ),
-            SizedBox(width: 8.w(context)),
-            Container(
-              width: 36.w(context),
-              height: 44.h(context),
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(18.w(context)),
-              ),
-            ),
-          ],
+        ClipRRect(
+          borderRadius: BorderRadius.circular(50.w(context)),
+          child: logoWidget,
         ),
         SizedBox(height: 12.h(context)),
-        Text(
-          'kids studio',
-          style: Theme.of(context).textTheme.displayMedium?.copyWith(
-            fontSize: 24.sp(context),
-            fontWeight: FontWeight.bold,
-            color: AppColors.primary,
-            letterSpacing: 1.2,
-          ),
-        ),
+        Text(tenant.appName, style: context.textTheme.primaryDisplayLarge),
         SizedBox(height: 16.h(context)),
         Container(
           padding: EdgeInsets.symmetric(
@@ -55,7 +72,7 @@ class LoginHeaderWidget extends StatelessWidget {
             vertical: 8.h(context),
           ),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? AppColors.darkCardBg : Colors.white,
             borderRadius: BorderRadius.circular(20.w(context)),
             boxShadow: [
               BoxShadow(
@@ -75,12 +92,8 @@ class LoginHeaderWidget extends StatelessWidget {
               ),
               SizedBox(width: 6.w(context)),
               Text(
-                'Learn through play',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontSize: 13.sp(context),
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.lightTextPrimary,
-                ),
+                strings.learnThroughPlay,
+                style: context.textTheme.titleSmall,
               ),
             ],
           ),

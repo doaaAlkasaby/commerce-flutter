@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
+import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/core/theme/text_theme_extension.dart';
 import 'package:ecommerce/core/widgets/app_text_field.dart';
 import 'package:ecommerce/core/widgets/app_button.dart';
 
-class LoginFormWidget extends StatelessWidget {
+class LoginFormWidget extends ConsumerWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final bool obscurePassword;
@@ -30,12 +32,17 @@ class LoginFormWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentLang = ref.watch(languageProvider);
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(24.w(context)),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkCardBg : Colors.white,
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(36.w(context)),
         ),
@@ -52,37 +59,25 @@ class LoginFormWidget extends StatelessWidget {
         children: [
           Center(
             child: Container(
-              width: 40.w(context),
-              height: 4.h(context),
+              width: 48.w(context),
+              height: 5.h(context),
               decoration: BoxDecoration(
                 color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2.w(context)),
+                borderRadius: BorderRadius.circular(10.w(context)),
               ),
             ),
           ),
           SizedBox(height: 24.h(context)),
-          Text(
-            isArabic ? 'تسجيل الدخول' : 'Welcome back',
-            style: context.textTheme.displaySmall?.copyWith(
-              fontSize: 26.sp(context),
-              fontWeight: FontWeight.bold,
-              color: AppColors.lightTextPrimary,
-            ),
-          ),
+          Text(strings.welcomeBack, style: context.textTheme.displaySmall),
           SizedBox(height: 8.h(context)),
           Text(
-            isArabic
-                ? 'الرجاء إدخال بيانات حسابك'
-                : 'Please enter your account details',
-            style: context.textTheme.bodyMedium?.copyWith(
-              fontSize: 14.sp(context),
-              color: AppColors.lightTextSecondary,
-            ),
+            strings.pleaseEnterAccountDetails,
+            style: context.textTheme.bodyMedium,
           ),
           SizedBox(height: 28.h(context)),
           AppTextField(
             controller: emailController,
-            labelText: isArabic ? 'البريد الإلكتروني' : 'Email Address',
+            labelText: strings.emailAddress,
             hintText: 'name@example.com',
             prefixIcon: Icons.email_outlined,
             keyboardType: TextInputType.emailAddress,
@@ -90,8 +85,8 @@ class LoginFormWidget extends StatelessWidget {
           SizedBox(height: 20.h(context)),
           AppTextField(
             controller: passwordController,
-            labelText: isArabic ? 'كلمة المرور' : 'Password',
-            hintText: 'Enter your password',
+            labelText: strings.password,
+            hintText: strings.enterYourPassword,
             prefixIcon: Icons.lock_outline,
             obscureText: obscurePassword,
             suffixIcon: IconButton(
@@ -106,21 +101,17 @@ class LoginFormWidget extends StatelessWidget {
           ),
           SizedBox(height: 24.h(context)),
           AppButton(
-            text: isArabic ? 'تسجيل الدخول' : 'SIGN IN',
+            text: strings.signIn,
             onPressed: onLoginPressed,
             isLoading: isLoading,
           ),
-          SizedBox(height: 16.h(context)),
+          SizedBox(height: 0.h(context)),
           Center(
             child: TextButton(
               onPressed: onForgotPasswordPressed,
               child: Text(
-                isArabic ? 'هل نسيت كلمة المرور؟' : 'Forgot password?',
-                style: context.textTheme.bodySmall?.copyWith(
-                  fontSize: 13.sp(context),
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
+                strings.forgotPasswordQ,
+                style: context.textTheme.primaryBodySmall,
               ),
             ),
           ),
@@ -129,25 +120,19 @@ class LoginFormWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                isArabic ? 'ليس لديك حساب؟' : "Don't have an account?",
-                style: context.textTheme.titleSmall?.copyWith(
-                  fontSize: 13.sp(context),
-                  color: AppColors.lightTextSecondary,
-                ),
+                strings.dontHaveAccount,
+                style: context.textTheme.bodyMedium,
               ),
               TextButton(
                 onPressed: onCreateAccountPressed,
                 child: Text(
-                  isArabic ? 'إنشاء حساب' : 'Sign up',
-                  style: context.textTheme.labelLarge?.copyWith(
-                    fontSize: 13.sp(context),
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
+                  strings.signUp,
+                  style: context.textTheme.primaryTitleMedium,
                 ),
               ),
             ],
           ),
+          SizedBox(height: 0.h(context)),
         ],
       ),
     );

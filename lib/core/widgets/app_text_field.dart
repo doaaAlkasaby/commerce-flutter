@@ -15,6 +15,8 @@ class AppTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final TextInputAction? textInputAction;
+  final Color? bkgColor;
+  final Color? borderColor;
 
   const AppTextField({
     super.key,
@@ -29,6 +31,8 @@ class AppTextField extends StatelessWidget {
     this.onChanged,
     this.onSubmitted,
     this.textInputAction,
+    this.bkgColor,
+    this.borderColor,
   });
 
   @override
@@ -39,21 +43,16 @@ class AppTextField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (labelText != null) ...[
-          Text(
-            labelText!,
-            style: context.textTheme.fieldLabel?.copyWith(
-              fontSize: 13.sp(context),
-            ),
-          ),
+          Text(labelText!, style: context.textTheme.fieldLabel),
           SizedBox(height: 6.h(context)),
         ],
         Container(
           decoration: BoxDecoration(
-            color: isDark
-                ? AppColors.darkBackground
-                : AppColors.lightBackground,
+            color:
+                bkgColor ??
+                (isDark ? AppColors.darkBackground : AppColors.lightBackground),
             borderRadius: BorderRadius.circular(16.w(context)),
-            border: Border.all(color: Colors.grey.shade300),
+            border: Border.all(color: borderColor ?? Colors.grey.shade300),
           ),
           child: TextField(
             controller: controller,
@@ -63,17 +62,10 @@ class AppTextField extends StatelessWidget {
             onChanged: onChanged,
             onSubmitted: onSubmitted,
             textInputAction: textInputAction,
-            style: context.textTheme.bodyMedium?.copyWith(
-              color: isDark
-                  ? AppColors.darkTextPrimary
-                  : AppColors.lightTextPrimary,
-              fontSize: 14.sp(context),
-            ),
+            style: context.textTheme.field,
             decoration: InputDecoration(
               hintText: hintText,
-              hintStyle: context.textTheme.secondaryHint?.copyWith(
-                fontSize: 13.sp(context),
-              ),
+              hintStyle: context.textTheme.secondaryHint,
               prefixIcon: prefixIcon != null
                   ? Icon(
                       prefixIcon,

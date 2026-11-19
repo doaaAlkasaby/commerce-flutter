@@ -50,13 +50,11 @@ final class UserRepositoryProvider
 
 String _$userRepositoryHash() => r'b4da2785ffabb19da795db712885a9430694be70';
 
-@ProviderFor(currentUser)
+@ProviderFor(CurrentUser)
 final currentUserProvider = CurrentUserProvider._();
 
 final class CurrentUserProvider
-    extends
-        $FunctionalProvider<AsyncValue<UserDto?>, UserDto?, FutureOr<UserDto?>>
-    with $FutureModifier<UserDto?>, $FutureProvider<UserDto?> {
+    extends $AsyncNotifierProvider<CurrentUser, UserDto?> {
   CurrentUserProvider._()
     : super(
         from: null,
@@ -73,13 +71,25 @@ final class CurrentUserProvider
 
   @$internal
   @override
-  $FutureProviderElement<UserDto?> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<UserDto?> create(Ref ref) {
-    return currentUser(ref);
-  }
+  CurrentUser create() => CurrentUser();
 }
 
-String _$currentUserHash() => r'd17ab07a14179a80a06f37b23d37466be603fc5c';
+String _$currentUserHash() => r'5a14ce8e8f792e44d4498d27196d73f82ad6649e';
+
+abstract class _$CurrentUser extends $AsyncNotifier<UserDto?> {
+  FutureOr<UserDto?> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<UserDto?>, UserDto?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<UserDto?>, UserDto?>,
+              AsyncValue<UserDto?>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}

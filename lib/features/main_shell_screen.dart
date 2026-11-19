@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:ecommerce/core/constants/app_assets.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/network/dio_client.dart';
@@ -27,16 +29,78 @@ class NavigationIndex extends _$NavigationIndex {
 class MainShellScreen extends ConsumerWidget {
   const MainShellScreen({super.key});
 
+  Widget _buildSvgIcon(String assetPath, Color color, {double size = 20}) {
+    return Padding(
+      padding: EdgeInsetsGeometry.only(top: 5, bottom: 5),
+      child: SvgPicture.asset(
+        assetPath,
+        width: size,
+        height: size,
+        colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+      ),
+    );
+  }
+
+  Widget _buildCartIcon(
+    String assetPath,
+    Color color,
+    int itemCount, {
+    double size = 20,
+  }) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Padding(
+          padding: EdgeInsetsGeometry.only(top: 5, bottom: 5),
+          child: SvgPicture.asset(
+            assetPath,
+            width: size,
+            height: size,
+            colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+          ),
+        ),
+        if (itemCount > 0)
+          Positioned(
+            top: -4,
+            right: -6,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: const BoxDecoration(
+                color: AppColors.badgeRed,
+                shape: BoxShape.circle,
+              ),
+              constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+              child: Text(
+                '$itemCount',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 9,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(navigationIndexProvider);
     final currentLang = ref.watch(languageProvider);
-    final isArabic = currentLang == AppLanguage.ar;
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final token = ref.watch(authTokenProvider);
     final isUnauthorized = token == null || token.isEmpty;
     final cartAsync = ref.watch(cartProvider);
     final itemCount = cartAsync.value?.itemCount ?? 0;
+
+    final selectedColor = isDark ? Colors.white : AppColors.primary;
+    final unselectedColor = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     final List<Widget> screens = [
       const HomeScreen(),
@@ -73,103 +137,73 @@ class MainShellScreen extends ConsumerWidget {
                   : AppColors.lightBackground,
               elevation: 0,
               type: BottomNavigationBarType.fixed,
-              selectedItemColor: AppColors.primary,
-              unselectedItemColor: isDark
-                  ? AppColors.darkTextSecondary
-                  : AppColors.lightTextSecondary,
+              selectedItemColor: isDark ? Colors.white : AppColors.primary,
+              selectedIconTheme: IconThemeData(
+                color: isDark ? Colors.white : AppColors.primary,
+              ),
+              unselectedItemColor: unselectedColor,
               selectedLabelStyle: const TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 12,
+                fontSize: 11,
               ),
               unselectedLabelStyle: const TextStyle(
                 fontWeight: FontWeight.w500,
-                fontSize: 12,
+                fontSize: 11,
               ),
               items: [
                 BottomNavigationBarItem(
-                  icon: const Icon(Icons.home_outlined),
-                  activeIcon: const Icon(Icons.home),
-                  label: isArabic ? 'الرئيسية' : 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.grid_view_outlined),
-                  activeIcon: const Icon(Icons.grid_view),
-                  label: isArabic ? 'التصنيفات' : 'Categories',
-                ),
-                BottomNavigationBarItem(
-                  icon: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      const Icon(Icons.shopping_cart_outlined),
-                      if (itemCount > 0)
-                        Positioned(
-                          top: -4,
-                          right: -6,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: const BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
-                            ),
-                            constraints: const BoxConstraints(
-                              minWidth: 16,
-                              minHeight: 16,
-                            ),
-                            child: Text(
-                              '$itemCount',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 9,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                    ],
+                  icon: _buildSvgIcon(
+                    AppAssets.homeSvg,
+                    unselectedColor,
+                    size: 17,
                   ),
-                  activeIcon: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      const Icon(Icons.shopping_cart),
-                      if (itemCount > 0)
-                        Positioned(
-                          top: -4,
-                          right: -6,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: const BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
-                            ),
-                            constraints: const BoxConstraints(
-                              minWidth: 16,
-                              minHeight: 16,
-                            ),
-                            child: Text(
-                              '$itemCount',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 9,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                    ],
+                  activeIcon: _buildSvgIcon(
+                    AppAssets.homeSvg,
+                    selectedColor,
+                    size: 17,
                   ),
-                  label: isArabic ? 'السلة' : 'Cart',
+                  label: strings.home,
                 ),
                 BottomNavigationBarItem(
-                  icon: const Icon(Icons.assignment_outlined),
-                  activeIcon: const Icon(Icons.assignment),
-                  label: isArabic ? 'الطلبات' : 'Orders',
+                  icon: _buildSvgIcon(
+                    AppAssets.categoriesSvg,
+                    unselectedColor,
+                    size: 17,
+                  ),
+                  activeIcon: _buildSvgIcon(
+                    AppAssets.categoriesSvg,
+                    selectedColor,
+                    size: 17,
+                  ),
+                  label: strings.categories,
                 ),
                 BottomNavigationBarItem(
-                  icon: const Icon(Icons.settings_outlined),
-                  activeIcon: const Icon(Icons.settings),
-                  label: isArabic ? 'الإعدادات' : 'Settings',
+                  icon: _buildCartIcon(
+                    AppAssets.cartSvg,
+                    unselectedColor,
+                    itemCount,
+                    size: 17,
+                  ),
+                  activeIcon: _buildCartIcon(
+                    AppAssets.cartSvg,
+                    selectedColor,
+                    itemCount,
+                    size: 17,
+                  ),
+                  label: strings.cart,
+                ),
+                BottomNavigationBarItem(
+                  icon: _buildSvgIcon(AppAssets.ordersSvg, unselectedColor),
+                  activeIcon: _buildSvgIcon(AppAssets.ordersSvg, selectedColor),
+                  label: strings.orders,
+                ),
+                BottomNavigationBarItem(
+                  icon: _buildSvgIcon(AppAssets.settingsSvg, unselectedColor),
+                  activeIcon: _buildSvgIcon(
+                    AppAssets.settingsSvg,
+                    selectedColor,
+                  ),
+                  label: strings.settings,
                 ),
               ],
             ),

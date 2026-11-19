@@ -5,6 +5,7 @@ import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/network/dio_client.dart';
 import 'package:ecommerce/core/widgets/app_scaffold.dart';
+import 'package:ecommerce/core/utils/app_error_utils.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/features/auth/data/auth_repository.dart';
 import 'package:ecommerce/features/auth/presentation/providers/user_provider.dart';
@@ -25,15 +26,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<void> _handleRegister() async {
+  Future<void> _handleRegister(AppStrings strings) async {
     final fullName = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
     if (fullName.isEmpty || email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(strings.pleaseFillAllFields)));
       return;
     }
 
@@ -69,22 +70,28 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Registration successful!')),
+            SnackBar(content: Text(strings.registrationSuccessful)),
           );
           Navigator.of(context).pop();
         }
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(response.message ?? 'Registration failed')),
+            SnackBar(
+              content: Text(response.message ?? strings.registrationFailed),
+            ),
           );
         }
       }
     } catch (e) {
       if (mounted) {
+        final errorMessage = AppErrorUtils.extractErrorMessage(
+          e,
+          fallback: strings.registrationFailedTryAgain,
+        );
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
       }
     } finally {
       if (mounted) {
@@ -98,7 +105,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final currentLang = ref.watch(languageProvider);
-    final isArabic = currentLang == AppLanguage.ar;
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
 
     return AppScaffold(
       body: SafeArea(
@@ -127,9 +135,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                     child: IconButton(
                       icon: Icon(
-                        isArabic
-                            ? Icons.arrow_forward_ios
-                            : Icons.arrow_back_ios_new,
+                        Icons.arrow_back_ios_new,
                         size: 16.sp(context),
                         color: AppColors.lightTextPrimary,
                       ),
@@ -146,8 +152,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RegisterHeaderWidget(isArabic: isArabic),
-                    SizedBox(height: 24.h(context)),
+                    const RegisterHeaderWidget(),
+                    SizedBox(height: 40.h(context)),
                     RegisterFormWidget(
                       nameController: _nameController,
                       emailController: _emailController,
@@ -159,7 +165,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           _obscurePassword = !_obscurePassword;
                         });
                       },
-                      onRegisterPressed: _handleRegister,
+                      onRegisterPressed: () => _handleRegister(strings),
                     ),
                   ],
                 ),

@@ -55,7 +55,7 @@ final class SessionCoordinatorProvider
 }
 
 String _$sessionCoordinatorHash() =>
-    r'137a1853b7856a42664e1eaebec801d8c6138e8e';
+    r'94c419cea5a5ad40bb7c3678aaf1cde8ec998ffc';
 
 @ProviderFor(AuthTokenNotifier)
 final authTokenProvider = AuthTokenNotifierProvider._();
@@ -89,7 +89,7 @@ final class AuthTokenNotifierProvider
   }
 }
 
-String _$authTokenNotifierHash() => r'cfe37883725446a46b577d13af21a58559139204';
+String _$authTokenNotifierHash() => r'0446932676aecee6908a7ebac6e83f06005511f0';
 
 abstract class _$AuthTokenNotifier extends $Notifier<String?> {
   String? build();
@@ -147,4 +147,4 @@ final class DioClientProvider extends $FunctionalProvider<Dio, Dio, Dio>
   }
 }
 
-String _$dioClientHash() => r'3363bf0729e57fc11a1b7e3d57b58cc984767855';
+String _$dioClientHash() => r'cdf3e9434773335784008cc27924f00a6241b9a7';

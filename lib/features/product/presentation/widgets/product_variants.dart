@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
+import 'package:ecommerce/core/localization/app_localizations.dart';
+import 'package:ecommerce/core/theme/text_theme_extension.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/features/home/models/home_response_model.dart';
 
-class ProductVariantsWidget extends StatelessWidget {
+class ProductVariantsWidget extends ConsumerWidget {
   final ProductModel product;
   final ProductVariantModel? selectedVariant;
   final bool isDark;
@@ -16,8 +19,12 @@ class ProductVariantsWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (product.variants.isEmpty) return const SizedBox.shrink();
+
+    final currentLang = ref.watch(languageProvider);
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
 
     return Container(
       margin: EdgeInsets.symmetric(vertical: 16.h(context)),
@@ -34,11 +41,9 @@ class ProductVariantsWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Available Variant SKU',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                strings.availableVariantSku,
+                style: context.textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: 13.sp(context),
-                  color: AppColors.lightTextSecondary,
                 ),
               ),
               Container(
@@ -54,15 +59,11 @@ class ProductVariantsWidget extends StatelessWidget {
                 ),
                 child: Text(
                   (selectedVariant?.isActive ?? true)
-                      ? 'In Stock'
-                      : 'Out of Stock',
-                  style: TextStyle(
-                    fontSize: 11.sp(context),
-                    fontWeight: FontWeight.bold,
-                    color: (selectedVariant?.isActive ?? true)
-                        ? AppColors.mintTeal
-                        : AppColors.badgeRed,
-                  ),
+                      ? strings.inStock
+                      : strings.outOfStockLabel,
+                  style: (selectedVariant?.isActive ?? true)
+                      ? context.textTheme.mintLabelSmall
+                      : context.textTheme.redTitleSmall,
                 ),
               ),
             ],
@@ -70,13 +71,7 @@ class ProductVariantsWidget extends StatelessWidget {
           SizedBox(height: 8.h(context)),
           Text(
             selectedVariant?.sku ?? product.slug.toUpperCase(),
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              fontSize: 14.sp(context),
-              color: isDark
-                  ? AppColors.darkTextPrimary
-                  : AppColors.lightTextPrimary,
-            ),
+            style: context.textTheme.titleMedium,
           ),
         ],
       ),

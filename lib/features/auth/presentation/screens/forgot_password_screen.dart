@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/network/dio_client.dart';
+import 'package:ecommerce/core/utils/app_error_utils.dart';
 import 'package:ecommerce/core/widgets/app_scaffold.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/features/auth/data/auth_repository.dart';
@@ -21,13 +22,13 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
   bool _isLoading = false;
 
-  Future<void> _handleForgotPassword() async {
+  Future<void> _handleForgotPassword(AppStrings strings) async {
     final email = _emailController.text.trim();
 
     if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter your email address')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(strings.pleaseEnterEmail)));
       return;
     }
 
@@ -41,8 +42,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password reset instructions sent to your email.'),
+          SnackBar(
+            content: Text(strings.resetInstructionsSent),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -50,9 +51,13 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final errorMessage = AppErrorUtils.extractErrorMessage(
+          e,
+          fallback: strings.failedToProcessRequest,
+        );
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
       }
     } finally {
       if (mounted) {
@@ -66,7 +71,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final currentLang = ref.watch(languageProvider);
-    final isArabic = currentLang == AppLanguage.ar;
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
 
     return AppScaffold(
       body: SafeArea(
@@ -95,9 +101,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     ),
                     child: IconButton(
                       icon: Icon(
-                        isArabic
-                            ? Icons.arrow_forward_ios
-                            : Icons.arrow_back_ios_new,
+                        Icons.arrow_back_ios_new,
                         size: 16.sp(context),
                         color: AppColors.lightTextPrimary,
                       ),
@@ -114,12 +118,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ForgotPasswordHeaderWidget(isArabic: isArabic),
-                    SizedBox(height: 24.h(context)),
+                    const ForgotPasswordHeaderWidget(),
+                    SizedBox(height: 40.h(context)),
                     ForgotPasswordFormWidget(
                       emailController: _emailController,
                       isLoading: _isLoading,
-                      onSubmitPressed: _handleForgotPassword,
+                      onSubmitPressed: () => _handleForgotPassword(strings),
                     ),
                   ],
                 ),

@@ -2,12 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:ecommerce/core/config/app_environment.dart';
 import 'package:ecommerce/main.dart';
-import 'package:ecommerce/features/cart/presentation/providers/cart_provider.dart';
-import 'package:ecommerce/features/categories/presentation/providers/categories_provider.dart';
-import 'package:ecommerce/features/home/presentation/providers/home_provider.dart';
-import 'package:ecommerce/features/orders/presentation/providers/orders_provider.dart';
 
 part 'tenant_config.g.dart';
+
+@Riverpod(keepAlive: true)
+class TenantConfirmationNotifier extends _$TenantConfirmationNotifier {
+  @override
+  bool build() {
+    try {
+      return sharedPreferences.getBool('is_tenant_confirmed') ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> confirmTenant(String slug) async {
+    try {
+      await sharedPreferences.setString('selected_tenant_slug', slug);
+      await sharedPreferences.setBool('is_tenant_confirmed', true);
+    } catch (_) {}
+
+    ref.read(selectedTenantSlugProvider.notifier).setTenantSlug(slug);
+    state = true;
+  }
+
+  Future<void> resetConfirmation() async {
+    try {
+      await sharedPreferences.setBool('is_tenant_confirmed', false);
+    } catch (_) {}
+    state = false;
+  }
+}
 
 @Riverpod(keepAlive: true)
 class SelectedTenantSlugNotifier extends _$SelectedTenantSlugNotifier {
@@ -23,23 +48,13 @@ class SelectedTenantSlugNotifier extends _$SelectedTenantSlugNotifier {
   }
 
   Future<void> setTenantSlug(String newSlug) async {
-    if (newSlug.isEmpty || state == newSlug) return;
+    if (newSlug.isEmpty) return;
 
     try {
       await sharedPreferences.setString('selected_tenant_slug', newSlug);
     } catch (_) {}
 
     state = newSlug;
-
-    // Asynchronously invalidate tenant-scoped providers that do not directly watch selectedTenantSlugProvider
-    Future.microtask(() {
-      ref.invalidate(homeDataProvider);
-      ref.invalidate(mainCategoriesProvider);
-      ref.invalidate(activeCategoriesListProvider);
-      ref.invalidate(activeBrandsListProvider);
-      ref.invalidate(cartProvider);
-      ref.invalidate(myOrdersProvider);
-    });
   }
 }
 

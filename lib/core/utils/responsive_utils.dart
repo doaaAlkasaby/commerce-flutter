@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ecommerce/core/theme/app_typography.dart';
 
 class SizeConfig {
   static void init(BuildContext context) {
@@ -12,6 +13,5 @@ extension ResponsiveExtension on num {
       (this / 375.0) * MediaQuery.sizeOf(context).width;
   double h(BuildContext context) =>
       (this / 812.0) * MediaQuery.sizeOf(context).height;
-  double sp(BuildContext context) =>
-      (this / 375.0) * MediaQuery.sizeOf(context).width;
+  double sp(BuildContext context) => AppTypography.sp(toDouble(), context);
 }

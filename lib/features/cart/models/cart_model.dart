@@ -1,32 +1,54 @@
+import 'package:ecommerce/core/config/app_environment.dart';
+
 class CartProductModel {
   final String id;
   final String name;
   final String slug;
   final String basePrice;
+  final String? imageUrl;
 
   const CartProductModel({
     required this.id,
     required this.name,
     required this.slug,
     required this.basePrice,
+    this.imageUrl,
   });
 
   factory CartProductModel.fromJson(Map<String, dynamic> json) {
+    final rawUrl = json['imageUrl']?.toString();
     return CartProductModel(
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
       slug: json['slug']?.toString() ?? '',
       basePrice: json['basePrice']?.toString() ?? '0.00',
+      imageUrl: rawUrl != null && rawUrl.trim().isNotEmpty
+          ? AppEnvironment.resolveImageUrl(rawUrl.trim())
+          : null,
     );
   }
 }
 
 class CartImageModel {
   final String url;
-  const CartImageModel({required this.url});
+  final int sortOrder;
+  final bool isPrimary;
+
+  const CartImageModel({
+    required this.url,
+    this.sortOrder = 0,
+    this.isPrimary = false,
+  });
 
   factory CartImageModel.fromJson(Map<String, dynamic> json) {
-    return CartImageModel(url: json['url']?.toString() ?? '');
+    final rawUrl = json['url']?.toString() ?? '';
+    return CartImageModel(
+      url: rawUrl.trim().isNotEmpty
+          ? AppEnvironment.resolveImageUrl(rawUrl.trim())
+          : '',
+      sortOrder: (json['sortOrder'] as num?)?.toInt() ?? 0,
+      isPrimary: json['isPrimary'] as bool? ?? false,
+    );
   }
 }
 
@@ -44,6 +66,29 @@ class CartVariantModel {
     required this.product,
     required this.images,
   });
+
+  String? get resolvedImageUrl {
+    final validImages = images
+        .where((img) => img.url.trim().isNotEmpty)
+        .toList();
+
+    if (validImages.isNotEmpty) {
+      final primaryList = validImages.where((img) => img.isPrimary).toList();
+      if (primaryList.isNotEmpty) {
+        return primaryList.first.url;
+      }
+
+      final sortedImages = List<CartImageModel>.from(validImages)
+        ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+      return sortedImages.first.url;
+    }
+
+    if (product.imageUrl != null && product.imageUrl!.trim().isNotEmpty) {
+      return product.imageUrl!.trim();
+    }
+
+    return null;
+  }
 
   factory CartVariantModel.fromJson(Map<String, dynamic> json) {
     return CartVariantModel(
@@ -104,6 +149,13 @@ class CartModel {
     required this.itemCount,
     required this.subtotal,
   });
+
+  const CartModel.empty()
+    : id = '',
+      userId = '',
+      items = const [],
+      itemCount = 0,
+      subtotal = '0.00';
 
   factory CartModel.fromJson(Map<String, dynamic> json) {
     return CartModel(

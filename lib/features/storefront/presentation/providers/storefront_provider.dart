@@ -20,17 +20,22 @@ Future<StorefrontModel> storefront(Ref ref) async {
 
   // Guard against stale in-flight response after a tenant switch
   final currentSlug = ref.read(selectedTenantSlugProvider);
-  if (currentSlug != activeSlug || (model.slug.isNotEmpty && model.slug != currentSlug)) {
-    throw StateError('Stale storefront response discarded for tenant $activeSlug');
+  if (currentSlug != activeSlug ||
+      (model.slug.isNotEmpty && model.slug != currentSlug)) {
+    throw StateError(
+      'Stale storefront response discarded for tenant $activeSlug',
+    );
   }
 
   // Update dynamic tenant branding / currency in tenantProvider
-  ref.read(tenantProvider.notifier).updateFromStorefront(
-    id: model.id,
-    name: model.name,
-    currency: model.currencySymbol,
-    logoUrl: model.logoUrl,
-  );
+  ref
+      .read(tenantProvider.notifier)
+      .updateFromStorefront(
+        id: model.id,
+        name: model.name,
+        currency: model.currencySymbol,
+        logoUrl: model.logoUrl,
+      );
 
   return model;
 }

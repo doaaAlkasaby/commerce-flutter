@@ -2,13 +2,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce/core/widgets/app_image_container.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
-import '../../models/home_response_model.dart';
+import '../../../../core/theme/text_theme_extension.dart';
+import '../../../categories/models/category_detail_model.dart';
 
-class CategoryItem extends StatelessWidget {
-  final CategoryModel category;
+class CategoryItemWidget extends StatelessWidget {
+  final MainCategoryModel category;
   final VoidCallback onTap;
 
-  const CategoryItem({super.key, required this.category, required this.onTap});
+  const CategoryItemWidget({
+    super.key,
+    required this.category,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +28,15 @@ class CategoryItem extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               AppImageContainer(
-                width: 32.w(context),
-                height: 32.w(context),
-                borderRadius: BorderRadius.circular(16.w(context)),
+                width: 42.w(context),
+                height: 42.w(context),
+                borderRadius: BorderRadius.circular(26.w(context)),
                 child: Center(
                   child: CachedNetworkImage(
-                    imageUrl: category.imageUrl ?? "",
+                    imageUrl: category.imageUrl,
                     fit: BoxFit.cover,
-                    width: 32.w(context),
-                    height: 32.w(context),
+                    width: 42.w(context),
+                    height: 42.w(context),
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.category_outlined, size: 16),
                   ),
@@ -43,10 +48,7 @@ class CategoryItem extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  fontSize: 9.sp(context),
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(context).textTheme.titleMini,
               ),
             ],
           ),

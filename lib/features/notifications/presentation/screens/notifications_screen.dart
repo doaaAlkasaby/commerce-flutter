@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ecommerce/core/constants/app_assets.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
-import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/core/theme/text_theme_extension.dart';
-import 'package:ecommerce/core/network/dio_client.dart';
-import '../../data/notifications_repository.dart';
-import '../../models/notification_model.dart';
+import 'package:ecommerce/core/utils/app_error_utils.dart';
+import 'package:ecommerce/core/utils/responsive_utils.dart';
+import 'package:ecommerce/core/widgets/app_empty_widget.dart';
+import 'package:ecommerce/core/widgets/app_error_widget.dart';
+import '../providers/notifications_provider.dart';
+import '../widgets/notification_item_tile.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
@@ -17,48 +20,26 @@ class NotificationsScreen extends ConsumerStatefulWidget {
 }
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
-  late Future<List<NotificationModel>> _notificationsFuture;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _loadNotifications();
+    _scrollController.addListener(_onScroll);
   }
 
-  void _loadNotifications() {
-    _notificationsFuture = NotificationsRepository(
-      ref.read(dioClientProvider),
-    ).getNotifications();
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
   }
 
-  Future<void> _markAllAsRead() async {
-    try {
-      final repo = NotificationsRepository(ref.read(dioClientProvider));
-      await repo.markAllAsRead();
-      setState(() {
-        _loadNotifications();
-      });
-    } catch (_) {}
-  }
-
-  Future<void> _deleteNotification(String id) async {
-    try {
-      final repo = NotificationsRepository(ref.read(dioClientProvider));
-      await repo.deleteNotification(id);
-      setState(() {
-        _loadNotifications();
-      });
-    } catch (_) {}
-  }
-
-  Future<void> _markAsRead(String id) async {
-    try {
-      final repo = NotificationsRepository(ref.read(dioClientProvider));
-      await repo.markAsRead(id);
-      setState(() {
-        _loadNotifications();
-      });
-    } catch (_) {}
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      ref.read(notificationControllerProvider.notifier).loadNextPage();
+    }
   }
 
   @override
@@ -66,8 +47,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     final localizationAsync = ref.watch(appLocalizationLoaderProvider);
     final currentLang = ref.watch(languageProvider);
     final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
-    final isArabic = currentLang == AppLanguage.ar;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final notifAsync = ref.watch(notificationControllerProvider);
 
     return Scaffold(
       backgroundColor: isDark
@@ -94,7 +76,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             ),
             child: IconButton(
               icon: Icon(
-                isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
+                Icons.arrow_back_ios_new,
                 size: 16.sp(context),
                 color: isDark
                     ? AppColors.darkTextPrimary
@@ -104,68 +86,61 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             ),
           ),
         ),
-        title: Text(
-          strings.notifications,
-          style: context.textTheme.titleLarge?.copyWith(
-            fontSize: 20.sp(context),
-            color: isDark
-                ? AppColors.darkTextPrimary
-                : AppColors.lightTextPrimary,
-          ),
-        ),
+        title: Text(strings.notifications, style: context.textTheme.titleLarge),
         actions: [
           TextButton(
-            onPressed: _markAllAsRead,
+            onPressed: () async {
+              try {
+                await ref
+                    .read(notificationControllerProvider.notifier)
+                    .markAllAsRead();
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        AppErrorUtils.extractErrorMessage(
+                          e,
+                          fallback: strings.failedToMarkAllRead,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+              }
+            },
             child: Text(
               strings.markAllRead,
-              style: context.textTheme.labelLarge?.copyWith(
-                fontSize: 12.sp(context),
-                color: AppColors.primary,
-              ),
+              style: context.textTheme.primaryTitleSmall,
             ),
           ),
         ],
       ),
-      body: FutureBuilder<List<NotificationModel>>(
-        future: _notificationsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final notifications = snapshot.data ?? [];
+      body: notifAsync.when(
+        data: (paginatedState) {
+          final notifications = paginatedState.items;
 
           if (notifications.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: EdgeInsets.all(24.w(context)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.notifications_none_outlined,
-                      size: 64.sp(context),
-                      color: AppColors.lightTextSecondary,
-                    ),
-                    SizedBox(height: 16.h(context)),
-                    Text(
-                      strings.noNotifications,
-                      style: context.textTheme.boldTitleLarge?.copyWith(
-                        fontSize: 18.sp(context),
-                        color: isDark
-                            ? AppColors.darkTextPrimary
-                            : AppColors.lightTextPrimary,
-                      ),
-                    ),
-                    SizedBox(height: 6.h(context)),
-                    Text(
-                      strings.noNotificationsDesc,
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.description?.copyWith(
-                        fontSize: 13.sp(context),
-                      ),
-                    ),
-                  ],
+            return RefreshIndicator(
+              color: AppColors.primary,
+              onRefresh: () async {
+                await ref
+                    .read(notificationControllerProvider.notifier)
+                    .refresh();
+              },
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
                 ),
+                children: [
+                  SizedBox(height: 120.h(context)),
+                  AppEmptyWidget(
+                    title: strings.noNotifications,
+                    subtitle: strings.noNotificationsDesc,
+                    pngAsset: AppAssets.alarm,
+                    size: 80.w(context),
+                  ),
+                ],
               ),
             );
           }
@@ -173,129 +148,68 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           return RefreshIndicator(
             color: AppColors.primary,
             onRefresh: () async {
-              setState(() {
-                _loadNotifications();
-              });
-              await _notificationsFuture;
+              await ref.read(notificationControllerProvider.notifier).refresh();
             },
             child: ListView.builder(
+              controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(
                 parent: BouncingScrollPhysics(),
               ),
               padding: EdgeInsets.all(20.w(context)),
-              itemCount: notifications.length,
+              itemCount:
+                  notifications.length +
+                  (paginatedState.isLoadingMore ||
+                          paginatedState.loadMoreError != null
+                      ? 1
+                      : 0),
               itemBuilder: (context, index) {
-                final notification = notifications[index];
-                return Dismissible(
-                  key: Key(notification.id),
-                  direction: DismissDirection.endToStart,
-                  onDismissed: (_) => _deleteNotification(notification.id),
-                  background: Container(
-                    alignment: Alignment.centerRight,
-                    padding: EdgeInsets.only(right: 20.w(context)),
-                    decoration: BoxDecoration(
-                      color: AppColors.badgeRed,
-                      borderRadius: BorderRadius.circular(20.w(context)),
-                    ),
-                    child: Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                      size: 22.sp(context),
-                    ),
-                  ),
-                  child: GestureDetector(
-                    onTap: () => _markAsRead(notification.id),
-                    child: Container(
-                      margin: EdgeInsets.only(bottom: 14.h(context)),
-                      padding: EdgeInsets.all(16.w(context)),
-                      decoration: BoxDecoration(
-                        color: notification.isRead
-                            ? (isDark ? AppColors.darkCardBg : Colors.white)
-                            : AppColors.primary.withValues(alpha: 0.05),
-                        borderRadius: BorderRadius.circular(20.w(context)),
-                        border: Border.all(
-                          color: notification.isRead
-                              ? Colors.transparent
-                              : AppColors.primary.withValues(alpha: 0.3),
-                          width: 1,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.04),
-                            blurRadius: 10,
-                            offset: Offset(0, 4.h(context)),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                if (index == notifications.length) {
+                  if (paginatedState.isLoadingMore) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20.h(context)),
+                      child: const Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  if (paginatedState.loadMoreError != null) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16.h(context)),
+                      child: Column(
                         children: [
-                          Container(
-                            width: 40.w(context),
-                            height: 40.h(context),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              notification.isRead
-                                  ? Icons.notifications_outlined
-                                  : Icons.notifications_active,
-                              color: AppColors.primary,
-                              size: 20.sp(context),
-                            ),
+                          Text(
+                            strings.failedToLoadMore,
+                            style: context.textTheme.redTitleSmall,
                           ),
-                          SizedBox(width: 14.w(context)),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        notification.title,
-                                        style: context.textTheme.boldTitleMedium
-                                            ?.copyWith(
-                                              fontSize: 15.sp(context),
-                                              color: isDark
-                                                  ? AppColors.darkTextPrimary
-                                                  : AppColors.lightTextPrimary,
-                                            ),
-                                      ),
-                                    ),
-                                    Text(
-                                      notification.createdAt,
-                                      style: context.textTheme.bodySmall
-                                          ?.copyWith(fontSize: 11.sp(context)),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 6.h(context)),
-                                Text(
-                                  notification.message,
-                                  style: context.textTheme.addressBody
-                                      ?.copyWith(
-                                        fontSize: 13.sp(context),
-                                        color: isDark
-                                            ? AppColors.darkTextSecondary
-                                            : AppColors.lightTextSecondary,
-                                      ),
-                                ),
-                              ],
-                            ),
+                          SizedBox(height: 8.h(context)),
+                          ElevatedButton(
+                            onPressed: () {
+                              ref
+                                  .read(notificationControllerProvider.notifier)
+                                  .loadNextPage();
+                            },
+                            child: Text(strings.retry),
                           ),
                         ],
                       ),
-                    ),
-                  ),
+                    );
+                  }
+                }
+
+                final notification = notifications[index];
+                return NotificationItemTile(
+                  notification: notification,
+                  isDark: isDark,
+                  strings: strings,
                 );
               },
             ),
           );
         },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, st) => AppErrorWidget(
+          message: strings.failedToLoadNotifications,
+          icon: Icons.notifications_none_outlined,
+          onRetry: () => ref.invalidate(notificationControllerProvider),
+        ),
       ),
     );
   }

@@ -31,8 +31,8 @@ class AppScaffold extends StatelessWidget {
             top: -50,
             left: -50,
             child: Container(
-              width: 250,
-              height: 250,
+              width: 350,
+              height: 350,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
@@ -55,8 +55,8 @@ class AppScaffold extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.mintTeal.withValues(alpha: 0.35),
-                    AppColors.mintTeal.withValues(alpha: 0.0),
+                    Colors.lightBlueAccent.withValues(alpha: 0.35),
+                    Colors.lightBlueAccent.withValues(alpha: 0.0),
                   ],
                   stops: const [0.0, 1.0],
                 ),
@@ -73,8 +73,8 @@ class AppScaffold extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    Colors.lightBlueAccent.withValues(alpha: 0.35),
-                    Colors.lightBlueAccent.withValues(alpha: 0.0),
+                    AppColors.mintTeal.withValues(alpha: 0.35),
+                    AppColors.mintTeal.withValues(alpha: 0.0),
                   ],
                   stops: const [0.0, 1.0],
                 ),

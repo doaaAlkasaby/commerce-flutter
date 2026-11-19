@@ -12,15 +12,34 @@ UserRepository userRepository(Ref ref) {
 }
 
 @riverpod
-Future<UserDto?> currentUser(Ref ref) async {
-  final token = ref.watch(authTokenProvider);
-  if (token == null || token.isEmpty) return null;
+class CurrentUser extends _$CurrentUser {
+  @override
+  Future<UserDto?> build() async {
+    final token = ref.watch(authTokenProvider);
+    if (token == null || token.isEmpty) return null;
 
-  try {
-    final repository = ref.watch(userRepositoryProvider);
-    final response = await repository.getCurrentUser();
-    return response.data;
-  } catch (_) {
-    return null;
+    try {
+      final repository = ref.watch(userRepositoryProvider);
+      final response = await repository.getCurrentUser();
+
+      if (!ref.mounted) return null;
+      if (ref.read(authTokenProvider) != token) return null;
+
+      return response.data;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> updateProfile({String? firstName, String? lastName}) async {
+    final token = ref.read(authTokenProvider);
+    final repository = ref.read(userRepositoryProvider);
+    await repository.updateProfile(firstName: firstName, lastName: lastName);
+
+    if (!ref.mounted) return;
+    if (ref.read(authTokenProvider) != token) return;
+
+    ref.invalidateSelf();
+    await future;
   }
 }

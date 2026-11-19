@@ -9,25 +9,10 @@ class AppSettingsRepository {
   AppSettingsRepository(this._dio);
 
   Future<ApiResponse<AppSettingsModel>> getAppSettings() async {
-    try {
-      final response = await _dio.get(ApiEndpoints.appSettings);
-      return ApiResponse.fromJson(
-        response.data,
-        (json) => AppSettingsModel.fromJson(json as Map<String, dynamic>),
-      );
-    } catch (e) {
-      return ApiResponse(
-        success: true,
-        message: 'Offline fallback',
-        data: AppSettingsModel(
-          androidBuild: const [23, 25, 28],
-          iosBuild: const [21, 25, 28],
-          forceUpdate: false,
-          currencyAr: 'جنيه مصري',
-          currencyEn: 'Egyptian Pound',
-          features: const ['aiAssistant', 'offers', 'wishlist'],
-        ),
-      );
-    }
+    final response = await _dio.get(ApiEndpoints.appSettings);
+    return ApiResponse.fromJson(
+      response.data,
+      (json) => AppSettingsModel.fromJson(json as Map<String, dynamic>),
+    );
   }
 }

@@ -18,39 +18,67 @@ class StorefrontModel {
   });
 
   static final RegExp _isoCurrencyRegex = RegExp(r'^[A-Z]{3}$');
-  static const Set<String> _supportedIsoCurrencies = {'KWD', 'SAR', 'USD', 'EUR', 'GBP', 'AED', 'QAR', 'BHD', 'OMR', 'EGP'};
+  static const Set<String> _supportedIsoCurrencies = {
+    'KWD',
+    'SAR',
+    'USD',
+    'EUR',
+    'GBP',
+    'AED',
+    'QAR',
+    'BHD',
+    'OMR',
+    'EGP',
+  };
 
   factory StorefrontModel.fromJson(Map<String, dynamic> json) {
     if (json['id'] == null || json['id'] is! String) {
-      throw const FormatException('Storefront response missing required "id" field');
+      throw const FormatException(
+        'Storefront response missing required "id" field',
+      );
     }
     final id = json['id'].toString().trim();
     if (id.isEmpty) {
-      throw const FormatException('Storefront response contains empty "id" field');
+      throw const FormatException(
+        'Storefront response contains empty "id" field',
+      );
     }
 
     if (json['slug'] == null || json['slug'] is! String) {
-      throw const FormatException('Storefront response missing required "slug" field');
+      throw const FormatException(
+        'Storefront response missing required "slug" field',
+      );
     }
     final slug = json['slug'].toString().trim();
     if (slug.isEmpty) {
-      throw const FormatException('Storefront response contains empty "slug" field');
+      throw const FormatException(
+        'Storefront response contains empty "slug" field',
+      );
     }
 
     if (json['name'] == null || json['name'] is! String) {
-      throw const FormatException('Storefront response missing required "name" field');
+      throw const FormatException(
+        'Storefront response missing required "name" field',
+      );
     }
     final name = json['name'].toString().trim();
     if (name.isEmpty) {
-      throw const FormatException('Storefront response contains empty "name" field');
+      throw const FormatException(
+        'Storefront response contains empty "name" field',
+      );
     }
 
     if (json['currency'] == null || json['currency'] is! String) {
-      throw const FormatException('Storefront response missing required ISO "currency" field');
+      throw const FormatException(
+        'Storefront response missing required ISO "currency" field',
+      );
     }
     final rawCurrency = json['currency'].toString().trim().toUpperCase();
-    if (!_isoCurrencyRegex.hasMatch(rawCurrency) || !_supportedIsoCurrencies.contains(rawCurrency)) {
-      throw const FormatException('Storefront response contains invalid or unsupported ISO 4217 currency code');
+    if (!_isoCurrencyRegex.hasMatch(rawCurrency) ||
+        !_supportedIsoCurrencies.contains(rawCurrency)) {
+      throw const FormatException(
+        'Storefront response contains invalid or unsupported ISO 4217 currency code',
+      );
     }
 
     return StorefrontModel(

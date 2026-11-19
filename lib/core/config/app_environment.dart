@@ -13,6 +13,10 @@ class AppEnvironment {
     'DEFAULT_TENANT_SLUG',
     defaultValue: 'dev81-kuwait-fashion',
   );
+  static const bool isWhiteLabel = bool.fromEnvironment(
+    'IS_WHITE_LABEL',
+    defaultValue: false,
+  );
 
   static EnvironmentType get currentEnvironment {
     switch (envRaw.toLowerCase()) {
@@ -52,6 +56,29 @@ class AppEnvironment {
     return 'http://127.0.0.1:3000/api/v1';
   }
 
+  static String resolveImageUrl(String? rawUrl) {
+    if (rawUrl == null || rawUrl.trim().isEmpty) {
+      return '';
+    }
+
+    final trimmed = rawUrl.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+
+    try {
+      final baseUri = Uri.parse(baseUrl);
+      final serverOrigin = baseUri.origin;
+      if (trimmed.startsWith('/')) {
+        return '$serverOrigin$trimmed';
+      } else {
+        return '$serverOrigin/$trimmed';
+      }
+    } catch (_) {
+      return trimmed;
+    }
+  }
+
   static String normalizeAndValidateUrl(String url) {
     var trimmed = url.trim();
     if (trimmed.isEmpty) {
@@ -72,24 +99,33 @@ class AppEnvironment {
     }
 
     if (uri.userInfo.isNotEmpty) {
-      throw const FormatException('Embedded user credentials in URL are prohibited');
+      throw const FormatException(
+        'Embedded user credentials in URL are prohibited',
+      );
     }
 
     if (uri.hasQuery) {
-      throw const FormatException('API Base URL must not include query parameters');
+      throw const FormatException(
+        'API Base URL must not include query parameters',
+      );
     }
 
     if (uri.hasFragment) {
       throw const FormatException('API Base URL must not include fragments');
     }
 
-    final path = uri.path.endsWith('/') ? uri.path.substring(0, uri.path.length - 1) : uri.path;
+    final path = uri.path.endsWith('/')
+        ? uri.path.substring(0, uri.path.length - 1)
+        : uri.path;
 
     if (path.contains('/api/v1/api/v1') || path.contains('/v1/v1')) {
-      throw const FormatException('API Base URL contains duplicate API path segments');
+      throw const FormatException(
+        'API Base URL contains duplicate API path segments',
+      );
     }
 
-    var result = '${uri.scheme}://${uri.host}${uri.hasPort ? ':${uri.port}' : ''}$path';
+    var result =
+        '${uri.scheme}://${uri.host}${uri.hasPort ? ':${uri.port}' : ''}$path';
     if (!result.endsWith('/api/v1')) {
       result = '$result/api/v1';
     }

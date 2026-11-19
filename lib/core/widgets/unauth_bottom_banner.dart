@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
+import 'package:ecommerce/core/theme/text_theme_extension.dart';
 import 'package:ecommerce/features/auth/presentation/screens/login_screen.dart';
 
 class UnAuthBottomBanner extends ConsumerStatefulWidget {
@@ -20,7 +21,8 @@ class _UnAuthBottomBannerState extends ConsumerState<UnAuthBottomBanner> {
     if (_dismissed) return const SizedBox.shrink();
 
     final currentLang = ref.watch(languageProvider);
-    final isArabic = currentLang == AppLanguage.ar;
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
@@ -63,16 +65,8 @@ class _UnAuthBottomBannerState extends ConsumerState<UnAuthBottomBanner> {
           SizedBox(width: 12.w(context)),
           Expanded(
             child: Text(
-              isArabic
-                  ? 'تسجيل الدخول لحفظ تقدمك'
-                  : 'Sign in to save your progress',
-              style: TextStyle(
-                fontSize: 13.sp(context),
-                fontWeight: FontWeight.w600,
-                color: isDark
-                    ? AppColors.darkTextPrimary
-                    : AppColors.lightTextPrimary,
-              ),
+              strings.signInToSaveProgress,
+              style: context.textTheme.titleSmall,
             ),
           ),
           ElevatedButton(
@@ -93,12 +87,8 @@ class _UnAuthBottomBannerState extends ConsumerState<UnAuthBottomBanner> {
               ),
             ),
             child: Text(
-              isArabic ? 'دخول' : 'SIGN IN',
-              style: TextStyle(
-                fontSize: 12.sp(context),
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+              strings.signIn,
+              style: context.textTheme.whiteLabelMedium,
             ),
           ),
           SizedBox(width: 8.w(context)),

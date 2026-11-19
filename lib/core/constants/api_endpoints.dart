@@ -5,6 +5,7 @@ class ApiEndpoints {
 
   // Storefront Bootstrap
   static const String storefront = '/storefront';
+  static const String publicStorefrontTenants = '/storefront/tenants';
 
   // App settings
   static const String appSettings = '/app-settings';
@@ -56,6 +57,10 @@ class ApiEndpoints {
   static const String productsNewArrivals = '/products/new-arrivals';
   static String productById(String id) => '/products/$id';
   static String productReviews(String id) => '/products/$id/reviews';
+  static String productReviewsSummary(String id) =>
+      '/products/$id/reviews/summary';
+  static String productReviewById(String productId, String reviewId) =>
+      '/products/$productId/reviews/$reviewId';
 
   // Wishlist
   static const String wishlist = '/wishlist';
@@ -63,6 +68,9 @@ class ApiEndpoints {
   static String wishlistByProduct(String productId) =>
       '/wishlist/items/$productId';
   static String wishlistCheck(String productId) => '/wishlist/check/$productId';
+
+  // Countries
+  static const String countries = '/countries';
 
   // Addresses
   static const String addresses = '/addresses';
@@ -79,6 +87,9 @@ class ApiEndpoints {
   static String orderById(String id) => '/orders/$id';
   static String orderStatus(String id) => '/orders/$id/status';
   static const String checkout = '/checkout';
+  static const String payments = '/payments';
+  static String paymentById(String id) => '/payments/$id';
+  static String paymentVerify(String id) => '/payments/$id/verify';
   static String paymentByOrderId(String orderId) => '/payments/order/$orderId';
 
   // Cart

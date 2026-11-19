@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
+import 'package:ecommerce/core/localization/app_localizations.dart';
+import 'package:ecommerce/core/theme/text_theme_extension.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/features/home/models/home_response_model.dart';
 
-class ProductHeaderWidget extends StatefulWidget {
+class ProductHeaderWidget extends ConsumerStatefulWidget {
   final ProductModel product;
+  final List<ProductImageModel>? overrideImages;
   final bool isArabic;
   final bool isDark;
   final bool isFavorite;
@@ -15,6 +19,7 @@ class ProductHeaderWidget extends StatefulWidget {
   const ProductHeaderWidget({
     super.key,
     required this.product,
+    this.overrideImages,
     required this.isArabic,
     required this.isDark,
     required this.isFavorite,
@@ -23,24 +28,42 @@ class ProductHeaderWidget extends StatefulWidget {
   });
 
   @override
-  State<ProductHeaderWidget> createState() => _ProductHeaderWidgetState();
+  ConsumerState<ProductHeaderWidget> createState() =>
+      _ProductHeaderWidgetState();
 }
 
-class _ProductHeaderWidgetState extends State<ProductHeaderWidget> {
+class _ProductHeaderWidgetState extends ConsumerState<ProductHeaderWidget> {
   int _selectedImageIndex = 0;
 
   @override
+  void didUpdateWidget(covariant ProductHeaderWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.overrideImages != widget.overrideImages) {
+      setState(() {
+        _selectedImageIndex = 0;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final images = widget.product.images.isNotEmpty
-        ? widget.product.images
-        : [
-            ProductImageModel(
-              id: '1',
-              url: widget.product.image,
-              altText: widget.product.name,
-              isPrimary: true,
-            ),
-          ];
+    final currentLang = ref.watch(languageProvider);
+    final localizationAsync = ref.watch(appLocalizationLoaderProvider);
+    final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
+
+    final images =
+        (widget.overrideImages != null && widget.overrideImages!.isNotEmpty)
+        ? widget.overrideImages!
+        : (widget.product.images.isNotEmpty
+              ? widget.product.images
+              : [
+                  ProductImageModel(
+                    id: '1',
+                    url: widget.product.image,
+                    altText: widget.product.name,
+                    isPrimary: true,
+                  ),
+                ]);
 
     final activeImageUrl =
         images[_selectedImageIndex.clamp(0, images.length - 1)].url;
@@ -67,9 +90,7 @@ class _ProductHeaderWidgetState extends State<ProductHeaderWidget> {
           ),
           child: IconButton(
             icon: Icon(
-              widget.isArabic
-                  ? Icons.arrow_forward_ios
-                  : Icons.arrow_back_ios_new,
+              Icons.arrow_back_ios_new,
               size: 16.sp(context),
               color: widget.isDark
                   ? AppColors.darkTextPrimary
@@ -174,11 +195,9 @@ class _ProductHeaderWidgetState extends State<ProductHeaderWidget> {
                   ],
                 ),
                 child: Text(
-                  'BESTSELLER',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontSize: 11.sp(context),
+                  strings.bestsellerLabel,
+                  style: context.textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.lightTextPrimary,
                     letterSpacing: 0.8,
                   ),
                 ),

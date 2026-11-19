@@ -11,9 +11,35 @@ dart run build_runner build --delete-conflicting-outputs
 //Auto-regenerate on every change (optional)
 dart run build_runner watch --delete-conflicting-outputs
 
+https://www.magnific.com/free-photos-vectors/ecommerce-shop-logo#uuid=c8d1f804-d392-4508-9004-de087cc683b1
 
 
 remove demo data and call the products search api s, filter apis,  translate all static strings , make all dimesions and radius scallable, add required widgets to handle all filter options implemented on the apis on lib/features/search/presentation/screens/search_filter_screen.dart
 
+وده بيخلينا نهتم جدًا بمفهوم اسمه Tenant Isolation، وهنخصص له Module كامل.
 
 المتجر الأول dev81-kuwait-fashion بعملة KWD وعنده مخزن في الكويت وآخر في الرياض. والمتجر الثاني dev81-independent بعملة SAR وعنده مخزن مستقل في الرياض.
+
+
+
+`customer1@example.com` belongs to the legacy `prisma/seeds/users.seed.ts` file, which the active seed command doesn’t execute. Setting `password123!` in that file doesn’t update the database.
+
+Use one of the customers already created and verified in `commerce_api_dev`:
+
+| Email | Password | `X-Tenant-Slug` |
+|---|---|---|
+| `fashion-customer@dev81.example.test` | `DevCustomer!2026` | `dev81-kuwait-fashion` |
+| `independent-customer@dev81.example.test` | `DevCustomer!2026` | `dev81-independent` |
+
+Send these credentials to `POST /api/v1/auth/login`.
+
+mail	Password	Store
+fashion-customer@dev81.example.test	DevCustomer!2026	Luma
+independent-customer@dev81.example.test	DevCustomer!2026	Noura
+
+
+lib/features/tenant_selection/presentation/screens i need you to replace any isArabic ?  "": ""  to use the app translation and move english text to assets/lang/en.json and arabic text to assets/lang/ar.json . also any static string translate it and add its translation to en.json and ar.json . also text font sizes try to use direct font styles without customize its sizw or font . if font style not exist on lib/core/theme/app_typography.dart or lib/core/theme/text_theme_extension.dart add the font style here .
+
+
+---
+we need to implement the same concepts on each screen i will send . to divide code into separate widgets . move widgets to widgets folder. if there is common widegets set it as a common widget. enhance code and if there is any dimension or radius is static make it scallable and if there is a string is static make it translated. now implement this on lib/features/orders/presentation/screens/orders_screen.dart

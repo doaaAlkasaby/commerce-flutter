@@ -9,6 +9,59 @@ part of 'tenant_config.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(TenantConfirmationNotifier)
+final tenantConfirmationProvider = TenantConfirmationNotifierProvider._();
+
+final class TenantConfirmationNotifierProvider
+    extends $NotifierProvider<TenantConfirmationNotifier, bool> {
+  TenantConfirmationNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'tenantConfirmationProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$tenantConfirmationNotifierHash();
+
+  @$internal
+  @override
+  TenantConfirmationNotifier create() => TenantConfirmationNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$tenantConfirmationNotifierHash() =>
+    r'52dc43a98729e60c5ce28dfc6eee20d744ca5580';
+
+abstract class _$TenantConfirmationNotifier extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(SelectedTenantSlugNotifier)
 final selectedTenantSlugProvider = SelectedTenantSlugNotifierProvider._();
 
@@ -42,7 +95,7 @@ final class SelectedTenantSlugNotifierProvider
 }
 
 String _$selectedTenantSlugNotifierHash() =>
-    r'060964c3679669effbfba8588ec1e502de948159';
+    r'7a6d9e4fedc8dec8e1653ec236543ee07f17c84e';
 
 abstract class _$SelectedTenantSlugNotifier extends $Notifier<String> {
   String build();

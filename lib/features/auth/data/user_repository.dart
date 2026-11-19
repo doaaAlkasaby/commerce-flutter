@@ -15,4 +15,18 @@ class UserRepository {
       (json) => UserDto.fromJson(json as Map<String, dynamic>),
     );
   }
+
+  Future<ApiResponse<UserDto>> updateProfile({
+    String? firstName,
+    String? lastName,
+  }) async {
+    final response = await _dio.patch(
+      ApiEndpoints.usersMe,
+      data: {'firstName': ?firstName, 'lastName': ?lastName},
+    );
+    return ApiResponse.fromJson(
+      response.data,
+      (json) => UserDto.fromJson(json as Map<String, dynamic>),
+    );
+  }
 }

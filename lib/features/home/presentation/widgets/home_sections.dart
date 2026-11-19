@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ecommerce/core/constants/api_endpoints.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
+import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/core/widgets/section_header.dart';
 import 'package:ecommerce/features/home/models/home_response_model.dart';
 import 'package:ecommerce/features/home/presentation/widgets/product_card.dart';
@@ -21,7 +22,13 @@ class HomeSectionsWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return homeDataAsync.when(
       data: (homeResponse) {
-        final sectionsList = homeResponse.data.sections;
+        final sectionsList = homeResponse.data.sections
+            .where((section) => section.products.isNotEmpty)
+            .toList();
+
+        if (sectionsList.isEmpty) {
+          return const SizedBox.shrink();
+        }
         return ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -79,7 +86,7 @@ class HomeSectionsWidget extends ConsumerWidget {
                 ),
                 const SizedBox(height: 14),
                 SizedBox(
-                  height: 230,
+                  height: 250.h(context),
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     physics: const BouncingScrollPhysics(),
@@ -87,9 +94,9 @@ class HomeSectionsWidget extends ConsumerWidget {
                     itemBuilder: (context, productIndex) {
                       final ProductModel product = productsList[productIndex];
                       return Padding(
-                        padding: const EdgeInsets.only(right: 16),
+                        padding: EdgeInsets.only(right: 16.w(context)),
                         child: SizedBox(
-                          width: 170,
+                          width: 180.w(context),
                           child: ProductCard(
                             product: product,
                             onFavoriteTap: () {},

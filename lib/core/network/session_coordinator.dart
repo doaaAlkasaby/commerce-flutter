@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class CredentialStorage {
@@ -6,6 +7,85 @@ abstract class CredentialStorage {
   Future<String?> readRefreshToken();
   Future<bool> writeCredentials(String accessToken, String? refreshToken);
   Future<bool> clearCredentials();
+  Future<void> migrateLegacyCredentials(SharedPreferences prefs);
+}
+
+class SecureCredentialStorage implements CredentialStorage {
+  final FlutterSecureStorage _secureStorage;
+
+  SecureCredentialStorage([FlutterSecureStorage? secureStorage])
+    : _secureStorage =
+          secureStorage ??
+          const FlutterSecureStorage(
+            aOptions: AndroidOptions(encryptedSharedPreferences: true),
+            iOptions: IOSOptions(
+              accessibility: KeychainAccessibility.first_unlock,
+            ),
+          );
+
+  @override
+  Future<String?> readAccessToken() async {
+    return await _secureStorage.read(key: 'access_token');
+  }
+
+  @override
+  Future<String?> readRefreshToken() async {
+    return await _secureStorage.read(key: 'refresh_token');
+  }
+
+  @override
+  Future<bool> writeCredentials(
+    String accessToken,
+    String? refreshToken,
+  ) async {
+    try {
+      await _secureStorage.write(key: 'access_token', value: accessToken);
+      if (refreshToken != null && refreshToken.isNotEmpty) {
+        await _secureStorage.write(key: 'refresh_token', value: refreshToken);
+      } else {
+        await _secureStorage.delete(key: 'refresh_token');
+      }
+      return true;
+    } catch (_) {
+      try {
+        await _secureStorage.delete(key: 'access_token');
+        await _secureStorage.delete(key: 'refresh_token');
+      } catch (_) {}
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> clearCredentials() async {
+    try {
+      await _secureStorage.delete(key: 'access_token');
+      await _secureStorage.delete(key: 'refresh_token');
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  @override
+  Future<void> migrateLegacyCredentials(SharedPreferences prefs) async {
+    final legacyAccess = prefs.getString('access_token');
+    final legacyRefresh = prefs.getString('refresh_token');
+
+    if (legacyAccess != null && legacyAccess.isNotEmpty) {
+      final currentAccess = await readAccessToken();
+      if (currentAccess == null || currentAccess.isEmpty) {
+        final ok = await writeCredentials(legacyAccess, legacyRefresh);
+        if (!ok) {
+          throw const FormatException(
+            'Failed to migrate legacy credentials to secure storage',
+          );
+        }
+      }
+    }
+
+    await prefs.remove('access_token');
+    await prefs.remove('refresh_token');
+  }
 }
 
 class SharedPreferencesCredentialStorage implements CredentialStorage {
@@ -20,7 +100,10 @@ class SharedPreferencesCredentialStorage implements CredentialStorage {
   Future<String?> readRefreshToken() async => _prefs.getString('refresh_token');
 
   @override
-  Future<bool> writeCredentials(String accessToken, String? refreshToken) async {
+  Future<bool> writeCredentials(
+    String accessToken,
+    String? refreshToken,
+  ) async {
     final accessOk = await _prefs.setString('access_token', accessToken);
     if (!accessOk) return false;
 
@@ -45,6 +128,9 @@ class SharedPreferencesCredentialStorage implements CredentialStorage {
 
     return !accessExists && !refreshExists;
   }
+
+  @override
+  Future<void> migrateLegacyCredentials(SharedPreferences prefs) async {}
 }
 
 class UserSession {
@@ -62,12 +148,14 @@ class UserSession {
 class SessionCoordinator {
   static int _globalCounter = 0;
   final CredentialStorage _storage;
+  final SharedPreferences? _legacyPrefs;
   UserSession? _currentSession;
+  int _operationRevision = 0;
   Future<void> _lock = Future.value();
   Future<String?>? inFlightRefreshFuture;
 
-  SessionCoordinator(this._storage) {
-    restoreSession();
+  SessionCoordinator(this._storage, [this._legacyPrefs]) {
+    restoreSession().catchError((_) => null);
   }
 
   static String _generateSessionId() {
@@ -82,31 +170,38 @@ class SessionCoordinator {
 
   Future<T> _enqueue<T>(Future<T> Function() action) {
     final completer = Completer<T>();
-    _lock = _lock.then((_) async {
-      try {
-        final result = await action();
-        completer.complete(result);
-      } catch (e, st) {
-        completer.completeError(e, st);
-      }
-    }).catchError((_) {});
+    _lock = _lock
+        .then((_) async {
+          try {
+            final result = await action();
+            completer.complete(result);
+          } catch (e, st) {
+            completer.completeError(e, st);
+          }
+        })
+        .catchError((_) {});
     return completer.future;
   }
 
   Future<UserSession?> restoreSession() async {
+    final currentRev = _operationRevision;
     return _enqueue(() async {
-      if (_currentSession != null) {
+      if (_operationRevision != currentRev || _currentSession != null) {
         return _currentSession;
       }
 
+      if (_legacyPrefs != null) {
+        await _storage.migrateLegacyCredentials(_legacyPrefs);
+      }
+
       final token = await _storage.readAccessToken();
-      if (_currentSession != null) {
+      if (_operationRevision != currentRev || _currentSession != null) {
         return _currentSession;
       }
 
       if (token != null && token.isNotEmpty) {
         final refreshToken = await _storage.readRefreshToken();
-        if (_currentSession != null) {
+        if (_operationRevision != currentRev || _currentSession != null) {
           return _currentSession;
         }
 
@@ -120,22 +215,42 @@ class SessionCoordinator {
     });
   }
 
-  Future<UserSession> startSession({required String accessToken, String? refreshToken}) async {
-    _currentSession = UserSession(
-      sessionId: _generateSessionId(),
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-    );
-    final activeSession = _currentSession!;
+  Future<UserSession> startSession({
+    required String accessToken,
+    String? refreshToken,
+  }) async {
+    _operationRevision++;
+    final currentRev = _operationRevision;
+    final pendingSessionId = _generateSessionId();
+    inFlightRefreshFuture = null;
 
-    await _enqueue(() async {
+    // 1. Invalidate previous session immediately in memory
+    _currentSession = null;
+
+    // 2. Persist credentials in queue and publish only if operation is still current
+    return _enqueue(() async {
       final ok = await _storage.writeCredentials(accessToken, refreshToken);
       if (!ok) {
-        throw const FormatException('Failed to persist login credentials to local storage');
+        throw const FormatException(
+          'Failed to persist login credentials to storage',
+        );
       }
-    });
 
-    return activeSession;
+      if (_operationRevision != currentRev) {
+        throw StateError(
+          'Login operation was superseded by a newer session operation',
+        );
+      }
+
+      final newSession = UserSession(
+        sessionId: pendingSessionId,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      );
+
+      _currentSession = newSession;
+      return newSession;
+    });
   }
 
   Future<UserSession?> updateToken(String newAccessToken) async {
@@ -151,12 +266,14 @@ class SessionCoordinator {
   }
 
   Future<void> clearSession() async {
+    _operationRevision++;
     _currentSession = null;
+    inFlightRefreshFuture = null;
 
     await _enqueue(() async {
       final ok = await _storage.clearCredentials();
       if (!ok) {
-        throw const FormatException('Failed to clear credentials from local storage');
+        throw const FormatException('Failed to clear credentials from storage');
       }
     });
   }
@@ -167,17 +284,23 @@ class SessionCoordinator {
     String? newRefreshToken,
   }) async {
     return _enqueue(() async {
-      if (_currentSession == null || _currentSession!.sessionId != owningSessionId) {
+      if (_currentSession == null ||
+          _currentSession!.sessionId != owningSessionId) {
         return null;
       }
 
-      final effectiveRefreshToken = newRefreshToken ?? _currentSession!.refreshToken;
-      final ok = await _storage.writeCredentials(newAccessToken, effectiveRefreshToken);
+      final effectiveRefreshToken =
+          newRefreshToken ?? _currentSession!.refreshToken;
+      final ok = await _storage.writeCredentials(
+        newAccessToken,
+        effectiveRefreshToken,
+      );
       if (!ok) {
         throw const FormatException('Failed to persist refreshed credentials');
       }
 
-      if (_currentSession == null || _currentSession!.sessionId != owningSessionId) {
+      if (_currentSession == null ||
+          _currentSession!.sessionId != owningSessionId) {
         return null;
       }
 
@@ -193,16 +316,21 @@ class SessionCoordinator {
 
   Future<bool> handleRefreshFailure(String failedSessionId) async {
     return _enqueue(() async {
-      if (_currentSession == null || _currentSession!.sessionId != failedSessionId) {
+      if (_currentSession == null ||
+          _currentSession!.sessionId != failedSessionId) {
         return false;
       }
 
+      final startRev = _operationRevision;
       await _storage.clearCredentials();
 
-      if (_currentSession != null && _currentSession!.sessionId != failedSessionId) {
+      if (_operationRevision != startRev ||
+          _currentSession == null ||
+          _currentSession!.sessionId != failedSessionId) {
         return false;
       }
 
+      _operationRevision++;
       _currentSession = null;
       return true;
     });

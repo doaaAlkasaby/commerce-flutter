@@ -1,9 +1,14 @@
+import 'package:ecommerce/core/config/app_environment.dart';
+
+import '../../categories/models/category_detail_model.dart';
+
 class BannerModel {
   final String id;
   final String title;
   final String subtitle;
   final String imageUrl;
   final String? targetType;
+  final String? targetId;
 
   const BannerModel({
     required this.id,
@@ -11,6 +16,7 @@ class BannerModel {
     required this.subtitle,
     required this.imageUrl,
     this.targetType,
+    this.targetId,
   });
 
   factory BannerModel.fromJson(Map<String, dynamic> json) {
@@ -18,36 +24,40 @@ class BannerModel {
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
       subtitle: json['subtitle']?.toString() ?? '',
-      imageUrl: json['imageUrl']?.toString() ?? '',
+      imageUrl: AppEnvironment.resolveImageUrl(
+        json['imageUrl']?.toString() ?? '',
+      ),
       targetType: json['targetType']?.toString(),
+      targetId: json['targetId']?.toString(),
     );
   }
 }
 
-class CategoryModel {
-  final String id;
-  final String name;
-  final String slug;
-  final String? imageUrl;
-  final String iconName;
-
-  const CategoryModel({
-    required this.id,
-    required this.name,
-    required this.slug,
-    this.imageUrl,
-    this.iconName = 'toys',
-  });
-
-  factory CategoryModel.fromJson(Map<String, dynamic> json) {
-    return CategoryModel(
-      id: json['id']?.toString() ?? '',
-      name: json['name']?.toString() ?? '',
-      slug: json['slug']?.toString() ?? '',
-      imageUrl: json['imageUrl']?.toString(),
-    );
-  }
-}
+// class CategoryModel {
+//   final String id;
+//   final String name;
+//   final String slug;
+//   final String? imageUrl;
+//   final String iconName;
+//
+//   const CategoryModel({
+//     required this.id,
+//     required this.name,
+//     required this.slug,
+//     this.imageUrl,
+//     this.iconName = 'toys',
+//   });
+//
+//   factory CategoryModel.fromJson(Map<String, dynamic> json) {
+//     final rawImg = json['imageUrl']?.toString();
+//     return CategoryModel(
+//       id: json['id']?.toString() ?? '',
+//       name: json['name']?.toString() ?? '',
+//       slug: json['slug']?.toString() ?? '',
+//       imageUrl: rawImg != null ? AppEnvironment.resolveImageUrl(rawImg) : null,
+//     );
+//   }
+// }
 
 class ProductPriceModel {
   final double originalPrice;
@@ -62,22 +72,29 @@ class ProductPriceModel {
 
   factory ProductPriceModel.fromJson(dynamic json) {
     if (json is Map<String, dynamic>) {
+      final displayPricing = json['displayPricing'] is Map<String, dynamic>
+          ? json['displayPricing'] as Map<String, dynamic>
+          : null;
+
       final original =
           double.tryParse(
-            json['original']?.toString() ??
+            displayPricing?['originalPrice']?.toString() ??
+                json['original']?.toString() ??
                 json['basePrice']?.toString() ??
                 '0.0',
           ) ??
           0.0;
       final finalP =
           double.tryParse(
-            json['final']?.toString() ??
+            displayPricing?['finalPrice']?.toString() ??
+                json['final']?.toString() ??
                 json['finalPrice']?.toString() ??
                 json['basePrice']?.toString() ??
                 '0.0',
           ) ??
           original;
       final discount =
+          displayPricing?['discountPercentage'] ??
           json['discountPercentage'] ??
           num.tryParse(json['discountValue']?.toString() ?? '');
       return ProductPriceModel(
@@ -144,7 +161,7 @@ class ProductImageModel {
   factory ProductImageModel.fromJson(Map<String, dynamic> json) {
     return ProductImageModel(
       id: json['id']?.toString() ?? '',
-      url: json['url']?.toString() ?? '',
+      url: AppEnvironment.resolveImageUrl(json['url']?.toString() ?? ''),
       altText: json['altText']?.toString() ?? '',
       isPrimary: json['isPrimary'] ?? false,
     );
@@ -163,10 +180,11 @@ class ProductAttributeValueModel {
   });
 
   factory ProductAttributeValueModel.fromJson(Map<String, dynamic> json) {
+    final rawImg = json['imageUrl']?.toString();
     return ProductAttributeValueModel(
       id: json['id']?.toString() ?? '',
       value: json['value']?.toString() ?? '',
-      imageUrl: json['imageUrl']?.toString(),
+      imageUrl: rawImg != null ? AppEnvironment.resolveImageUrl(rawImg) : null,
     );
   }
 }
@@ -219,6 +237,29 @@ class VariantAttributeModel {
   }
 }
 
+class ProductVariantInventoryModel {
+  final int quantity;
+  final int reservedQuantity;
+  final int availableQuantity;
+
+  const ProductVariantInventoryModel({
+    required this.quantity,
+    required this.reservedQuantity,
+    required this.availableQuantity,
+  });
+
+  factory ProductVariantInventoryModel.fromJson(Map<String, dynamic> json) {
+    final q = (json['quantity'] as num?)?.toInt() ?? 0;
+    final rq = (json['reservedQuantity'] as num?)?.toInt() ?? 0;
+    final aq = (json['availableQuantity'] as num?)?.toInt() ?? (q - rq);
+    return ProductVariantInventoryModel(
+      quantity: q,
+      reservedQuantity: rq,
+      availableQuantity: aq < 0 ? 0 : aq,
+    );
+  }
+}
+
 class ProductVariantModel {
   final String id;
   final String sku;
@@ -227,6 +268,7 @@ class ProductVariantModel {
   final ProductPricingModel pricing;
   final List<ProductImageModel> images;
   final List<VariantAttributeModel> attributes;
+  final ProductVariantInventoryModel? inventory;
 
   const ProductVariantModel({
     required this.id,
@@ -236,6 +278,7 @@ class ProductVariantModel {
     required this.pricing,
     required this.images,
     required this.attributes,
+    this.inventory,
   });
 
   factory ProductVariantModel.fromJson(Map<String, dynamic> json) {
@@ -254,6 +297,11 @@ class ProductVariantModel {
                 VariantAttributeModel.fromJson(attr as Map<String, dynamic>),
           )
           .toList(),
+      inventory: json['inventory'] != null
+          ? ProductVariantInventoryModel.fromJson(
+              json['inventory'] as Map<String, dynamic>,
+            )
+          : null,
     );
   }
 }
@@ -333,18 +381,20 @@ class ProductModel {
       imgsList.add(
         ProductImageModel(
           id: pi['id']?.toString() ?? 'primary',
-          url: pi['url']?.toString() ?? '',
+          url: AppEnvironment.resolveImageUrl(pi['url']?.toString() ?? ''),
           altText: pi['altText']?.toString() ?? '',
           isPrimary: true,
         ),
       );
     }
 
-    final primaryImg =
+    final rawImage =
         imgsList.where((img) => img.isPrimary).firstOrNull?.url ??
         (imgsList.isNotEmpty
             ? imgsList.first.url
             : json['image']?.toString() ?? 'https://placehold.co/800x800');
+
+    final primaryImg = AppEnvironment.resolveImageUrl(rawImage);
 
     return ProductModel(
       id: json['id']?.toString() ?? '',
@@ -395,20 +445,42 @@ class ProductModel {
       defaultVariantId: defaultVariantId,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'slug': slug,
+      'description': description,
+      'priceInfo': priceInfo,
+      'pricing': pricing,
+      'image': image,
+      'images': images,
+      'attributes': attributes,
+      'variants': variants,
+      'isFavorite': isFavorite,
+      'rating': rating,
+      'reviewCount': reviewCount,
+      'category': category,
+      'brand': brand,
+      'hasVariants': hasVariants,
+      'defaultVariantId': defaultVariantId,
+    };
+  }
 }
 
 class HomeSectionModel {
   final String type;
   final String title;
-  final String displayType;
+  final String? displayType;
   final List<ProductModel> products;
   final SeeAllModel? seeAll;
 
   const HomeSectionModel({
     required this.type,
     required this.title,
-    required this.displayType,
-    required this.products,
+    this.displayType,
+    this.products = const [],
     this.seeAll,
   });
 
@@ -416,7 +488,7 @@ class HomeSectionModel {
     return HomeSectionModel(
       type: json['type']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
-      displayType: json['displayType']?.toString() ?? '',
+      displayType: json['displayType']?.toString(),
       products: (json['products'] as List? ?? [])
           .map((p) => ProductModel.fromJson(p as Map<String, dynamic>))
           .toList(),
@@ -427,25 +499,16 @@ class HomeSectionModel {
   }
 }
 
-class BrandModel {
-  final String id;
-  final String name;
-  final String slug;
-  final String? imageUrl;
+class SeeAllModel {
+  final String targetType;
+  final String? target;
 
-  const BrandModel({
-    required this.id,
-    required this.name,
-    required this.slug,
-    this.imageUrl,
-  });
+  const SeeAllModel({required this.targetType, this.target});
 
-  factory BrandModel.fromJson(Map<String, dynamic> json) {
-    return BrandModel(
-      id: json['id']?.toString() ?? '',
-      name: json['name']?.toString() ?? '',
-      slug: json['slug']?.toString() ?? '',
-      imageUrl: json['imageUrl']?.toString(),
+  factory SeeAllModel.fromJson(Map<String, dynamic> json) {
+    return SeeAllModel(
+      targetType: json['targetType']?.toString() ?? '',
+      target: json['target']?.toString(),
     );
   }
 }
@@ -453,9 +516,9 @@ class BrandModel {
 class HomeDataModel {
   final String platform;
   final List<BannerModel> banners;
-  final List<CategoryModel> categories;
+  final List<MainCategoryModel> categories;
   final List<HomeSectionModel> sections;
-  final List<BrandModel> brands;
+  final List<Map<String, dynamic>> brands;
 
   const HomeDataModel({
     required this.platform,
@@ -472,13 +535,13 @@ class HomeDataModel {
           .map((b) => BannerModel.fromJson(b as Map<String, dynamic>))
           .toList(),
       categories: (json['categories'] as List? ?? [])
-          .map((c) => CategoryModel.fromJson(c as Map<String, dynamic>))
+          .map((c) => MainCategoryModel.fromJson(c as Map<String, dynamic>))
           .toList(),
       sections: (json['sections'] as List? ?? [])
           .map((s) => HomeSectionModel.fromJson(s as Map<String, dynamic>))
           .toList(),
       brands: (json['brands'] as List? ?? [])
-          .map((br) => BrandModel.fromJson(br as Map<String, dynamic>))
+          .map((b) => b as Map<String, dynamic>)
           .toList(),
     );
   }
@@ -500,22 +563,6 @@ class HomeResponseModel {
       success: json['success'] ?? false,
       message: json['message']?.toString(),
       data: HomeDataModel.fromJson(json['data'] ?? {}),
-    );
-  }
-}
-
-class SeeAllModel {
-  final bool enabled;
-  final String? targetType;
-  final String? target;
-
-  const SeeAllModel({required this.enabled, this.targetType, this.target});
-
-  factory SeeAllModel.fromJson(Map<String, dynamic> json) {
-    return SeeAllModel(
-      enabled: json['enabled'] ?? false,
-      targetType: json['targetType']?.toString(),
-      target: json['target']?.toString(),
     );
   }
 }

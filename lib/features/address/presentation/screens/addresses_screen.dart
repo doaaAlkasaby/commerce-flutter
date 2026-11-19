@@ -1,14 +1,27 @@
+import 'package:ecommerce/core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/core/theme/text_theme_extension.dart';
+import 'package:ecommerce/core/widgets/app_button.dart';
+import 'package:ecommerce/core/widgets/app_empty_widget.dart';
+import 'package:ecommerce/core/widgets/app_error_widget.dart';
+import '../../models/address_model.dart';
 import '../providers/address_provider.dart';
+import '../widgets/address_card_tile.dart';
 import 'add_edit_address_screen.dart';
 
 class AddressesScreen extends ConsumerWidget {
-  const AddressesScreen({super.key});
+  final bool isSelectMode;
+  final String? selectedAddressId;
+
+  const AddressesScreen({
+    super.key,
+    this.isSelectMode = false,
+    this.selectedAddressId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,7 +29,6 @@ class AddressesScreen extends ConsumerWidget {
     final localizationAsync = ref.watch(appLocalizationLoaderProvider);
     final currentLang = ref.watch(languageProvider);
     final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
-    final isArabic = currentLang == AppLanguage.ar;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -44,7 +56,7 @@ class AddressesScreen extends ConsumerWidget {
             ),
             child: IconButton(
               icon: Icon(
-                isArabic ? Icons.arrow_forward_ios : Icons.arrow_back_ios_new,
+                Icons.arrow_back_ios_new,
                 size: 16.sp(context),
                 color: isDark
                     ? AppColors.darkTextPrimary
@@ -55,207 +67,145 @@ class AddressesScreen extends ConsumerWidget {
           ),
         ),
         title: Text(
-          strings.myAddresses,
-          style: context.textTheme.titleLarge?.copyWith(
-            fontSize: 20.sp(context),
-            color: isDark
-                ? AppColors.darkTextPrimary
-                : AppColors.lightTextPrimary,
-          ),
+          isSelectMode ? strings.selectDeliveryAddressReq : strings.myAddresses,
+          style: context.textTheme.titleLarge,
         ),
       ),
       body: addressesAsync.when(
-        data: (addresses) => addresses.isEmpty
-            ? Center(
-                child: Text(
-                  strings.noProductsFound,
-                  style: context.textTheme.bodyMedium?.copyWith(
-                    fontSize: 14.sp(context),
-                  ),
+        data: (addresses) {
+          if (addresses.isEmpty) {
+            return RefreshIndicator(
+              color: AppColors.primary,
+              onRefresh: () async {
+                await ref.read(addressProvider.notifier).refresh();
+              },
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
                 ),
-              )
-            : ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                padding: EdgeInsets.all(20.w(context)),
-                itemCount: addresses.length,
-                itemBuilder: (context, index) {
-                  final address = addresses[index];
-                  return Container(
-                    margin: EdgeInsets.only(bottom: 16.h(context)),
-                    padding: EdgeInsets.all(18.w(context)),
-                    decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkCardBg : Colors.white,
-                      borderRadius: BorderRadius.circular(24.w(context)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
-                          blurRadius: 10,
-                          offset: Offset(0, 4.h(context)),
-                        ),
-                      ],
+                children: [
+                  SizedBox(height: 100.h(context)),
+                  AppEmptyWidget(
+                    title: strings.noAddressesFound,
+                    pngAsset: AppAssets.map,
+                    size: 80.w(context),
+                  ),
+                  Padding(
+                    padding: EdgeInsetsGeometry.symmetric(
+                      horizontal: 50.w(context),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  address.fullName,
-                                  style: context.textTheme.boldTitleMedium
-                                      ?.copyWith(
-                                        fontSize: 16.sp(context),
-                                        color: isDark
-                                            ? AppColors.darkTextPrimary
-                                            : AppColors.lightTextPrimary,
-                                      ),
-                                ),
-                                SizedBox(width: 8.w(context)),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 8.w(context),
-                                    vertical: 2.h(context),
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.lightBackground,
-                                    borderRadius: BorderRadius.circular(
-                                      6.w(context),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    address.title,
-                                    style: context.textTheme.labelSmall
-                                        ?.copyWith(fontSize: 10.sp(context)),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            if (address.isDefault)
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 8.w(context),
-                                  vertical: 4.h(context),
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary.withValues(
-                                    alpha: 0.1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(
-                                    10.w(context),
-                                  ),
-                                ),
-                                child: Text(
-                                  strings.defaultLabel,
-                                  style: context.textTheme.labelSmall?.copyWith(
-                                    fontSize: 10.sp(context),
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                        SizedBox(height: 8.h(context)),
-                        Text(
-                          '${address.streetAddress}\n${address.city} ${address.postalCode}\n${address.phoneNumber}',
-                          style: context.textTheme.addressBody?.copyWith(
-                            fontSize: 13.sp(context),
-                          ),
-                        ),
-                        SizedBox(height: 14.h(context)),
-                        const Divider(height: 1),
-                        SizedBox(height: 10.h(context)),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            if (!address.isDefault)
-                              TextButton(
-                                onPressed: () {
-                                  ref
-                                      .read(addressProvider.notifier)
-                                      .setDefault(address.id);
-                                },
-                                child: Text(
-                                  strings.setAsDefault,
-                                  style: context.textTheme.labelMedium
-                                      ?.copyWith(
-                                        fontSize: 12.sp(context),
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.mintTeal,
-                                      ),
-                                ),
-                              ),
-                            const Spacer(),
-                            TextButton.icon(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => AddEditAddressScreen(
-                                      addressToEdit: address,
-                                    ),
-                                  ),
-                                );
-                              },
-                              icon: Icon(
-                                Icons.edit_outlined,
-                                size: 16.sp(context),
-                                color: AppColors.primary,
-                              ),
-                              label: Text(
-                                strings.edit,
-                                style: context.textTheme.labelMedium?.copyWith(
-                                  fontSize: 12.sp(context),
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ),
-                            TextButton.icon(
-                              onPressed: () {
-                                ref
-                                    .read(addressProvider.notifier)
-                                    .deleteAddress(address.id);
-                              },
-                              icon: Icon(
-                                Icons.delete_outline,
-                                size: 16.sp(context),
-                                color: AppColors.badgeRed,
-                              ),
-                              label: Text(
-                                strings.delete,
-                                style: context.textTheme.labelMedium?.copyWith(
-                                  fontSize: 12.sp(context),
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.badgeRed,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                    child: _addBtnWidget(context, strings),
+                  ),
+                ],
               ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(child: Text('Error: $e')),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const AddEditAddressScreen()),
+            );
+          }
+
+          return Stack(
+            children: [
+              RefreshIndicator(
+                color: AppColors.primary,
+                onRefresh: () async {
+                  await ref.read(addressProvider.notifier).refresh();
+                },
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  padding: EdgeInsets.fromLTRB(
+                    12.w(context),
+                    10.h(context),
+                    12.w(context),
+                    110.h(context),
+                  ),
+                  children: [
+                    // Sub-header Row (e.g. 3 SAVED, DEFAULT FIRST)
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 12.h(context)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${addresses.length} ${strings.savedUppercase}',
+                            style: context.textTheme.subheaderLabel,
+                          ),
+                          Text(
+                            strings.defaultFirst,
+                            style: context.textTheme.subheaderLabel,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Addresses Cards
+                    ...addresses.map((address) {
+                      return AddressCardTile(
+                        address: address,
+                        isSelectMode: isSelectMode,
+                        selectedAddressId: selectedAddressId,
+                        isDark: isDark,
+                        strings: strings,
+                      );
+                    }),
+
+                    SizedBox(height: 12.h(context)),
+                    Text(
+                      strings.addressTaxNotice,
+                      textAlign: TextAlign.center,
+                      style: context.textTheme.secondaryNoticeText,
+                    ),
+                  ],
+                ),
+              ),
+
+              // Fixed Bottom Action Button: + Add address
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(
+                    20.w(context),
+                    12.h(context),
+                    20.w(context),
+                    24.h(context),
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.darkSurface : Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 16,
+                        offset: Offset(0, -4.h(context)),
+                      ),
+                    ],
+                  ),
+                  child: _addBtnWidget(context, strings),
+                ),
+              ),
+            ],
           );
         },
-        backgroundColor: AppColors.primary,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(
-          strings.addAddress,
-          style: context.textTheme.whiteLabelLarge?.copyWith(
-            fontSize: 14.sp(context),
-          ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, st) => AppErrorWidget(
+          message: strings.failedToLoadAddresses,
+          onRetry: () => ref.invalidate(addressProvider),
         ),
       ),
+    );
+  }
+
+  Widget _addBtnWidget(context, strings) {
+    return AppButton(
+      text: '+ ${strings.addAddress}',
+      onPressed: () async {
+        final newAddress = await Navigator.of(context).push<AddressModel>(
+          MaterialPageRoute(builder: (_) => const AddEditAddressScreen()),
+        );
+        if (newAddress != null && context.mounted && isSelectMode) {
+          Navigator.of(context).pop<AddressModel>(newAddress);
+        }
+      },
     );
   }
 }

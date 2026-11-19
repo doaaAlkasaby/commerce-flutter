@@ -6,6 +6,7 @@ import 'package:ecommerce/core/theme/app_theme.dart';
 import 'package:ecommerce/core/widgets/app_scaffold.dart';
 import 'package:ecommerce/core/utils/app_update_helper.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
+import 'package:ecommerce/features/storefront/presentation/providers/storefront_provider.dart';
 import 'package:ecommerce/features/home/presentation/providers/home_provider.dart';
 import 'package:ecommerce/features/home/presentation/widgets/home_header.dart';
 import 'package:ecommerce/features/home/presentation/widgets/home_categories.dart';
@@ -32,6 +33,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(storefrontProvider);
     final homeDataAsync = ref.watch(homeDataProvider);
     final localizationAsync = ref.watch(appLocalizationLoaderProvider);
     final currentLang = ref.watch(languageProvider);
@@ -50,16 +52,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: RefreshIndicator(
           color: AppColors.primary,
           onRefresh: () async {
+            ref.invalidate(storefrontProvider);
             ref.invalidate(homeDataProvider);
             ref.invalidate(currentUserProvider);
-            await ref.read(homeDataProvider.future);
+            await Future.wait([
+              ref.read(storefrontProvider.future),
+              ref.read(homeDataProvider.future),
+            ]);
           },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(
               parent: BouncingScrollPhysics(),
             ),
             padding: EdgeInsets.symmetric(
-              horizontal: 20.w(context),
+              horizontal: 12.w(context),
               vertical: 12.h(context),
             ),
             child: Column(

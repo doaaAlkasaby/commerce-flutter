@@ -1,22 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../main.dart';
 import '../constants/app_colors.dart';
 import '../utils/responsive_utils.dart';
 import 'app_typography.dart';
 
 part 'app_theme.g.dart';
 
+const String _themeKey = 'app_theme_mode';
+
 @Riverpod(keepAlive: true)
 class ThemeNotifier extends _$ThemeNotifier {
   @override
-  ThemeMode build() => ThemeMode.light;
+  ThemeMode build() {
+    final savedTheme = sharedPreferences.getString(_themeKey);
+    if (savedTheme == 'dark') return ThemeMode.dark;
+    if (savedTheme == 'light') return ThemeMode.light;
+    return ThemeMode.light;
+  }
 
   void setThemeMode(ThemeMode mode) {
     state = mode;
+    sharedPreferences.setString(
+      _themeKey,
+      mode == ThemeMode.dark ? 'dark' : 'light',
+    );
   }
 
   void toggleTheme() {
-    state = state == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+    final newMode = state == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+    setThemeMode(newMode);
   }
 }
 
