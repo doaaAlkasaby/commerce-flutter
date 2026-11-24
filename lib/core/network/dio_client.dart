@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../features/auth/data/auth_repository.dart';
 import '../../features/devices/presentation/providers/device_provider.dart';
+import '../config/app_environment.dart';
 import '../config/tenant_config.dart';
 import '../constants/api_endpoints.dart';
 import '../utils/app_logger.dart';
@@ -20,18 +22,15 @@ class AuthTokenNotifier extends _$AuthTokenNotifier {
   @override
   String? build() {
     final coordinator = ref.watch(sessionCoordinatorProvider);
-    final activeToken = coordinator.activeAccessToken;
-
-    if (activeToken == null) {
-      Future.microtask(() async {
-        final session = await coordinator.restoreSession();
-        if (session != null && state == null) {
-          state = session.accessToken;
-        }
-      });
+    final active = coordinator.activeAccessToken;
+    if (active != null && active.isNotEmpty) {
+      return active;
     }
-
-    return activeToken;
+    try {
+      return state;
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<void> setToken(String? token, {String? refreshToken}) async {
@@ -44,11 +43,32 @@ class AuthTokenNotifier extends _$AuthTokenNotifier {
         refreshToken: effectiveRefresh,
       );
     } else {
-      try {
-        await ref
-            .read(deviceRegistrationProvider.notifier)
-            .deactivateCurrentDeviceBeforeLogout();
-      } catch (_) {}
+      if (state != null && state!.isNotEmpty) {
+        final currentRefresh = await coordinator.storage.readRefreshToken();
+        if (currentRefresh != null && currentRefresh.isNotEmpty) {
+          try {
+            final tenantSlug = ref.read(selectedTenantSlugProvider);
+            final logoutDio = Dio(
+              BaseOptions(
+                baseUrl: AppEnvironment.baseUrl,
+                connectTimeout: const Duration(seconds: 2),
+                receiveTimeout: const Duration(seconds: 2),
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                  'X-Tenant-Slug': tenantSlug,
+                },
+              ),
+            );
+            await AuthRepository(logoutDio).logout(currentRefresh);
+          } catch (_) {}
+        }
+        try {
+          await ref
+              .read(deviceRegistrationProvider.notifier)
+              .deactivateCurrentDeviceBeforeLogout();
+        } catch (_) {}
+      }
       await coordinator.clearSession();
     }
     state = token;

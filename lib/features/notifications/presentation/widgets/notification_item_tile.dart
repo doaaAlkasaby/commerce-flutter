@@ -1,3 +1,4 @@
+import 'package:ecommerce/core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
@@ -7,6 +8,7 @@ import 'package:ecommerce/core/utils/app_error_utils.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/features/notifications/models/notification_model.dart';
 import 'package:ecommerce/features/notifications/presentation/providers/notifications_provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class NotificationItemTile extends ConsumerWidget {
   final NotificationModel notification;
@@ -102,12 +104,14 @@ class NotificationItemTile extends ConsumerWidget {
                   color: AppColors.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
+                padding: EdgeInsets.all(12.sp(context)),
+                child: SvgPicture.asset(
                   notification.isRead
-                      ? Icons.notifications_outlined
-                      : Icons.notifications_active,
+                      ? AppAssets.bell
+                      : AppAssets.bell,
                   color: AppColors.primary,
-                  size: 20.sp(context),
+                  width: 14.sp(context),
+                  height: 14.sp(context),
                 ),
               ),
               SizedBox(width: 14.w(context)),
@@ -115,20 +119,23 @@ class NotificationItemTile extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(
+                      notification.title,
+                      // maxLines: 1,
+                      // overflow: TextOverflow.ellipsis,
+                      style: context.textTheme.titleMedium,
+                    ),
+
+                    SizedBox(height: 6.h(context)),
+                    Text(
+                      notification.message,
+                      style: context.textTheme.grayBodySmall,
+                    ),
+                    SizedBox(height: 10.h(context)),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Expanded(
-                          child: Text(
-                            notification.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.titleMedium,
-                          ),
-                        ),
-                        SizedBox(width: 8.w(context)),
-                        Flexible(
-                          child: Text(
+                       Text(
                             notification.createdAt.contains('T')
                                 ? notification.createdAt.split('T').first
                                 : notification.createdAt,
@@ -136,13 +143,7 @@ class NotificationItemTile extends ConsumerWidget {
                             overflow: TextOverflow.ellipsis,
                             style: context.textTheme.labelSmall,
                           ),
-                        ),
                       ],
-                    ),
-                    SizedBox(height: 6.h(context)),
-                    Text(
-                      notification.message,
-                      style: context.textTheme.bodyMedium,
                     ),
                   ],
                 ),

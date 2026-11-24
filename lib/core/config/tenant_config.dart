@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:ecommerce/core/config/app_environment.dart';
+import 'package:ecommerce/core/network/dio_client.dart';
 import 'package:ecommerce/main.dart';
 
 part 'tenant_config.g.dart';

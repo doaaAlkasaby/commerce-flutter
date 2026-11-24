@@ -1,11 +1,16 @@
+import 'package:ecommerce/core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/theme/text_theme_extension.dart';
+import 'package:ecommerce/core/config/tenant_config.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
+import 'package:ecommerce/features/cart/presentation/providers/cart_provider.dart';
 import 'package:ecommerce/features/home/models/home_response_model.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ProductHeaderWidget extends ConsumerStatefulWidget {
   final ProductModel product;
@@ -15,6 +20,7 @@ class ProductHeaderWidget extends ConsumerStatefulWidget {
   final bool isFavorite;
   final VoidCallback onBackPressed;
   final VoidCallback onFavoritePressed;
+  final VoidCallback onCartPressed;
 
   const ProductHeaderWidget({
     super.key,
@@ -25,6 +31,7 @@ class ProductHeaderWidget extends ConsumerStatefulWidget {
     required this.isFavorite,
     required this.onBackPressed,
     required this.onFavoritePressed,
+    required this.onCartPressed,
   });
 
   @override
@@ -34,6 +41,14 @@ class ProductHeaderWidget extends ConsumerStatefulWidget {
 
 class _ProductHeaderWidgetState extends ConsumerState<ProductHeaderWidget> {
   int _selectedImageIndex = 0;
+
+  void _shareProduct() {
+    final tenant = ref.read(tenantProvider);
+    final appName = tenant.appName.isNotEmpty ? tenant.appName : 'Store';
+    final shareText =
+        '${widget.product.name}\nCheck out this product on $appName!';
+    Share.share(shareText, subject: widget.product.name);
+  }
 
   @override
   void didUpdateWidget(covariant ProductHeaderWidget oldWidget) {
@@ -50,6 +65,8 @@ class _ProductHeaderWidgetState extends ConsumerState<ProductHeaderWidget> {
     final currentLang = ref.watch(languageProvider);
     final localizationAsync = ref.watch(appLocalizationLoaderProvider);
     final strings = AppStrings(localizationAsync.value ?? {}, currentLang);
+    final cartAsync = ref.watch(cartProvider);
+    final cartItemCount = cartAsync.value?.itemCount ?? 0;
 
     final images =
         (widget.overrideImages != null && widget.overrideImages!.isNotEmpty)
@@ -123,7 +140,66 @@ class _ProductHeaderWidgetState extends ConsumerState<ProductHeaderWidget> {
                     ? AppColors.darkTextPrimary
                     : AppColors.lightTextPrimary,
               ),
-              onPressed: () {},
+              onPressed: _shareProduct,
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.w(context)),
+          child: Container(
+            decoration: BoxDecoration(
+              color: widget.isDark ? AppColors.darkSurface : Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 8,
+                  offset: Offset(0, 2.h(context)),
+                ),
+              ],
+            ),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                IconButton(
+                  icon: SvgPicture.asset(
+                    AppAssets.cartAddSvg,
+                    width: 18.sp(context),
+                    colorFilter: ColorFilter.mode(
+                      widget.isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.lightTextPrimary,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                  onPressed: widget.onCartPressed,
+                ),
+                if (cartItemCount > 0)
+                  Positioned(
+                    top: 2.h(context),
+                    right: 2.w(context),
+                    child: Container(
+                      padding: EdgeInsets.all(3.w(context)),
+                      decoration: const BoxDecoration(
+                        color: AppColors.badgeRed,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: BoxConstraints(
+                        minWidth: 16.w(context),
+                        minHeight: 16.w(context),
+                      ),
+                      child: Text(
+                        cartItemCount > 99 ? '99+' : '$cartItemCount',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 9.sp(context),
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),

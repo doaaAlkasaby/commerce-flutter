@@ -398,6 +398,10 @@
   "no_eligible_fulfillment_warehouse": "No shipping option can fulfill this cart for the selected address",
   "no_orders_found": "No orders found",
   "no_addresses_found": "No addresses found",
-"shopping_cart": "Shopping Cart",
+  "shopping_cart": "Shopping Cart",
+  "exit_app_title": "Exit App",
+  "exit_app_desc": "Are you sure you want to exit the app or continue shopping?",
+  "continue_shopping": "Continue Shopping",
+  "exit_app_btn": "Exit App",
   "password_validation": "Password should contain at least 8 characters with uppercase, lowercase, number, and special character"
 }

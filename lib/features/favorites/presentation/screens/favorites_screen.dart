@@ -138,6 +138,7 @@ class FavoritesScreen extends ConsumerWidget {
                     subtitle: strings.tapTheHeart,
                     pngAsset: AppAssets.favorites,
                     actionText: strings.browseTheShop,
+                    size: 100.w(context),
                     onActionPressed: () {
                       Navigator.of(context).pop();
                       ref.read(navigationIndexProvider.notifier).setIndex(0);

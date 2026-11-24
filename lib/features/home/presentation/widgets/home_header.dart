@@ -11,6 +11,9 @@ import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/features/search/presentation/screens/search_filter_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../notifications/presentation/providers/notifications_provider.dart';
+import '../../../notifications/presentation/screens/notifications_screen.dart';
+
 class HomeHeaderWidget extends ConsumerWidget {
   final AppStrings strings;
   final bool isDark;
@@ -29,6 +32,8 @@ class HomeHeaderWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final unreadCount = ref.watch(unreadNotificationCountProvider);
+
     final tenant = ref.watch(tenantProvider);
     Widget defaultLogo = Image.asset(
       AppAssets.logo,
@@ -179,11 +184,8 @@ class HomeHeaderWidget extends ConsumerWidget {
                       height: 17.sp(context),
                     ),
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('You have 5 unread notifications'),
-                          behavior: SnackBarBehavior.floating,
-                        ),
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const NotificationsScreen()),
                       );
                     },
                     padding: EdgeInsets.zero,
@@ -203,7 +205,7 @@ class HomeHeaderWidget extends ConsumerWidget {
                       minHeight: 18.h(context),
                     ),
                     child: Text(
-                      '5',
+                      unreadCount.toString(),
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: Colors.white,
                         fontSize: 10.sp(context),

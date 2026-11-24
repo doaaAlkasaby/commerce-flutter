@@ -642,4 +642,8 @@ class AppStrings {
   String get passwordValidation => get("password_validation");
   String get noAddressesFound => get("no_addresses_found");
   String get shoppingCart => get("shopping_cart");
+  String get exitAppTitle => get('exit_app_title');
+  String get exitAppDesc => get('exit_app_desc');
+  String get continueShopping => get('continue_shopping');
+  String get exitAppBtn => get('exit_app_btn');
 }

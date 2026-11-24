@@ -309,6 +309,7 @@ class DeviceRegistrationNotifier extends _$DeviceRegistrationNotifier {
 
   Future<void> deactivateCurrentDeviceBeforeLogout() async {
     final currentDevice = _registeredDevice ?? state;
+    if (currentDevice == null) return;
     state = null;
     _clearContext();
 

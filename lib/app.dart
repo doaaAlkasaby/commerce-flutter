@@ -5,6 +5,9 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'core/config/app_environment.dart';
 import 'core/config/tenant_config.dart';
 import 'core/localization/app_localizations.dart';
+import 'core/network/dio_client.dart';
+import 'core/services/notification_navigation_handler.dart';
+import 'core/services/notification_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/devices/presentation/providers/device_provider.dart';
 import 'features/main_shell_screen.dart';
@@ -24,7 +27,16 @@ class EcommerceApp extends ConsumerWidget {
 
     final isArabic = language == AppLanguage.ar;
 
+    AppNotificationService().onNotificationTap = (data) {
+      final token = ref.read(authTokenProvider);
+      NotificationNavigationHandler.processNotificationTap(
+        data,
+        authToken: token,
+      );
+    };
+
     return MaterialApp(
+      navigatorKey: rootNavigatorKey,
       title: tenant.appName,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),

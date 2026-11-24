@@ -76,14 +76,16 @@ class MockNotificationsHttpAdapter implements HttpClientAdapter {
     Stream<Uint8List>? requestStream,
     Future<void>? cancelFuture,
   ) async {
-    requests.add(RecordedRequest(
-      sequenceNumber: requests.length + 1,
-      path: options.path,
-      method: options.method,
-      headers: Map.from(options.headers),
-      queryParameters: Map.from(options.queryParameters),
-      body: options.data,
-    ));
+    requests.add(
+      RecordedRequest(
+        sequenceNumber: requests.length + 1,
+        path: options.path,
+        method: options.method,
+        headers: Map.from(options.headers),
+        queryParameters: Map.from(options.queryParameters),
+        body: options.data,
+      ),
+    );
 
     final path = options.path;
     final query = options.queryParameters;
@@ -93,7 +95,9 @@ class MockNotificationsHttpAdapter implements HttpClientAdapter {
       return ResponseBody.fromString(
         jsonEncode({'message': 'Failed to fetch notifications'}),
         500,
-        headers: {Headers.contentTypeHeader: [Headers.jsonContentType]},
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
       );
     }
 
@@ -105,7 +109,9 @@ class MockNotificationsHttpAdapter implements HttpClientAdapter {
         return ResponseBody.fromString(
           jsonEncode({'message': 'Failed to mark as read'}),
           400,
-          headers: {Headers.contentTypeHeader: [Headers.jsonContentType]},
+          headers: {
+            Headers.contentTypeHeader: [Headers.jsonContentType],
+          },
         );
       }
       return ResponseBody.fromString(
@@ -119,10 +125,12 @@ class MockNotificationsHttpAdapter implements HttpClientAdapter {
             'body': 'Your order has been confirmed.',
             'isRead': true,
             'createdAt': '2026-03-01T10:00:00.000Z',
-          }
+          },
         }),
         200,
-        headers: {Headers.contentTypeHeader: [Headers.jsonContentType]},
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
       );
     }
 
@@ -130,7 +138,9 @@ class MockNotificationsHttpAdapter implements HttpClientAdapter {
       return ResponseBody.fromString(
         jsonEncode({'success': true, 'message': null, 'data': null}),
         200,
-        headers: {Headers.contentTypeHeader: [Headers.jsonContentType]},
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
       );
     }
 
@@ -139,13 +149,17 @@ class MockNotificationsHttpAdapter implements HttpClientAdapter {
         return ResponseBody.fromString(
           jsonEncode({'message': 'Failed to delete notification'}),
           400,
-          headers: {Headers.contentTypeHeader: [Headers.jsonContentType]},
+          headers: {
+            Headers.contentTypeHeader: [Headers.jsonContentType],
+          },
         );
       }
       return ResponseBody.fromString(
         jsonEncode({'success': true, 'message': null, 'data': null}),
         200,
-        headers: {Headers.contentTypeHeader: [Headers.jsonContentType]},
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
       );
     }
 
@@ -158,7 +172,9 @@ class MockNotificationsHttpAdapter implements HttpClientAdapter {
           return ResponseBody.fromString(
             jsonEncode({'message': 'Failed to load page 2'}),
             500,
-            headers: {Headers.contentTypeHeader: [Headers.jsonContentType]},
+            headers: {
+              Headers.contentTypeHeader: [Headers.jsonContentType],
+            },
           );
         }
 
@@ -176,7 +192,7 @@ class MockNotificationsHttpAdapter implements HttpClientAdapter {
                   'data': {'orderId': 'ord-123'},
                   'isRead': true,
                   'createdAt': '2026-03-02T10:00:00.000Z',
-                }
+                },
               ],
               'pagination': {
                 'page': 2,
@@ -185,10 +201,12 @@ class MockNotificationsHttpAdapter implements HttpClientAdapter {
                 'totalPages': 2,
               },
               'unreadCount': 1,
-            }
+            },
           }),
           200,
-          headers: {Headers.contentTypeHeader: [Headers.jsonContentType]},
+          headers: {
+            Headers.contentTypeHeader: [Headers.jsonContentType],
+          },
         );
       }
 
@@ -206,26 +224,25 @@ class MockNotificationsHttpAdapter implements HttpClientAdapter {
                 'data': {'orderId': 'ord-123'},
                 'isRead': false,
                 'createdAt': '2026-03-01T10:00:00.000Z',
-              }
+              },
             ],
-            'pagination': {
-              'page': 1,
-              'limit': 20,
-              'total': 2,
-              'totalPages': 2,
-            },
+            'pagination': {'page': 1, 'limit': 20, 'total': 2, 'totalPages': 2},
             'unreadCount': 1,
-          }
+          },
         }),
         200,
-        headers: {Headers.contentTypeHeader: [Headers.jsonContentType]},
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
       );
     }
 
     return ResponseBody.fromString(
       jsonEncode({'success': true, 'data': {}}),
       200,
-      headers: {Headers.contentTypeHeader: [Headers.jsonContentType]},
+      headers: {
+        Headers.contentTypeHeader: [Headers.jsonContentType],
+      },
     );
   }
 
@@ -237,97 +254,129 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Task 06.5.1 — Notifications Behavioral Integration Tests', () {
-    test('1. NotificationModel parses real backend DTO fields (body, type, data, isRead)', () {
-      final json = {
-        'id': 'notif-1',
-        'type': 'ORDER_STATUS_CHANGED',
-        'title': 'Order Confirmed',
-        'body': 'Your order has been confirmed.',
-        'data': {'orderId': 'ord-123'},
-        'isRead': false,
-        'readAt': null,
-        'createdAt': '2026-03-01T10:00:00.000Z',
-      };
+    test(
+      '1. NotificationModel parses real backend DTO fields (body, type, data, isRead)',
+      () {
+        final json = {
+          'id': 'notif-1',
+          'type': 'ORDER_STATUS_CHANGED',
+          'title': 'Order Confirmed',
+          'body': 'Your order has been confirmed.',
+          'data': {'orderId': 'ord-123'},
+          'isRead': false,
+          'readAt': null,
+          'createdAt': '2026-03-01T10:00:00.000Z',
+        };
 
-      final notif = NotificationModel.fromJson(json);
+        final notif = NotificationModel.fromJson(json);
 
-      expect(notif.id, 'notif-1');
-      expect(notif.type, 'ORDER_STATUS_CHANGED');
-      expect(notif.title, 'Order Confirmed');
-      expect(notif.body, 'Your order has been confirmed.');
-      expect(notif.message, 'Your order has been confirmed.');
-      expect(notif.data?['orderId'], 'ord-123');
-      expect(notif.isRead, isFalse);
-    });
+        expect(notif.id, 'notif-1');
+        expect(notif.type, 'ORDER_STATUS_CHANGED');
+        expect(notif.title, 'Order Confirmed');
+        expect(notif.body, 'Your order has been confirmed.');
+        expect(notif.message, 'Your order has been confirmed.');
+        expect(notif.data?['orderId'], 'ord-123');
+        expect(notif.isRead, isFalse);
+      },
+    );
 
-    test('2. NotificationsRepository getPaginatedNotifications parses items, pagination, and unreadCount', () async {
-      final mockAdapter = MockNotificationsHttpAdapter();
-      final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:3000/api/v1'));
-      dio.httpClientAdapter = mockAdapter;
+    test(
+      '2. NotificationsRepository getPaginatedNotifications parses items, pagination, and unreadCount',
+      () async {
+        final mockAdapter = MockNotificationsHttpAdapter();
+        final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:3000/api/v1'));
+        dio.httpClientAdapter = mockAdapter;
 
-      final repo = NotificationsRepository(dio);
-      final res = await repo.getPaginatedNotifications(page: 1, limit: 20);
+        final repo = NotificationsRepository(dio);
+        final res = await repo.getPaginatedNotifications(page: 1, limit: 20);
 
-      expect(res.items.length, 1);
-      expect(res.items.first.id, 'notif-1');
-      expect(res.page, 1);
-      expect(res.totalPages, 2);
-      expect(res.unreadCount, 1);
-    });
+        expect(res.items.length, 1);
+        expect(res.items.first.id, 'notif-1');
+        expect(res.page, 1);
+        expect(res.totalPages, 2);
+        expect(res.unreadCount, 1);
+      },
+    );
 
-    test('3. GET request sends correct page=1 and limit=20 parameters', () async {
-      final mockAdapter = MockNotificationsHttpAdapter();
-      final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:3000/api/v1'));
-      dio.httpClientAdapter = mockAdapter;
+    test(
+      '3. GET request sends correct page=1 and limit=20 parameters',
+      () async {
+        final mockAdapter = MockNotificationsHttpAdapter();
+        final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:3000/api/v1'));
+        dio.httpClientAdapter = mockAdapter;
 
-      final repo = NotificationsRepository(dio);
-      await repo.getPaginatedNotifications(page: 1, limit: 20);
+        final repo = NotificationsRepository(dio);
+        await repo.getPaginatedNotifications(page: 1, limit: 20);
 
-      expect(mockAdapter.requests.first.queryParameters, {'page': 1, 'limit': 20});
-    });
+        expect(mockAdapter.requests.first.queryParameters, {
+          'page': 1,
+          'limit': 20,
+        });
+      },
+    );
 
-    test('4. NotificationController loadNextPage appends page 2 unique items and updates pagination', () async {
-      SharedPreferences.setMockInitialValues({'selected_tenant_slug': 'dev81-kuwait-fashion'});
-      sharedPreferences = await SharedPreferences.getInstance();
+    test(
+      '4. NotificationController loadNextPage appends page 2 unique items and updates pagination',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'selected_tenant_slug': 'dev81-kuwait-fashion',
+        });
+        sharedPreferences = await SharedPreferences.getInstance();
 
-      final mockAdapter = MockNotificationsHttpAdapter();
-      late ProviderContainer container;
+        final mockAdapter = MockNotificationsHttpAdapter();
+        late ProviderContainer container;
 
-      container = ProviderContainer(
-        overrides: [
-          authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
-          currentUserProvider.overrideWith(() => FakeUserNotifier()),
-          sessionCoordinatorProvider.overrideWith((ref) {
-            return SessionCoordinator(SharedPreferencesCredentialStorage(sharedPreferences));
-          }),
-          dioClientProvider.overrideWith((ref) {
-            final tenantSlug = ref.watch(selectedTenantSlugProvider);
-            final dio = Dio(BaseOptions(
-              baseUrl: 'http://127.0.0.1:3000/api/v1',
-              headers: {'X-Tenant-Slug': tenantSlug, 'Authorization': 'Bearer test-token'},
-            ));
-            dio.httpClientAdapter = mockAdapter;
-            return dio;
-          }),
-        ],
-      );
+        container = ProviderContainer(
+          overrides: [
+            authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
+            currentUserProvider.overrideWith(() => FakeUserNotifier()),
+            sessionCoordinatorProvider.overrideWith((ref) {
+              return SessionCoordinator(
+                SharedPreferencesCredentialStorage(sharedPreferences),
+              );
+            }),
+            dioClientProvider.overrideWith((ref) {
+              final tenantSlug = ref.watch(selectedTenantSlugProvider);
+              final dio = Dio(
+                BaseOptions(
+                  baseUrl: 'http://127.0.0.1:3000/api/v1',
+                  headers: {
+                    'X-Tenant-Slug': tenantSlug,
+                    'Authorization': 'Bearer test-token',
+                  },
+                ),
+              );
+              dio.httpClientAdapter = mockAdapter;
+              return dio;
+            }),
+          ],
+        );
 
-      container.listen(notificationControllerProvider, (_, _) {});
+        container.listen(notificationControllerProvider, (_, _) {});
 
-      final statePage1 = await container.read(notificationControllerProvider.future);
-      expect(statePage1.items.length, 1);
-      expect(statePage1.hasMore, isTrue);
+        final statePage1 = await container.read(
+          notificationControllerProvider.future,
+        );
+        expect(statePage1.items.length, 1);
+        expect(statePage1.hasMore, isTrue);
 
-      await container.read(notificationControllerProvider.notifier).loadNextPage();
-      final statePage2 = container.read(notificationControllerProvider).value!;
+        await container
+            .read(notificationControllerProvider.notifier)
+            .loadNextPage();
+        final statePage2 = container
+            .read(notificationControllerProvider)
+            .value!;
 
-      expect(statePage2.items.length, 2);
-      expect(statePage2.items[0].id, 'notif-1');
-      expect(statePage2.items[1].id, 'notif-2');
-      expect(statePage2.hasMore, isFalse);
-    });
+        expect(statePage2.items.length, 2);
+        expect(statePage2.items[0].id, 'notif-1');
+        expect(statePage2.items[1].id, 'notif-2');
+        expect(statePage2.hasMore, isFalse);
+      },
+    );
 
-    testWidgets('5. Initial GET failure displays Error UI and Retry button', (tester) async {
+    testWidgets('5. Initial GET failure displays Error UI and Retry button', (
+      tester,
+    ) async {
       SharedPreferences.setMockInitialValues({
         'is_tenant_confirmed': true,
         'selected_tenant_slug': 'dev81-kuwait-fashion',
@@ -343,14 +392,21 @@ void main() {
             authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
             currentUserProvider.overrideWith(() => FakeUserNotifier()),
             sessionCoordinatorProvider.overrideWith((ref) {
-              return SessionCoordinator(SharedPreferencesCredentialStorage(sharedPreferences));
+              return SessionCoordinator(
+                SharedPreferencesCredentialStorage(sharedPreferences),
+              );
             }),
             dioClientProvider.overrideWith((ref) {
               final tenantSlug = ref.watch(selectedTenantSlugProvider);
-              final dio = Dio(BaseOptions(
-                baseUrl: 'http://127.0.0.1:3000/api/v1',
-                headers: {'X-Tenant-Slug': tenantSlug, 'Authorization': 'Bearer test-token'},
-              ));
+              final dio = Dio(
+                BaseOptions(
+                  baseUrl: 'http://127.0.0.1:3000/api/v1',
+                  headers: {
+                    'X-Tenant-Slug': tenantSlug,
+                    'Authorization': 'Bearer test-token',
+                  },
+                ),
+              );
               dio.httpClientAdapter = mockAdapter;
               return dio;
             }),
@@ -371,87 +427,129 @@ void main() {
       expect(find.text('Order Confirmed'), findsOneWidget);
     });
 
-    test('6. Mark unread notification as read sends PATCH request and decrements unreadCount once', () async {
-      SharedPreferences.setMockInitialValues({'selected_tenant_slug': 'dev81-kuwait-fashion'});
-      sharedPreferences = await SharedPreferences.getInstance();
+    test(
+      '6. Mark unread notification as read sends PATCH request and decrements unreadCount once',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'selected_tenant_slug': 'dev81-kuwait-fashion',
+        });
+        sharedPreferences = await SharedPreferences.getInstance();
 
-      final mockAdapter = MockNotificationsHttpAdapter();
-      late ProviderContainer container;
+        final mockAdapter = MockNotificationsHttpAdapter();
+        late ProviderContainer container;
 
-      container = ProviderContainer(
-        overrides: [
-          authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
-          currentUserProvider.overrideWith(() => FakeUserNotifier()),
-          sessionCoordinatorProvider.overrideWith((ref) {
-            return SessionCoordinator(SharedPreferencesCredentialStorage(sharedPreferences));
-          }),
-          dioClientProvider.overrideWith((ref) {
-            final tenantSlug = ref.watch(selectedTenantSlugProvider);
-            final dio = Dio(BaseOptions(
-              baseUrl: 'http://127.0.0.1:3000/api/v1',
-              headers: {'X-Tenant-Slug': tenantSlug, 'Authorization': 'Bearer test-token'},
-            ));
-            dio.httpClientAdapter = mockAdapter;
-            return dio;
-          }),
-        ],
-      );
+        container = ProviderContainer(
+          overrides: [
+            authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
+            currentUserProvider.overrideWith(() => FakeUserNotifier()),
+            sessionCoordinatorProvider.overrideWith((ref) {
+              return SessionCoordinator(
+                SharedPreferencesCredentialStorage(sharedPreferences),
+              );
+            }),
+            dioClientProvider.overrideWith((ref) {
+              final tenantSlug = ref.watch(selectedTenantSlugProvider);
+              final dio = Dio(
+                BaseOptions(
+                  baseUrl: 'http://127.0.0.1:3000/api/v1',
+                  headers: {
+                    'X-Tenant-Slug': tenantSlug,
+                    'Authorization': 'Bearer test-token',
+                  },
+                ),
+              );
+              dio.httpClientAdapter = mockAdapter;
+              return dio;
+            }),
+          ],
+        );
 
-      container.listen(notificationControllerProvider, (_, _) {});
+        container.listen(notificationControllerProvider, (_, _) {});
 
-      final initState = await container.read(notificationControllerProvider.future);
-      expect(initState.unreadCount, 1);
+        final initState = await container.read(
+          notificationControllerProvider.future,
+        );
+        expect(initState.unreadCount, 1);
 
-      await container.read(notificationControllerProvider.notifier).markAsRead('notif-1');
+        await container
+            .read(notificationControllerProvider.notifier)
+            .markAsRead('notif-1');
 
-      final finalState = container.read(notificationControllerProvider).value!;
-      expect(finalState.unreadCount, 0);
-      expect(finalState.items.first.isRead, isTrue);
-      expect(mockAdapter.requests.last.path, contains('/notifications/notif-1/read'));
-    });
+        final finalState = container
+            .read(notificationControllerProvider)
+            .value!;
+        expect(finalState.unreadCount, 0);
+        expect(finalState.items.first.isRead, isTrue);
+        expect(
+          mockAdapter.requests.last.path,
+          contains('/notifications/notif-1/read'),
+        );
+      },
+    );
 
-    test('7. Marking already-read notification does not decrement unreadCount', () async {
-      SharedPreferences.setMockInitialValues({'selected_tenant_slug': 'dev81-kuwait-fashion'});
-      sharedPreferences = await SharedPreferences.getInstance();
+    test(
+      '7. Marking already-read notification does not decrement unreadCount',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'selected_tenant_slug': 'dev81-kuwait-fashion',
+        });
+        sharedPreferences = await SharedPreferences.getInstance();
 
-      final mockAdapter = MockNotificationsHttpAdapter();
-      late ProviderContainer container;
+        final mockAdapter = MockNotificationsHttpAdapter();
+        late ProviderContainer container;
 
-      container = ProviderContainer(
-        overrides: [
-          authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
-          currentUserProvider.overrideWith(() => FakeUserNotifier()),
-          sessionCoordinatorProvider.overrideWith((ref) {
-            return SessionCoordinator(SharedPreferencesCredentialStorage(sharedPreferences));
-          }),
-          dioClientProvider.overrideWith((ref) {
-            final tenantSlug = ref.watch(selectedTenantSlugProvider);
-            final dio = Dio(BaseOptions(
-              baseUrl: 'http://127.0.0.1:3000/api/v1',
-              headers: {'X-Tenant-Slug': tenantSlug, 'Authorization': 'Bearer test-token'},
-            ));
-            dio.httpClientAdapter = mockAdapter;
-            return dio;
-          }),
-        ],
-      );
+        container = ProviderContainer(
+          overrides: [
+            authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
+            currentUserProvider.overrideWith(() => FakeUserNotifier()),
+            sessionCoordinatorProvider.overrideWith((ref) {
+              return SessionCoordinator(
+                SharedPreferencesCredentialStorage(sharedPreferences),
+              );
+            }),
+            dioClientProvider.overrideWith((ref) {
+              final tenantSlug = ref.watch(selectedTenantSlugProvider);
+              final dio = Dio(
+                BaseOptions(
+                  baseUrl: 'http://127.0.0.1:3000/api/v1',
+                  headers: {
+                    'X-Tenant-Slug': tenantSlug,
+                    'Authorization': 'Bearer test-token',
+                  },
+                ),
+              );
+              dio.httpClientAdapter = mockAdapter;
+              return dio;
+            }),
+          ],
+        );
 
-      container.listen(notificationControllerProvider, (_, _) {});
+        container.listen(notificationControllerProvider, (_, _) {});
 
-      await container.read(notificationControllerProvider.future);
-      await container.read(notificationControllerProvider.notifier).markAsRead('notif-1');
+        await container.read(notificationControllerProvider.future);
+        await container
+            .read(notificationControllerProvider.notifier)
+            .markAsRead('notif-1');
 
-      final reqCount = mockAdapter.requests.length;
+        final reqCount = mockAdapter.requests.length;
 
-      // Second markAsRead on same read item
-      await container.read(notificationControllerProvider.notifier).markAsRead('notif-1');
+        // Second markAsRead on same read item
+        await container
+            .read(notificationControllerProvider.notifier)
+            .markAsRead('notif-1');
 
-      expect(mockAdapter.requests.length, reqCount); // No duplicate PATCH
-      expect(container.read(notificationControllerProvider).value!.unreadCount, 0);
-    });
+        expect(mockAdapter.requests.length, reqCount); // No duplicate PATCH
+        expect(
+          container.read(notificationControllerProvider).value!.unreadCount,
+          0,
+        );
+      },
+    );
 
     test('8. markAllAsRead updates global unreadCount to 0', () async {
-      SharedPreferences.setMockInitialValues({'selected_tenant_slug': 'dev81-kuwait-fashion'});
+      SharedPreferences.setMockInitialValues({
+        'selected_tenant_slug': 'dev81-kuwait-fashion',
+      });
       sharedPreferences = await SharedPreferences.getInstance();
 
       final mockAdapter = MockNotificationsHttpAdapter();
@@ -462,14 +560,21 @@ void main() {
           authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
           currentUserProvider.overrideWith(() => FakeUserNotifier()),
           sessionCoordinatorProvider.overrideWith((ref) {
-            return SessionCoordinator(SharedPreferencesCredentialStorage(sharedPreferences));
+            return SessionCoordinator(
+              SharedPreferencesCredentialStorage(sharedPreferences),
+            );
           }),
           dioClientProvider.overrideWith((ref) {
             final tenantSlug = ref.watch(selectedTenantSlugProvider);
-            final dio = Dio(BaseOptions(
-              baseUrl: 'http://127.0.0.1:3000/api/v1',
-              headers: {'X-Tenant-Slug': tenantSlug, 'Authorization': 'Bearer test-token'},
-            ));
+            final dio = Dio(
+              BaseOptions(
+                baseUrl: 'http://127.0.0.1:3000/api/v1',
+                headers: {
+                  'X-Tenant-Slug': tenantSlug,
+                  'Authorization': 'Bearer test-token',
+                },
+              ),
+            );
             dio.httpClientAdapter = mockAdapter;
             return dio;
           }),
@@ -479,57 +584,82 @@ void main() {
       container.listen(notificationControllerProvider, (_, _) {});
 
       await container.read(notificationControllerProvider.future);
-      await container.read(notificationControllerProvider.notifier).markAllAsRead();
+      await container
+          .read(notificationControllerProvider.notifier)
+          .markAllAsRead();
 
       final state = container.read(notificationControllerProvider).value!;
       expect(state.unreadCount, 0);
       expect(state.items.every((i) => i.isRead), isTrue);
-      expect(mockAdapter.requests.last.path, contains('/notifications/read-all'));
-    });
-
-    test('9. Delete unread notification sends DELETE and updates list and unreadCount', () async {
-      SharedPreferences.setMockInitialValues({'selected_tenant_slug': 'dev81-kuwait-fashion'});
-      sharedPreferences = await SharedPreferences.getInstance();
-
-      final mockAdapter = MockNotificationsHttpAdapter();
-      late ProviderContainer container;
-
-      container = ProviderContainer(
-        overrides: [
-          authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
-          currentUserProvider.overrideWith(() => FakeUserNotifier()),
-          sessionCoordinatorProvider.overrideWith((ref) {
-            return SessionCoordinator(SharedPreferencesCredentialStorage(sharedPreferences));
-          }),
-          dioClientProvider.overrideWith((ref) {
-            final tenantSlug = ref.watch(selectedTenantSlugProvider);
-            final dio = Dio(BaseOptions(
-              baseUrl: 'http://127.0.0.1:3000/api/v1',
-              headers: {'X-Tenant-Slug': tenantSlug, 'Authorization': 'Bearer test-token'},
-            ));
-            dio.httpClientAdapter = mockAdapter;
-            return dio;
-          }),
-        ],
+      expect(
+        mockAdapter.requests.last.path,
+        contains('/notifications/read-all'),
       );
-
-      container.listen(notificationControllerProvider, (_, _) {});
-
-      await container.read(notificationControllerProvider.future);
-      await container.read(notificationControllerProvider.notifier).deleteNotification('notif-1');
-
-      final state = container.read(notificationControllerProvider).value!;
-      expect(state.items, isEmpty);
-      expect(state.unreadCount, 0);
-      expect(mockAdapter.requests.last.method, 'DELETE');
-      expect(mockAdapter.requests.last.path, contains('/notifications/notif-1'));
     });
+
+    test(
+      '9. Delete unread notification sends DELETE and updates list and unreadCount',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'selected_tenant_slug': 'dev81-kuwait-fashion',
+        });
+        sharedPreferences = await SharedPreferences.getInstance();
+
+        final mockAdapter = MockNotificationsHttpAdapter();
+        late ProviderContainer container;
+
+        container = ProviderContainer(
+          overrides: [
+            authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
+            currentUserProvider.overrideWith(() => FakeUserNotifier()),
+            sessionCoordinatorProvider.overrideWith((ref) {
+              return SessionCoordinator(
+                SharedPreferencesCredentialStorage(sharedPreferences),
+              );
+            }),
+            dioClientProvider.overrideWith((ref) {
+              final tenantSlug = ref.watch(selectedTenantSlugProvider);
+              final dio = Dio(
+                BaseOptions(
+                  baseUrl: 'http://127.0.0.1:3000/api/v1',
+                  headers: {
+                    'X-Tenant-Slug': tenantSlug,
+                    'Authorization': 'Bearer test-token',
+                  },
+                ),
+              );
+              dio.httpClientAdapter = mockAdapter;
+              return dio;
+            }),
+          ],
+        );
+
+        container.listen(notificationControllerProvider, (_, _) {});
+
+        await container.read(notificationControllerProvider.future);
+        await container
+            .read(notificationControllerProvider.notifier)
+            .deleteNotification('notif-1');
+
+        final state = container.read(notificationControllerProvider).value!;
+        expect(state.items, isEmpty);
+        expect(state.unreadCount, 0);
+        expect(mockAdapter.requests.last.method, 'DELETE');
+        expect(
+          mockAdapter.requests.last.path,
+          contains('/notifications/notif-1'),
+        );
+      },
+    );
 
     test('10. Failed mutation rolls back optimistic state change', () async {
-      SharedPreferences.setMockInitialValues({'selected_tenant_slug': 'dev81-kuwait-fashion'});
+      SharedPreferences.setMockInitialValues({
+        'selected_tenant_slug': 'dev81-kuwait-fashion',
+      });
       sharedPreferences = await SharedPreferences.getInstance();
 
-      final mockAdapter = MockNotificationsHttpAdapter()..patchShouldFail = true;
+      final mockAdapter = MockNotificationsHttpAdapter()
+        ..patchShouldFail = true;
       late ProviderContainer container;
 
       container = ProviderContainer(
@@ -537,14 +667,21 @@ void main() {
           authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
           currentUserProvider.overrideWith(() => FakeUserNotifier()),
           sessionCoordinatorProvider.overrideWith((ref) {
-            return SessionCoordinator(SharedPreferencesCredentialStorage(sharedPreferences));
+            return SessionCoordinator(
+              SharedPreferencesCredentialStorage(sharedPreferences),
+            );
           }),
           dioClientProvider.overrideWith((ref) {
             final tenantSlug = ref.watch(selectedTenantSlugProvider);
-            final dio = Dio(BaseOptions(
-              baseUrl: 'http://127.0.0.1:3000/api/v1',
-              headers: {'X-Tenant-Slug': tenantSlug, 'Authorization': 'Bearer test-token'},
-            ));
+            final dio = Dio(
+              BaseOptions(
+                baseUrl: 'http://127.0.0.1:3000/api/v1',
+                headers: {
+                  'X-Tenant-Slug': tenantSlug,
+                  'Authorization': 'Bearer test-token',
+                },
+              ),
+            );
             dio.httpClientAdapter = mockAdapter;
             return dio;
           }),
@@ -556,7 +693,9 @@ void main() {
       await container.read(notificationControllerProvider.future);
 
       try {
-        await container.read(notificationControllerProvider.notifier).markAsRead('notif-1');
+        await container
+            .read(notificationControllerProvider.notifier)
+            .markAsRead('notif-1');
       } catch (_) {}
 
       final state = container.read(notificationControllerProvider).value!;
@@ -564,50 +703,66 @@ void main() {
       expect(state.unreadCount, 1);
     });
 
-    test('11. Delayed GET from old user session cannot overwrite new user notifications', () async {
-      SharedPreferences.setMockInitialValues({'selected_tenant_slug': 'dev81-kuwait-fashion'});
-      sharedPreferences = await SharedPreferences.getInstance();
+    test(
+      '11. Delayed GET from old user session cannot overwrite new user notifications',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'selected_tenant_slug': 'dev81-kuwait-fashion',
+        });
+        sharedPreferences = await SharedPreferences.getInstance();
 
-      final mockAdapter = MockNotificationsHttpAdapter();
-      final authNotifier = FakeAuthTokenNotifier();
-      final fakeUserNotifier = FakeUserNotifier();
-      late ProviderContainer container;
+        final mockAdapter = MockNotificationsHttpAdapter();
+        final authNotifier = FakeAuthTokenNotifier();
+        final fakeUserNotifier = FakeUserNotifier();
+        late ProviderContainer container;
 
-      container = ProviderContainer(
-        overrides: [
-          authTokenProvider.overrideWith(() => authNotifier),
-          currentUserProvider.overrideWith(() => fakeUserNotifier),
-          sessionCoordinatorProvider.overrideWith((ref) {
-            return SessionCoordinator(SharedPreferencesCredentialStorage(sharedPreferences));
-          }),
-          dioClientProvider.overrideWith((ref) {
-            final tenantSlug = ref.watch(selectedTenantSlugProvider);
-            final token = ref.watch(authTokenProvider);
-            final dio = Dio(BaseOptions(
-              baseUrl: 'http://127.0.0.1:3000/api/v1',
-              headers: {'X-Tenant-Slug': tenantSlug, if (token != null) 'Authorization': 'Bearer $token'},
-            ));
-            dio.httpClientAdapter = mockAdapter;
-            return dio;
-          }),
-        ],
-      );
+        container = ProviderContainer(
+          overrides: [
+            authTokenProvider.overrideWith(() => authNotifier),
+            currentUserProvider.overrideWith(() => fakeUserNotifier),
+            sessionCoordinatorProvider.overrideWith((ref) {
+              return SessionCoordinator(
+                SharedPreferencesCredentialStorage(sharedPreferences),
+              );
+            }),
+            dioClientProvider.overrideWith((ref) {
+              final tenantSlug = ref.watch(selectedTenantSlugProvider);
+              final token = ref.watch(authTokenProvider);
+              final dio = Dio(
+                BaseOptions(
+                  baseUrl: 'http://127.0.0.1:3000/api/v1',
+                  headers: {
+                    'X-Tenant-Slug': tenantSlug,
+                    if (token != null) 'Authorization': 'Bearer $token',
+                  },
+                ),
+              );
+              dio.httpClientAdapter = mockAdapter;
+              return dio;
+            }),
+          ],
+        );
 
-      container.listen(notificationControllerProvider, (_, _) {});
+        container.listen(notificationControllerProvider, (_, _) {});
 
-      await container.read(notificationControllerProvider.future);
+        await container.read(notificationControllerProvider.future);
 
-      // Logout
-      authNotifier.setToken(null);
-      fakeUserNotifier.user = null;
-      await Future.microtask(() {});
+        // Logout
+        authNotifier.setToken(null);
+        fakeUserNotifier.user = null;
+        await Future.microtask(() {});
 
-      final state = await container.read(notificationControllerProvider.future);
-      expect(state.items, isEmpty);
-      expect(state.unreadCount, 0);
-    });
+        final state = await container.read(
+          notificationControllerProvider.future,
+        );
+        expect(state.items, isEmpty);
+        expect(state.unreadCount, 0);
+      },
+    );
 
-    testWidgets('12. Settings badge reflects real unreadNotificationCount', (tester) async {
+    testWidgets('12. Settings badge reflects real unreadNotificationCount', (
+      tester,
+    ) async {
       SharedPreferences.setMockInitialValues({
         'is_tenant_confirmed': true,
         'selected_tenant_slug': 'dev81-kuwait-fashion',
@@ -623,14 +778,21 @@ void main() {
             authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
             currentUserProvider.overrideWith(() => FakeUserNotifier()),
             sessionCoordinatorProvider.overrideWith((ref) {
-              return SessionCoordinator(SharedPreferencesCredentialStorage(sharedPreferences));
+              return SessionCoordinator(
+                SharedPreferencesCredentialStorage(sharedPreferences),
+              );
             }),
             dioClientProvider.overrideWith((ref) {
               final tenantSlug = ref.watch(selectedTenantSlugProvider);
-              final dio = Dio(BaseOptions(
-                baseUrl: 'http://127.0.0.1:3000/api/v1',
-                headers: {'X-Tenant-Slug': tenantSlug, 'Authorization': 'Bearer test-token'},
-              ));
+              final dio = Dio(
+                BaseOptions(
+                  baseUrl: 'http://127.0.0.1:3000/api/v1',
+                  headers: {
+                    'X-Tenant-Slug': tenantSlug,
+                    'Authorization': 'Bearer test-token',
+                  },
+                ),
+              );
               dio.httpClientAdapter = mockAdapter;
               return dio;
             }),
@@ -641,142 +803,194 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      expect(find.text('1'), findsOneWidget); // unreadCount == 1 from mock adapter
+      expect(
+        find.text('1'),
+        findsOneWidget,
+      ); // unreadCount == 1 from mock adapter
     });
 
-    test('13. Delayed mutation from old user session cannot modify new session', () async {
-      SharedPreferences.setMockInitialValues({'selected_tenant_slug': 'dev81-kuwait-fashion'});
-      sharedPreferences = await SharedPreferences.getInstance();
+    test(
+      '13. Delayed mutation from old user session cannot modify new session',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'selected_tenant_slug': 'dev81-kuwait-fashion',
+        });
+        sharedPreferences = await SharedPreferences.getInstance();
 
-      final patchCompleter = Completer<void>();
-      final mockAdapter = MockNotificationsHttpAdapter()..patchCompleter = patchCompleter;
-      final authNotifier = FakeAuthTokenNotifier();
-      final fakeUserNotifier = FakeUserNotifier();
-      late ProviderContainer container;
+        final patchCompleter = Completer<void>();
+        final mockAdapter = MockNotificationsHttpAdapter()
+          ..patchCompleter = patchCompleter;
+        final authNotifier = FakeAuthTokenNotifier();
+        final fakeUserNotifier = FakeUserNotifier();
+        late ProviderContainer container;
 
-      container = ProviderContainer(
-        overrides: [
-          authTokenProvider.overrideWith(() => authNotifier),
-          currentUserProvider.overrideWith(() => fakeUserNotifier),
-          sessionCoordinatorProvider.overrideWith((ref) {
-            return SessionCoordinator(SharedPreferencesCredentialStorage(sharedPreferences));
-          }),
-          dioClientProvider.overrideWith((ref) {
-            final tenantSlug = ref.watch(selectedTenantSlugProvider);
-            final token = ref.watch(authTokenProvider);
-            final dio = Dio(BaseOptions(
-              baseUrl: 'http://127.0.0.1:3000/api/v1',
-              headers: {'X-Tenant-Slug': tenantSlug, if (token != null) 'Authorization': 'Bearer $token'},
-            ));
-            dio.httpClientAdapter = mockAdapter;
-            return dio;
-          }),
-        ],
-      );
+        container = ProviderContainer(
+          overrides: [
+            authTokenProvider.overrideWith(() => authNotifier),
+            currentUserProvider.overrideWith(() => fakeUserNotifier),
+            sessionCoordinatorProvider.overrideWith((ref) {
+              return SessionCoordinator(
+                SharedPreferencesCredentialStorage(sharedPreferences),
+              );
+            }),
+            dioClientProvider.overrideWith((ref) {
+              final tenantSlug = ref.watch(selectedTenantSlugProvider);
+              final token = ref.watch(authTokenProvider);
+              final dio = Dio(
+                BaseOptions(
+                  baseUrl: 'http://127.0.0.1:3000/api/v1',
+                  headers: {
+                    'X-Tenant-Slug': tenantSlug,
+                    if (token != null) 'Authorization': 'Bearer $token',
+                  },
+                ),
+              );
+              dio.httpClientAdapter = mockAdapter;
+              return dio;
+            }),
+          ],
+        );
 
-      container.listen(notificationControllerProvider, (_, _) {});
+        container.listen(notificationControllerProvider, (_, _) {});
 
-      await container.read(notificationControllerProvider.future);
+        await container.read(notificationControllerProvider.future);
 
-      final notifFuture = container.read(notificationControllerProvider.notifier).markAsRead('notif-1');
+        final notifFuture = container
+            .read(notificationControllerProvider.notifier)
+            .markAsRead('notif-1');
 
-      // Logout during in-flight PATCH
-      authNotifier.setToken(null);
-      fakeUserNotifier.user = null;
-      patchCompleter.complete();
+        // Logout during in-flight PATCH
+        authNotifier.setToken(null);
+        fakeUserNotifier.user = null;
+        patchCompleter.complete();
 
-      try {
-        await notifFuture;
-      } catch (_) {}
+        try {
+          await notifFuture;
+        } catch (_) {}
 
-      final state = await container.read(notificationControllerProvider.future);
-      expect(state.items, isEmpty);
-      expect(state.unreadCount, 0);
-    });
+        final state = await container.read(
+          notificationControllerProvider.future,
+        );
+        expect(state.items, isEmpty);
+        expect(state.unreadCount, 0);
+      },
+    );
 
-    test('14. loadNextPage preserves item mutations completed while page 2 was in-flight', () async {
-      SharedPreferences.setMockInitialValues({'selected_tenant_slug': 'dev81-kuwait-fashion'});
-      sharedPreferences = await SharedPreferences.getInstance();
+    test(
+      '14. loadNextPage preserves item mutations completed while page 2 was in-flight',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'selected_tenant_slug': 'dev81-kuwait-fashion',
+        });
+        sharedPreferences = await SharedPreferences.getInstance();
 
-      final page2Completer = Completer<void>();
-      final mockAdapter = MockNotificationsHttpAdapter()..page2Completer = page2Completer;
-      late ProviderContainer container;
+        final page2Completer = Completer<void>();
+        final mockAdapter = MockNotificationsHttpAdapter()
+          ..page2Completer = page2Completer;
+        late ProviderContainer container;
 
-      container = ProviderContainer(
-        overrides: [
-          authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
-          currentUserProvider.overrideWith(() => FakeUserNotifier()),
-          sessionCoordinatorProvider.overrideWith((ref) {
-            return SessionCoordinator(SharedPreferencesCredentialStorage(sharedPreferences));
-          }),
-          dioClientProvider.overrideWith((ref) {
-            final tenantSlug = ref.watch(selectedTenantSlugProvider);
-            final dio = Dio(BaseOptions(
-              baseUrl: 'http://127.0.0.1:3000/api/v1',
-              headers: {'X-Tenant-Slug': tenantSlug, 'Authorization': 'Bearer test-token'},
-            ));
-            dio.httpClientAdapter = mockAdapter;
-            return dio;
-          }),
-        ],
-      );
+        container = ProviderContainer(
+          overrides: [
+            authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
+            currentUserProvider.overrideWith(() => FakeUserNotifier()),
+            sessionCoordinatorProvider.overrideWith((ref) {
+              return SessionCoordinator(
+                SharedPreferencesCredentialStorage(sharedPreferences),
+              );
+            }),
+            dioClientProvider.overrideWith((ref) {
+              final tenantSlug = ref.watch(selectedTenantSlugProvider);
+              final dio = Dio(
+                BaseOptions(
+                  baseUrl: 'http://127.0.0.1:3000/api/v1',
+                  headers: {
+                    'X-Tenant-Slug': tenantSlug,
+                    'Authorization': 'Bearer test-token',
+                  },
+                ),
+              );
+              dio.httpClientAdapter = mockAdapter;
+              return dio;
+            }),
+          ],
+        );
 
-      container.listen(notificationControllerProvider, (_, _) {});
+        container.listen(notificationControllerProvider, (_, _) {});
 
-      await container.read(notificationControllerProvider.future);
+        await container.read(notificationControllerProvider.future);
 
-      // Start loading page 2
-      final page2Future = container.read(notificationControllerProvider.notifier).loadNextPage();
+        // Start loading page 2
+        final page2Future = container
+            .read(notificationControllerProvider.notifier)
+            .loadNextPage();
 
-      // Mark notif-1 as read while page 2 is in-flight
-      await container.read(notificationControllerProvider.notifier).markAsRead('notif-1');
+        // Mark notif-1 as read while page 2 is in-flight
+        await container
+            .read(notificationControllerProvider.notifier)
+            .markAsRead('notif-1');
 
-      page2Completer.complete();
-      await page2Future;
+        page2Completer.complete();
+        await page2Future;
 
-      final state = container.read(notificationControllerProvider).value!;
-      expect(state.items.first.id, 'notif-1');
-      expect(state.items.first.isRead, isTrue); // Mutation preserved!
-      expect(state.items.length, 2);
-    });
+        final state = container.read(notificationControllerProvider).value!;
+        expect(state.items.first.id, 'notif-1');
+        expect(state.items.first.isRead, isTrue); // Mutation preserved!
+        expect(state.items.length, 2);
+      },
+    );
 
-    test('15. Failed delete mutation rolls back item and preserves unread count', () async {
-      SharedPreferences.setMockInitialValues({'selected_tenant_slug': 'dev81-kuwait-fashion'});
-      sharedPreferences = await SharedPreferences.getInstance();
+    test(
+      '15. Failed delete mutation rolls back item and preserves unread count',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'selected_tenant_slug': 'dev81-kuwait-fashion',
+        });
+        sharedPreferences = await SharedPreferences.getInstance();
 
-      final mockAdapter = MockNotificationsHttpAdapter()..deleteShouldFail = true;
-      late ProviderContainer container;
+        final mockAdapter = MockNotificationsHttpAdapter()
+          ..deleteShouldFail = true;
+        late ProviderContainer container;
 
-      container = ProviderContainer(
-        overrides: [
-          authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
-          currentUserProvider.overrideWith(() => FakeUserNotifier()),
-          sessionCoordinatorProvider.overrideWith((ref) {
-            return SessionCoordinator(SharedPreferencesCredentialStorage(sharedPreferences));
-          }),
-          dioClientProvider.overrideWith((ref) {
-            final tenantSlug = ref.watch(selectedTenantSlugProvider);
-            final dio = Dio(BaseOptions(
-              baseUrl: 'http://127.0.0.1:3000/api/v1',
-              headers: {'X-Tenant-Slug': tenantSlug, 'Authorization': 'Bearer test-token'},
-            ));
-            dio.httpClientAdapter = mockAdapter;
-            return dio;
-          }),
-        ],
-      );
+        container = ProviderContainer(
+          overrides: [
+            authTokenProvider.overrideWith(() => FakeAuthTokenNotifier()),
+            currentUserProvider.overrideWith(() => FakeUserNotifier()),
+            sessionCoordinatorProvider.overrideWith((ref) {
+              return SessionCoordinator(
+                SharedPreferencesCredentialStorage(sharedPreferences),
+              );
+            }),
+            dioClientProvider.overrideWith((ref) {
+              final tenantSlug = ref.watch(selectedTenantSlugProvider);
+              final dio = Dio(
+                BaseOptions(
+                  baseUrl: 'http://127.0.0.1:3000/api/v1',
+                  headers: {
+                    'X-Tenant-Slug': tenantSlug,
+                    'Authorization': 'Bearer test-token',
+                  },
+                ),
+              );
+              dio.httpClientAdapter = mockAdapter;
+              return dio;
+            }),
+          ],
+        );
 
-      container.listen(notificationControllerProvider, (_, _) {});
+        container.listen(notificationControllerProvider, (_, _) {});
 
-      await container.read(notificationControllerProvider.future);
+        await container.read(notificationControllerProvider.future);
 
-      try {
-        await container.read(notificationControllerProvider.notifier).deleteNotification('notif-1');
-      } catch (_) {}
+        try {
+          await container
+              .read(notificationControllerProvider.notifier)
+              .deleteNotification('notif-1');
+        } catch (_) {}
 
-      final state = container.read(notificationControllerProvider).value!;
-      expect(state.items.first.id, 'notif-1');
-      expect(state.unreadCount, 1);
-    });
+        final state = container.read(notificationControllerProvider).value!;
+        expect(state.items.first.id, 'notif-1');
+        expect(state.unreadCount, 1);
+      },
+    );
   });
 }

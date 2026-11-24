@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -33,6 +34,8 @@ class AppNotificationService {
       );
 
   bool _isInitialized = false;
+
+  Function(Map<String, dynamic> data)? onNotificationTap;
 
   static String? mockTokenForTesting;
   static StreamController<String>? mockTokenRefreshControllerForTesting;
@@ -82,7 +85,15 @@ class AppNotificationService {
     try {
       await _localNotifs.initialize(
         settings: initializationSettings,
-        onDidReceiveNotificationResponse: (NotificationResponse response) {},
+        onDidReceiveNotificationResponse: (NotificationResponse response) {
+          if (response.payload != null && response.payload!.isNotEmpty) {
+            try {
+              final data =
+                  jsonDecode(response.payload!) as Map<String, dynamic>;
+              onNotificationTap?.call(data);
+            } catch (_) {}
+          }
+        },
       );
 
       await _localNotifs
@@ -95,13 +106,15 @@ class AppNotificationService {
     try {
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         final notification = message.notification;
-        final android = message.notification?.android;
+        final title = notification?.title ?? message.data['title']?.toString();
+        final body = notification?.body ?? message.data['body']?.toString();
 
-        if (notification != null && android != null) {
+        if (title != null && body != null) {
           _localNotifs.show(
-            id: notification.hashCode,
-            title: notification.title,
-            body: notification.body,
+            id: message.messageId?.hashCode ?? title.hashCode,
+            title: title,
+            body: body,
+            payload: jsonEncode(message.data),
             notificationDetails: NotificationDetails(
               android: AndroidNotificationDetails(
                 _androidChannel.id,
@@ -120,6 +133,19 @@ class AppNotificationService {
           );
         }
       });
+
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        onNotificationTap?.call(message.data);
+      });
+
+      _fcm
+          .getInitialMessage()
+          .then((RemoteMessage? message) {
+            if (message != null) {
+              onNotificationTap?.call(message.data);
+            }
+          })
+          .catchError((_) => null);
     } catch (_) {}
 
     _isInitialized = true;

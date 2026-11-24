@@ -4,10 +4,13 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ecommerce/core/config/tenant_config.dart';
 import 'package:ecommerce/core/network/dio_client.dart';
+import 'package:ecommerce/core/network/session_coordinator.dart';
 import 'package:ecommerce/core/constants/api_endpoints.dart';
 import 'package:ecommerce/features/storefront/presentation/providers/storefront_provider.dart';
+import 'package:ecommerce/main.dart';
 
 class ControlledMockAdapter implements HttpClientAdapter {
   final Map<String, Completer<ResponseBody>> _completers = {};
@@ -33,12 +36,22 @@ class ControlledMockAdapter implements HttpClientAdapter {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    sharedPreferences = await SharedPreferences.getInstance();
+  });
+
   group('Real In-Flight Tenant Isolation Tests', () {
     test('Tenant A pending response is discarded when active tenant switches to Tenant B and Tenant B loads its own data', () async {
       final mockAdapter = ControlledMockAdapter();
 
       final container = ProviderContainer(
         overrides: [
+          sessionCoordinatorProvider.overrideWith((ref) {
+            return SessionCoordinator(SharedPreferencesCredentialStorage(sharedPreferences));
+          }),
           dioClientProvider.overrideWith((ref) {
             final tenantSlug = ref.watch(selectedTenantSlugProvider);
             final dio = Dio(BaseOptions(

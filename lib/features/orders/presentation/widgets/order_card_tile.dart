@@ -266,7 +266,7 @@ class OrderCardTile extends StatelessWidget {
                       backgroundColor: AppColors.primary,
                       padding: EdgeInsets.symmetric(
                         horizontal: 16.w(context),
-                        vertical: 10.h(context),
+                        vertical: 0.h(context),
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.w(context)),

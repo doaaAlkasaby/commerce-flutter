@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ecommerce/main.dart';
 import 'package:ecommerce/core/config/tenant_config.dart';
 import 'package:ecommerce/core/network/dio_client.dart';
+import 'package:ecommerce/core/network/session_coordinator.dart';
 import 'package:ecommerce/core/services/notification_service.dart';
 import 'package:ecommerce/features/devices/data/device_repository.dart';
 import 'package:ecommerce/features/devices/presentation/providers/device_provider.dart';
@@ -640,7 +641,10 @@ class TestAuthTokenNotifier extends AuthTokenNotifier {
   TestAuthTokenNotifier(this._t);
 
   @override
-  String? build() => _t;
+  String? build() {
+    ref.watch(sessionCoordinatorProvider);
+    return _t;
+  }
 
   @override
   Future<void> setToken(String? token, {String? refreshToken}) async {

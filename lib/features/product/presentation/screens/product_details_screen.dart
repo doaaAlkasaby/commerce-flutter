@@ -12,6 +12,7 @@ import 'package:ecommerce/features/auth/presentation/screens/login_screen.dart';
 import 'package:ecommerce/features/cart/presentation/providers/cart_provider.dart';
 import 'package:ecommerce/features/favorites/presentation/providers/favorites_provider.dart';
 import 'package:ecommerce/features/home/models/home_response_model.dart';
+import 'package:ecommerce/features/main_shell_screen.dart';
 import 'package:ecommerce/features/product/data/product_repository.dart';
 import 'package:ecommerce/features/product/presentation/providers/reviews_provider.dart';
 import 'package:ecommerce/features/product/presentation/screens/all_reviews_screen.dart';
@@ -174,12 +175,50 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
     );
   }
 
+  void _showLoginRequiredDialog(BuildContext context, AppStrings strings) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24.w(context)),
+        ),
+        title: Text(strings.loginRequired, style: context.textTheme.titleLarge),
+        content: Text(
+          strings.loginRequiredDesc,
+          style: context.textTheme.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(strings.cancel, style: context.textTheme.bodyMedium),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+            child: Text(
+              strings.signIn,
+              style: context.textTheme.whiteLabelLarge,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openCartTab() {
+    ref.read(navigationIndexProvider.notifier).setIndex(2);
+    Navigator.of(context).popUntil((route) => route.isFirst);
+  }
+
   Future<void> _postReview(AppStrings strings) async {
     final token = ref.read(authTokenProvider);
     if (token == null || token.isEmpty) {
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute(builder: (_) => const LoginScreen()));
+      _showLoginRequiredDialog(context, strings);
       return;
     }
 
@@ -227,6 +266,12 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
     ProductModel currentProduct,
     AppStrings strings,
   ) async {
+    final token = ref.read(authTokenProvider);
+    if (token == null || token.isEmpty) {
+      _showLoginRequiredDialog(context, strings);
+      return;
+    }
+
     String? variantId;
 
     if (currentProduct.attributes.isNotEmpty) {
@@ -350,7 +395,13 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                             ?.isFavorite(currentProduct.id) ??
                         currentProduct.isFavorite,
                     onBackPressed: () => Navigator.of(context).pop(),
+                    onCartPressed: _openCartTab,
                     onFavoritePressed: () async {
+                      final token = ref.read(authTokenProvider);
+                      if (token == null || token.isEmpty) {
+                        _showLoginRequiredDialog(context, strings);
+                        return;
+                      }
                       try {
                         await ref
                             .read(wishlistControllerProvider.notifier)

@@ -12,6 +12,7 @@ import 'package:ecommerce/core/widgets/app_empty_widget.dart';
 import 'package:ecommerce/core/widgets/app_error_widget.dart';
 import 'package:ecommerce/core/widgets/app_scaffold.dart';
 import 'package:ecommerce/core/widgets/app_text_field.dart';
+import 'package:ecommerce/features/auth/data/auth_repository.dart';
 import 'package:ecommerce/features/storefront/data/storefront_repository.dart';
 import 'package:ecommerce/features/tenant_selection/presentation/providers/tenant_selection_provider.dart';
 import '../widgets/tenant_card_tile.dart';
@@ -61,6 +62,27 @@ class _TenantSelectionScreenState extends ConsumerState<TenantSelectionScreen> {
     });
 
     try {
+      final activeSlug = ref.read(selectedTenantSlugProvider);
+      final isChangingStore =
+          activeSlug.isNotEmpty && activeSlug != _selectedSlug;
+
+      if (isChangingStore) {
+        final token = ref.read(authTokenProvider);
+        if (token != null && token.isNotEmpty) {
+          final coordinator = ref.read(sessionCoordinatorProvider);
+          final currentRefresh = await coordinator.storage.readRefreshToken();
+          if (currentRefresh != null && currentRefresh.isNotEmpty) {
+            try {
+              final authRepo = AuthRepository(ref.read(dioClientProvider));
+              await authRepo
+                  .logout(currentRefresh)
+                  .timeout(const Duration(seconds: 2));
+            } catch (_) {}
+          }
+          await ref.read(authTokenProvider.notifier).setToken(null);
+        }
+      }
+
       final token = ref.read(authTokenProvider);
 
       final candidateDio = Dio(
