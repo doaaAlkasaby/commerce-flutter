@@ -43,6 +43,34 @@ const Map<String, String> defaultEnglishMap = {
   'app_version': 'App version',
   'support': 'Support',
   'change_store': 'Change Store',
+  'special_orders': 'Special Orders',
+  'special_orders_intro_desc':
+      'Can\'t find a product in our store? Request it directly and receive a personalized quotation.',
+  'special_orders_dev_msg': 'Special Orders is currently being prepared.',
+  'settings_tooltip': 'Settings',
+  'home_banner_title': 'Can\'t find a product?',
+  'home_banner_desc': 'Request it directly from the store.',
+  'categories_banner_title': 'Looking for an unavailable product?',
+  'categories_banner_desc': 'Try our Special Orders service.',
+  'cart_banner_title': 'Need another unavailable product?',
+  'cart_banner_desc': 'Request it through Special Orders.',
+  'orders_banner_title': 'Your Special Orders',
+  'orders_banner_desc': 'Track product requests and quotations.',
+  'my_special_orders': 'My Special Orders',
+  'requests_tab': 'Requests',
+  'confirmed_orders_tab': 'Confirmed Orders',
+  'request_a_product': 'Request a Product',
+  'request_details': 'Request Details',
+  'confirmed_special_order_details': 'Confirmed Special Order Details',
+  'no_special_order_requests': 'No Special Order Requests',
+  'no_confirmed_special_orders': 'No Confirmed Special Orders',
+  'failed_to_load_special_orders': 'Failed to load special orders',
+  'requested_items': 'Requested Items',
+  'request_number': 'Request #{number}',
+  'specifications': 'Specifications',
+  'rejection_reason': 'Rejection Reason',
+  'submissions_disabled_notice':
+      'New product submissions are currently disabled by the store. You can still view your previous orders below.',
   'resend_verification_email': 'Resend Verification Email',
   'logout_all_devices': 'Logout All Devices',
   'welcome_back': 'Welcome back',
@@ -278,6 +306,33 @@ class AppStrings {
   String get profile => get('profile');
   String get orders => get('orders');
   String get settings => get('settings');
+  String get specialOrders => get('special_orders');
+  String get specialOrdersIntroDesc => get('special_orders_intro_desc');
+  String get specialOrdersDevMsg => get('special_orders_dev_msg');
+  String get settingsTooltip => get('settings_tooltip');
+  String get homeBannerTitle => get('home_banner_title');
+  String get homeBannerDesc => get('home_banner_desc');
+  String get categoriesBannerTitle => get('categories_banner_title');
+  String get categoriesBannerDesc => get('categories_banner_desc');
+  String get cartBannerTitle => get('cart_banner_title');
+  String get cartBannerDesc => get('cart_banner_desc');
+  String get ordersBannerTitle => get('orders_banner_title');
+  String get ordersBannerDesc => get('orders_banner_desc');
+  String get mySpecialOrders => get('my_special_orders');
+  String get requestsTab => get('requests_tab');
+  String get confirmedOrdersTab => get('confirmed_orders_tab');
+  String get requestAProduct => get('request_a_product');
+  String get requestDetails => get('request_details');
+  String get confirmedSpecialOrderDetails =>
+      get('confirmed_special_order_details');
+  String get noSpecialOrderRequests => get('no_special_order_requests');
+  String get noConfirmedSpecialOrders => get('no_confirmed_special_orders');
+  String get failedToLoadSpecialOrders => get('failed_to_load_special_orders');
+  String get requestedItems => get('requested_items');
+  String get requestNumber => get('request_number');
+  String get specifications => get('specifications');
+  String get rejectionReason => get('rejection_reason');
+  String get submissionsDisabledNotice => get('submissions_disabled_notice');
   String get favorites => get('favorites');
   String get addresses => get('addresses');
   String get notifications => get('notifications');

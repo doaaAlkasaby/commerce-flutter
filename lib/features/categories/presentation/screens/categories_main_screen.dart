@@ -4,6 +4,7 @@ import 'package:ecommerce/core/constants/app_colors.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import '../../../../core/widgets/app_scaffold.dart';
+import 'package:ecommerce/features/special_orders/presentation/widgets/special_orders_banner.dart';
 import '../providers/categories_provider.dart';
 import '../widgets/categories_section.dart';
 
@@ -127,6 +128,17 @@ class CategoriesMainScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20.w(context),
+                    vertical: 8.h(context),
+                  ),
+                  child: const SpecialOrdersBanner(
+                    bannerContext: SpecialOrdersBannerContext.categories,
                   ),
                 ),
               ),

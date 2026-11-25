@@ -88,7 +88,7 @@ final class DeviceRegistrationNotifierProvider
 }
 
 String _$deviceRegistrationNotifierHash() =>
-    r'3a0eebc351592bce5ea46a4683058507c8f8b900';
+    r'76b0e429d35086d87e30ae60e6b2a4ddbca65a22';
 
 abstract class _$DeviceRegistrationNotifier extends $Notifier<DeviceDto?> {
   DeviceDto? build();

@@ -13,6 +13,7 @@ import 'package:ecommerce/features/home/presentation/widgets/home_categories.dar
 import 'package:ecommerce/features/home/presentation/widgets/home_sections.dart';
 import 'package:ecommerce/features/home/presentation/widgets/promo_banner.dart';
 import 'package:ecommerce/features/auth/presentation/providers/user_provider.dart';
+import 'package:ecommerce/features/special_orders/presentation/widgets/special_orders_banner.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -92,7 +93,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   error: (e, st) => const SizedBox.shrink(),
                 ),
-                SizedBox(height: 26.h(context)),
+                SizedBox(height: 16.h(context)),
+                const SpecialOrdersBanner(
+                  bannerContext: SpecialOrdersBannerContext.home,
+                ),
+                SizedBox(height: 16.h(context)),
                 HomeSectionsWidget(
                   homeDataAsync: homeDataAsync,
                   strings: strings,

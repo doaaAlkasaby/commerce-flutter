@@ -9,6 +9,7 @@ import 'package:ecommerce/core/widgets/app_error_widget.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
 import 'package:ecommerce/core/theme/text_theme_extension.dart';
 import 'package:ecommerce/features/orders/models/order_model.dart';
+import 'package:ecommerce/features/special_orders/presentation/widgets/special_orders_banner.dart';
 import '../../../main_shell_screen.dart';
 import '../providers/orders_provider.dart';
 import '../widgets/order_card_tile.dart';
@@ -56,6 +57,16 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
               selectedFilter: selectedFilter,
               strings: strings,
               isDark: isDark,
+            ),
+
+            SizedBox(height: 12.h(context)),
+
+            // Special Orders Banner
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w(context)),
+              child: const SpecialOrdersBanner(
+                bannerContext: SpecialOrdersBannerContext.orders,
+              ),
             ),
 
             SizedBox(height: 12.h(context)),

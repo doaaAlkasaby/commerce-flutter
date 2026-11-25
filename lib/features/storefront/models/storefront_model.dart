@@ -111,4 +111,36 @@ class StorefrontModel {
         return currency;
     }
   }
+
+  /// Special Orders settings helper
+  SpecialOrderSettingsModel get specialOrders {
+    final raw = settings['specialOrders'];
+    if (raw is Map<String, dynamic>) {
+      return SpecialOrderSettingsModel.fromJson(raw);
+    }
+    return const SpecialOrderSettingsModel(enabled: false);
+  }
+}
+
+class SpecialOrderSettingsModel {
+  final bool enabled;
+  final String? instructionsAr;
+  final String? instructionsEn;
+
+  const SpecialOrderSettingsModel({
+    required this.enabled,
+    this.instructionsAr,
+    this.instructionsEn,
+  });
+
+  factory SpecialOrderSettingsModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return const SpecialOrderSettingsModel(enabled: false);
+    }
+    return SpecialOrderSettingsModel(
+      enabled: json['enabled'] == true,
+      instructionsAr: json['instructionsAr']?.toString().trim(),
+      instructionsEn: json['instructionsEn']?.toString().trim(),
+    );
+  }
 }

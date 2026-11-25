@@ -9,9 +9,15 @@ class SettingsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final canPop = Navigator.of(context).canPop();
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [Text(strings.settings, style: context.textTheme.displayLarge)],
+      children: [
+        if (canPop) ...[
+          const BackButton(),
+          const SizedBox(width: 4),
+        ],
+        Text(strings.settings, style: context.textTheme.displayLarge),
+      ],
     );
   }
 }

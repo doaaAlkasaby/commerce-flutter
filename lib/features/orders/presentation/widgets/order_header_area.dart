@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ecommerce/core/localization/app_localizations.dart';
 import 'package:ecommerce/core/theme/text_theme_extension.dart';
 import 'package:ecommerce/core/utils/responsive_utils.dart';
+import 'package:ecommerce/features/special_orders/presentation/screens/special_orders_list_screen.dart';
 import '../providers/orders_provider.dart';
 
 class OrderHeaderArea extends ConsumerWidget {
@@ -59,6 +60,20 @@ class OrderHeaderArea extends ConsumerWidget {
                 error: (_, __) => const SizedBox.shrink(),
               ),
             ],
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.assignment_outlined,
+              size: 22.sp(context),
+            ),
+            tooltip: strings.mySpecialOrders,
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const SpecialOrdersListScreen(),
+                ),
+              );
+            },
           ),
         ],
       ),

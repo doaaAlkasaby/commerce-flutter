@@ -1,4 +1,5 @@
 import 'package:ecommerce/core/utils/responsive_utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,10 +16,19 @@ import 'package:ecommerce/features/home/presentation/screens/home_screen.dart';
 import 'package:ecommerce/features/categories/presentation/screens/categories_main_screen.dart';
 import 'package:ecommerce/features/cart/presentation/screens/cart_screen.dart';
 import 'package:ecommerce/features/orders/presentation/screens/orders_screen.dart';
-import 'package:ecommerce/features/settings/presentation/screens/settings_screen.dart';
 import 'package:ecommerce/features/cart/presentation/providers/cart_provider.dart';
+import 'package:ecommerce/features/special_orders/presentation/providers/special_orders_availability_provider.dart';
+import 'package:ecommerce/features/special_orders/presentation/screens/special_orders_list_screen.dart';
 
 part 'main_shell_screen.g.dart';
+
+class MainShellDestination {
+  static const int home = 0;
+  static const int categories = 1;
+  static const int cart = 2;
+  static const int orders = 3;
+  static const int specialOrders = 4;
+}
 
 @riverpod
 class NavigationIndex extends _$NavigationIndex {
@@ -233,6 +243,7 @@ class MainShellScreen extends ConsumerWidget {
     final cartAsync = ref.watch(cartProvider);
     final itemCount = cartAsync.value?.itemCount ?? 0;
 
+    final isSpecialOrdersEnabled = ref.watch(specialOrdersAvailabilityProvider);
     final selectedColor = isDark ? Colors.white : AppColors.primary;
     final unselectedColor = isDark
         ? AppColors.darkTextSecondary
@@ -243,15 +254,22 @@ class MainShellScreen extends ConsumerWidget {
       const CategoriesMainScreen(),
       const CartScreen(),
       const OrdersScreen(),
-      const SettingsScreen(),
+      if (isSpecialOrdersEnabled) const SpecialOrdersListScreen(),
     ];
+
+    final effectiveIndex = currentIndex < screens.length ? currentIndex : 0;
+    if (currentIndex >= screens.length) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(navigationIndexProvider.notifier).setIndex(0);
+      });
+    }
 
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
 
-        if (currentIndex != 0) {
+        if (effectiveIndex != 0) {
           ref.read(navigationIndexProvider.notifier).setIndex(0);
           return;
         }
@@ -267,7 +285,7 @@ class MainShellScreen extends ConsumerWidget {
         }
       },
       child: Scaffold(
-        body: IndexedStack(index: currentIndex, children: screens),
+        body: IndexedStack(index: effectiveIndex, children: screens),
         bottomNavigationBar: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -284,7 +302,7 @@ class MainShellScreen extends ConsumerWidget {
                 ],
               ),
               child: BottomNavigationBar(
-                currentIndex: currentIndex,
+                currentIndex: effectiveIndex,
                 onTap: (index) {
                   ref.read(navigationIndexProvider.notifier).setIndex(index);
                 },
@@ -349,21 +367,23 @@ class MainShellScreen extends ConsumerWidget {
                     label: strings.cart,
                   ),
                   BottomNavigationBarItem(
-                    icon: _buildSvgIcon(AppAssets.ordersSvg, unselectedColor),
+                    icon: _buildSvgIcon(AppAssets.basketSvg, unselectedColor),
                     activeIcon: _buildSvgIcon(
-                      AppAssets.ordersSvg,
+                      AppAssets.basketSvg,
                       selectedColor,
                     ),
                     label: strings.orders,
                   ),
-                  BottomNavigationBarItem(
-                    icon: _buildSvgIcon(AppAssets.settingsSvg, unselectedColor),
-                    activeIcon: _buildSvgIcon(
-                      AppAssets.settingsSvg,
-                      selectedColor,
+                  if (isSpecialOrdersEnabled)
+                    BottomNavigationBarItem(
+                      icon: _buildSvgIcon(AppAssets.orderSVG, unselectedColor, size: 14),
+                      activeIcon: _buildSvgIcon(
+                        AppAssets.orderSVG,
+                        selectedColor,
+                        size: 14,
+                      ),
+                      label: strings.specialOrders,
                     ),
-                    label: strings.settings,
-                  ),
                 ],
               ),
             ),

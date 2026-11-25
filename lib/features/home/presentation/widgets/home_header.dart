@@ -13,6 +13,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../notifications/presentation/providers/notifications_provider.dart';
 import '../../../notifications/presentation/screens/notifications_screen.dart';
+import '../../../settings/presentation/screens/settings_screen.dart';
 
 class HomeHeaderWidget extends ConsumerWidget {
   final AppStrings strings;
@@ -216,6 +217,44 @@ class HomeHeaderWidget extends ConsumerWidget {
                   ),
                 ),
               ],
+            ),
+            SizedBox(width: 10.w(context)),
+            Container(
+              width: 40.w(context),
+              height: 40.w(context),
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.darkSurface : Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 8,
+                    offset: Offset(0, 2.h(context)),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                tooltip: strings.settingsTooltip,
+                icon: SvgPicture.asset(
+                  AppAssets.settingsSvg,
+                  colorFilter: ColorFilter.mode(
+                    isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.lightTextPrimary,
+                    BlendMode.srcIn,
+                  ),
+                  width: 17.sp(context),
+                  height: 17.sp(context),
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const SettingsScreen(),
+                    ),
+                  );
+                },
+                padding: EdgeInsets.zero,
+              ),
             ),
           ],
         ),

@@ -108,4 +108,13 @@ class ApiEndpoints {
   static const String notificationsReadAll = '/notifications/read-all';
   static String notificationRead(String id) => '/notifications/$id/read';
   static String notificationById(String id) => '/notifications/$id';
+
+  // Special Orders Customer Endpoints
+  static const String specialOrdersMy = '/special-orders/my';
+  static String specialOrderMyById(String id) => '/special-orders/my/$id';
+  static const String specialOrdersMyOrders = '/special-orders/my/orders';
+  static String specialOrderMyOrderById(String id) =>
+      '/special-orders/my/orders/$id';
+  static String specialOrderMyOrderForRequest(String id) =>
+      '/special-orders/my/$id/order';
 }

@@ -22,6 +22,7 @@ import 'package:ecommerce/features/home/presentation/providers/home_provider.dar
 import 'package:ecommerce/features/main_shell_screen.dart';
 import 'package:ecommerce/features/product/data/product_repository.dart';
 import 'package:ecommerce/features/product/presentation/screens/product_details_screen.dart';
+import 'package:ecommerce/features/special_orders/presentation/widgets/special_orders_banner.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -109,6 +110,15 @@ class CartScreen extends ConsumerWidget {
                       },
                     ),
                   ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.w(context),
+                      vertical: 12.h(context),
+                    ),
+                    child: const SpecialOrdersBanner(
+                      bannerContext: SpecialOrdersBannerContext.cart,
+                    ),
+                  ),
                 ],
               );
             }
@@ -176,6 +186,12 @@ class CartScreen extends ConsumerWidget {
                       CartDeliveryNoticeBanner(
                         strings: strings,
                         isDark: isDark,
+                      ),
+                      SizedBox(height: 14.h(context)),
+
+                      // Special Orders Banner
+                      const SpecialOrdersBanner(
+                        bannerContext: SpecialOrdersBannerContext.cart,
                       ),
                     ],
                   ),

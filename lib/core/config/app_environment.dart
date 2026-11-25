@@ -17,6 +17,10 @@ class AppEnvironment {
     'IS_WHITE_LABEL',
     defaultValue: false,
   );
+  static const bool isSpecialOrdersPreviewEnabled = bool.fromEnvironment(
+    'SPECIAL_ORDERS_PREVIEW',
+    defaultValue: false,
+  );
 
   static EnvironmentType get currentEnvironment {
     switch (envRaw.toLowerCase()) {

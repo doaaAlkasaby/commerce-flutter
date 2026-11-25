@@ -14,6 +14,7 @@ class AppAssets {
   static const String categoriesSvg = 'assets/images/svg/categories.svg';
   static const String cartSvg = 'assets/images/svg/cart.svg';
   static const String ordersSvg = 'assets/images/svg/orders.svg';
+  static const String basketSvg = 'assets/images/svg/basket.svg';
   static const String settingsSvg = 'assets/images/svg/settings.svg';
 
   static const String heart = 'assets/images/svg/heart.svg';
